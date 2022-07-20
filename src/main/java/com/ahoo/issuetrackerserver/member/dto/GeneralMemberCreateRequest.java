@@ -13,7 +13,7 @@ public class GeneralMemberCreateRequest {
     private String loginId;
     private String password;
     private String email;
-    private String nickName;
+    private String nickname;
     private String profileImage;
 
     public Member toEntity() {
@@ -22,7 +22,7 @@ public class GeneralMemberCreateRequest {
             this.loginId,
             this.password,
             this.email,
-            this.nickName,
+            this.nickname,
             Optional.ofNullable(this.profileImage).orElse("defaultS3ImageUrl"),
             AuthProvider.NONE);
     }

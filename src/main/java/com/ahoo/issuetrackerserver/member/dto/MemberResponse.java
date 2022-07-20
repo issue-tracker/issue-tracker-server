@@ -13,18 +13,18 @@ public class MemberResponse {
 
     private Long id;
     private String email;
-    private String nickName;
+    private String nickname;
     private String profileImage;
 
-    public static MemberResponse of(Long id, String email, String nickName, String profileImage) {
-        return new MemberResponse(id, email, nickName, profileImage);
+    public static MemberResponse of(Long id, String email, String nickname, String profileImage) {
+        return new MemberResponse(id, email, nickname, profileImage);
     }
 
     public static MemberResponse from(Member member) {
         return new MemberResponse(
             member.getId(),
             member.getEmail(),
-            member.getNickName(),
+            member.getNickname(),
             member.getProfileImage()
         );
     }

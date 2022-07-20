@@ -32,7 +32,7 @@ public class Member {
     private String email;
 
     @Column(unique = true, nullable = false, length = 12)
-    private String nickName;
+    private String nickname;
 
     @Column(nullable = false)
     private String profileImage;

@@ -20,15 +20,15 @@ public class MemberService {
             throw new DuplicateMemberException(authProviderName + "(으)로 이미 가입된 이메일입니다.");
         });
         validateLoginId(memberCreateRequest.getLoginId());
-        validateNickName(memberCreateRequest.getNickName());
+        validateNickname(memberCreateRequest.getNickname());
 
         Member savedMember = memberRepository.save(memberCreateRequest.toEntity());
 
         return MemberResponse.from(savedMember);
     }
 
-    private void validateNickName(String nickName) {
-        if (memberRepository.existsByNickName(nickName)) {
+    private void validateNickname(String nickname) {
+        if (memberRepository.existsByNickname(nickname)) {
             throw new DuplicateMemberException("중복되는 닉네임이 존재합니다.");
         }
     }
