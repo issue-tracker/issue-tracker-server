@@ -7,8 +7,15 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(staticName = "of")
 public class Member {
 
     @Id
@@ -23,6 +30,9 @@ public class Member {
 
     @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(unique = true, nullable = false, length = 12)
+    private String nickName;
 
     @Column(nullable = false)
     private String profileImage;
