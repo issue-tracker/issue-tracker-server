@@ -15,37 +15,43 @@ public class MemberService {
 
     @Transactional
     public MemberResponse signUpByGeneral(GeneralMemberCreateRequest memberCreateRequest) {
-        validateEmail(memberCreateRequest.getEmail());
-        validateLoginId(memberCreateRequest.getLoginId());
-        validateNickname(memberCreateRequest.getNickname());
+        validateMemberRequest(memberCreateRequest);
 
         Member savedMember = memberRepository.save(memberCreateRequest.toEntity());
 
         return MemberResponse.from(savedMember);
     }
 
+
     @Transactional(readOnly = true)
-    public Boolean validateNickname(String nickname) {
-        if (memberRepository.existsByNickname(nickname)) {
-            throw new DuplicateMemberException("중복되는 닉네임이 존재합니다.");
-        }
-        return true;
+    public Boolean checkDuplicatedNickname(String nickname) {
+        return memberRepository.existsByNickname(nickname);
     }
 
     @Transactional(readOnly = true)
-    public Boolean validateLoginId(String loginId) {
-        if (memberRepository.existsByLoginId(loginId)) {
+    public Boolean checkDuplicatedLoginId(String loginId) {
+        return memberRepository.existsByLoginId(loginId);
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean checkDuplicatedEmail(String email) {
+        return memberRepository.existsByEmail(email);
+    }
+
+    private void validateMemberRequest(GeneralMemberCreateRequest generalMemberCreateRequest) {
+        if (checkDuplicatedLoginId(generalMemberCreateRequest.getLoginId())) {
             throw new DuplicateMemberException("중복되는 아이디가 존재합니다.");
         }
-        return true;
-    }
 
-    @Transactional(readOnly = true)
-    public Boolean validateEmail(String email) {
-        memberRepository.findByEmail(email).ifPresent(m -> {
-            String authProviderName = m.getAuthProviderType().getProviderName();
-            throw new DuplicateMemberException(authProviderName + "(으)로 이미 가입된 이메일입니다.");
-        });
-        return true;
+        if (checkDuplicatedNickname(generalMemberCreateRequest.getNickname())) {
+            throw new DuplicateMemberException("중복되는 닉네임이 존재합니다.");
+        }
+
+        if (checkDuplicatedEmail(generalMemberCreateRequest.getEmail())) {
+            memberRepository.findByEmail(generalMemberCreateRequest.getEmail()).ifPresent(m -> {
+                String authProviderName = m.getAuthProviderType().getProviderName();
+                throw new DuplicateMemberException(authProviderName + "(으)로 이미 가입된 이메일입니다.");
+            });
+        }
     }
 }
