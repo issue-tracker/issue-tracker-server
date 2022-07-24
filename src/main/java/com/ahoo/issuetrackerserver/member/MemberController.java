@@ -1,5 +1,6 @@
 package com.ahoo.issuetrackerserver.member;
 
+import com.ahoo.issuetrackerserver.member.dto.AuthMemberCreateRequest;
 import com.ahoo.issuetrackerserver.member.dto.GeneralMemberCreateRequest;
 import com.ahoo.issuetrackerserver.member.dto.MemberResponse;
 import javax.validation.Valid;
@@ -18,10 +19,16 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/members")
+    @PostMapping("/members/new/general")
     @ResponseStatus(HttpStatus.CREATED)
     public MemberResponse signUpByGeneral(@Valid @RequestBody GeneralMemberCreateRequest memberCreateRequest) {
         return memberService.signUpByGeneral(memberCreateRequest);
+    }
+
+    @PostMapping("/members/new/auth")
+    @ResponseStatus(HttpStatus.CREATED)
+    public MemberResponse signUpByAuth(@Valid @RequestBody AuthMemberCreateRequest memberCreateRequest) {
+        return memberService.signUpByAuth(memberCreateRequest);
     }
 
     @GetMapping("/members/login-id/{loginId}/exists")

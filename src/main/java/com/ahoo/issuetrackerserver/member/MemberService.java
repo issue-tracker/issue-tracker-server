@@ -1,6 +1,8 @@
 package com.ahoo.issuetrackerserver.member;
 
 import com.ahoo.issuetrackerserver.exception.DuplicateMemberException;
+import com.ahoo.issuetrackerserver.exception.IllegalAuthProviderTypeException;
+import com.ahoo.issuetrackerserver.member.dto.AuthMemberCreateRequest;
 import com.ahoo.issuetrackerserver.member.dto.GeneralMemberCreateRequest;
 import com.ahoo.issuetrackerserver.member.dto.MemberResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,11 +17,23 @@ public class MemberService {
 
     @Transactional
     public MemberResponse signUpByGeneral(GeneralMemberCreateRequest memberCreateRequest) {
-        validateMemberRequest(memberCreateRequest);
+        validateGeneralMemberRequest(memberCreateRequest);
 
         Member savedMember = memberRepository.save(memberCreateRequest.toEntity());
 
         return MemberResponse.from(savedMember);
+    }
+
+    @Transactional
+    public MemberResponse signUpByAuth(AuthMemberCreateRequest memberCreateRequest) {
+        validateAuthMemberRequest(memberCreateRequest);
+
+        try {
+            Member savedMember = memberRepository.save(memberCreateRequest.toEntity());
+            return MemberResponse.from(savedMember);
+        } catch (IllegalArgumentException e){
+            throw new IllegalAuthProviderTypeException(e);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -37,7 +51,7 @@ public class MemberService {
         return memberRepository.existsByEmail(email);
     }
 
-    private void validateMemberRequest(GeneralMemberCreateRequest generalMemberCreateRequest) {
+    private void validateGeneralMemberRequest(GeneralMemberCreateRequest generalMemberCreateRequest) {
         validateDuplicatedEmail(generalMemberCreateRequest.getEmail());
 
         if (isDuplicatedLoginId(generalMemberCreateRequest.getLoginId())) {
@@ -45,6 +59,14 @@ public class MemberService {
         }
 
         if (isDuplicatedNickname(generalMemberCreateRequest.getNickname())) {
+            throw new DuplicateMemberException("중복되는 닉네임이 존재합니다.");
+        }
+    }
+
+    private void validateAuthMemberRequest(AuthMemberCreateRequest authMemberCreateRequest) {
+        validateDuplicatedEmail(authMemberCreateRequest.getEmail());
+
+        if (isDuplicatedNickname(authMemberCreateRequest.getNickname())) {
             throw new DuplicateMemberException("중복되는 닉네임이 존재합니다.");
         }
     }
