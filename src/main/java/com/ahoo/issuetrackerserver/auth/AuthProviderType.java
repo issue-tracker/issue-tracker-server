@@ -1,6 +1,6 @@
-package com.ahoo.issuetrackerserver.member;
+package com.ahoo.issuetrackerserver.auth;
 
-public enum AuthProvider {
+public enum AuthProviderType {
 
     NONE("일반 회원가입"),
     GITHUB("깃허브"),
@@ -9,7 +9,7 @@ public enum AuthProvider {
 
     private String providerName;
 
-    AuthProvider(String providerName) {
+    AuthProviderType(String providerName) {
         this.providerName = providerName;
     }
 

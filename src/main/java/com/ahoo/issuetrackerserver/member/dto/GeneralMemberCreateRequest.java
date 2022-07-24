@@ -1,6 +1,6 @@
 package com.ahoo.issuetrackerserver.member.dto;
 
-import com.ahoo.issuetrackerserver.member.AuthProvider;
+import com.ahoo.issuetrackerserver.auth.AuthProviderType;
 import com.ahoo.issuetrackerserver.member.Member;
 import java.util.Optional;
 import javax.validation.constraints.Email;
@@ -43,7 +43,7 @@ public class GeneralMemberCreateRequest {
             this.email,
             this.nickname,
             Optional.ofNullable(this.profileImage).orElse("defaultS3ImageUrl"),
-            AuthProvider.NONE);
+            AuthProviderType.NONE);
     }
 
     public static GeneralMemberCreateRequest of(String loginId, String password, String email, String nickname,

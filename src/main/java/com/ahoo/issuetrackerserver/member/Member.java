@@ -1,5 +1,6 @@
 package com.ahoo.issuetrackerserver.member;
 
+import com.ahoo.issuetrackerserver.auth.AuthProviderType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -41,15 +42,15 @@ public class Member extends BaseEntity {
 
     @Column(nullable = false, updatable = false)
     @Enumerated(EnumType.STRING)
-    private AuthProvider authProviderType;
+    private AuthProviderType authProviderType;
 
     public static Member of(Long id, String loginId, String password, String email, String nickname,
-        String profileImage, AuthProvider authProviderType) {
+        String profileImage, AuthProviderType authProviderType) {
         return new Member(id, loginId, password, email, nickname, profileImage, authProviderType);
     }
 
     public static Member of(String loginId, String password, String email, String nickname,
-        String profileImage, AuthProvider authProviderType) {
+        String profileImage, AuthProviderType authProviderType) {
         return new Member(null, loginId, password, email, nickname, profileImage, authProviderType);
     }
 }
