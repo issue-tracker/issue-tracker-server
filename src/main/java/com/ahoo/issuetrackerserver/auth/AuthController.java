@@ -14,7 +14,7 @@ public class AuthController {
     private final AuthService authService;
 
     @GetMapping("/github")
-    public AuthUserResponse authMemberInfo현(String code) {
+    public AuthUserResponse authMemberInfo(String code) {
         AccessToken accessTokenResponse = authService.requestAccessToken(code);
         AuthUserResponse authUser = authService.requestAuthUser(accessTokenResponse);
 
