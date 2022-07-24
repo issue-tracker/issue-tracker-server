@@ -38,10 +38,7 @@ public class MemberService {
     }
 
     private void validateMemberRequest(GeneralMemberCreateRequest generalMemberCreateRequest) {
-        memberRepository.findByEmail(generalMemberCreateRequest.getEmail()).ifPresent(m -> {
-            String authProviderName = m.getAuthProviderType().getProviderName();
-            throw new DuplicateMemberException(authProviderName + "(으)로 이미 가입된 이메일입니다.");
-        });
+        validateDuplicatedEmail(generalMemberCreateRequest.getEmail());
 
         if (isDuplicatedLoginId(generalMemberCreateRequest.getLoginId())) {
             throw new DuplicateMemberException("중복되는 아이디가 존재합니다.");
@@ -50,5 +47,12 @@ public class MemberService {
         if (isDuplicatedNickname(generalMemberCreateRequest.getNickname())) {
             throw new DuplicateMemberException("중복되는 닉네임이 존재합니다.");
         }
+    }
+
+    public void validateDuplicatedEmail(String email) {
+        memberRepository.findByEmail(email).ifPresent(m -> {
+            String authProviderName = m.getAuthProviderType().getProviderName();
+            throw new DuplicateMemberException(authProviderName + "(으)로 이미 가입된 이메일입니다.");
+        });
     }
 }
