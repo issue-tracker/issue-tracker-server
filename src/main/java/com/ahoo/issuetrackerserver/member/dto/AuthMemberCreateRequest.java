@@ -15,15 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class GeneralMemberCreateRequest {
-
-    @NotBlank(message = "아이디는 필수 입력 값입니다.")
-    @Size(min = 6, max = 12, message = "아이디는 최소 6자리, 최대 12자리여야 합니다.")
-    private String loginId;
-
-    @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
-    @Size(min = 8, max = 16, message = "비밀번호는 최소 8자리, 최대 16자리여야 합니다.")
-    private String password;
+public class AuthMemberCreateRequest {
 
     @NotNull(message = "이메일은 필수 입력 값입니다.")
     @Email
@@ -35,20 +27,18 @@ public class GeneralMemberCreateRequest {
 
     private String profileImage;
 
+    //TODO: Add Enum Validate Custom Annotation
+    private String authProviderType;
+
     public Member toEntity() {
         return Member.of(
             null,
-            this.loginId,
-            this.password,
+            null,
+            null,
             this.email,
             this.nickname,
             Optional.ofNullable(this.profileImage).orElse("defaultS3ImageUrl"),
-            AuthProvider.NONE);
-    }
-
-    public static GeneralMemberCreateRequest of(String loginId, String password, String email, String nickname,
-        String profileImage) {
-        return new GeneralMemberCreateRequest(loginId, password, email, nickname,
-            Optional.ofNullable(profileImage).orElse("defaultS3ImageUrl"));
+            AuthProvider.valueOf(this.authProviderType)
+        );
     }
 }
