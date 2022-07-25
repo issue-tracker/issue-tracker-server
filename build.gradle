@@ -8,6 +8,12 @@ group = 'com.ahoo'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
+bootJar {
+    archivesBaseName = 'issue-tracker'
+    archiveFileName = 'issue-tracker.jar'
+    archiveVersion = "0.0.0"
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
