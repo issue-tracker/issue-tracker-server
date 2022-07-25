@@ -2,7 +2,6 @@ package com.ahoo.issuetrackerserver.exception;
 
 import java.util.List;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,6 +15,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = DuplicateMemberException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleDuplicateMemberException(DuplicateMemberException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(value = IllegalAuthProviderTypeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIllegalAuthProviderTypeException(IllegalAuthProviderTypeException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(value = EssentialFieldDisagreeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleEssentialFieldDisagreeException(EssentialFieldDisagreeException e) {
         return new ErrorResponse(e.getMessage());
     }
 
