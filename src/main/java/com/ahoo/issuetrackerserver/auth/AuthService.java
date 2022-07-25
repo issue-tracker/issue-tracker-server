@@ -2,11 +2,13 @@ package com.ahoo.issuetrackerserver.auth;
 
 import com.ahoo.issuetrackerserver.auth.dto.AuthUserResponse;
 import com.ahoo.issuetrackerserver.auth.dto.GithubEmailResponse;
+import com.ahoo.issuetrackerserver.exception.EssentialFieldDisagreeException;
 import com.ahoo.issuetrackerserver.member.MemberService;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -62,9 +64,12 @@ public class AuthService {
             jsonResponse.put("email", email);
         }
 
-        AuthUserResponse authUserResponse = authProvider.parseAuthUserResponse(jsonResponse);
-        memberService.validateDuplicatedEmail(authUserResponse.getEmail());
-
-        return authUserResponse;
+        try {
+            AuthUserResponse authUserResponse = authProvider.parseAuthUserResponse(jsonResponse);
+            memberService.validateDuplicatedEmail(authUserResponse.getEmail());
+            return authUserResponse;
+        } catch (JSONException e) {
+            throw new EssentialFieldDisagreeException("필수 제공 동의 항목을 동의하지 않았습니다.");
+        }
     }
 }
