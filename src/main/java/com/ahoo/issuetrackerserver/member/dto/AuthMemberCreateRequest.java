@@ -2,6 +2,7 @@ package com.ahoo.issuetrackerserver.member.dto;
 
 import com.ahoo.issuetrackerserver.auth.AuthProvider;
 import com.ahoo.issuetrackerserver.member.Member;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Optional;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -12,22 +13,27 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Schema(description = "Auth 회원가입 요청")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthMemberCreateRequest {
 
+    @Schema(description = "이메일", required = true, example = "ader@gmail.com")
     @NotNull(message = "이메일은 필수 입력 값입니다.")
     @Email
     private String email;
 
+    @Schema(description = "닉네임", required = true, minLength = 2, maxLength = 12)
     @NotBlank(message = "닉네임은 필수 입력 값입니다.")
     @Size(min = 2, max = 12, message = "닉네임은 최소 2자리, 최대 12자리여야 합니다.")
     private String nickname;
 
+    @Schema(description = "프로필 사진 경로")
     private String profileImage;
 
     //TODO: Add Enum Validate Custom Annotation
+    @Schema(description = "Auth Provider 이름", example = "GITHUB")
     private String authProviderType;
 
     public Member toEntity() {
