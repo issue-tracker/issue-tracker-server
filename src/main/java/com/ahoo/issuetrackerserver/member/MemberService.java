@@ -31,7 +31,7 @@ public class MemberService {
         try {
             Member savedMember = memberRepository.save(memberCreateRequest.toEntity());
             return MemberResponse.from(savedMember);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw new IllegalAuthProviderTypeException(e);
         }
     }
