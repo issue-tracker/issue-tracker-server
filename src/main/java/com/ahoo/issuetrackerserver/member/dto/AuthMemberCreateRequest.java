@@ -47,4 +47,9 @@ public class AuthMemberCreateRequest {
             AuthProvider.valueOf(this.authProviderType)
         );
     }
+
+    public static AuthMemberCreateRequest of(String email, String nickname, String profileImage,
+        String authProviderType) {
+        return new AuthMemberCreateRequest(email, nickname, profileImage, authProviderType);
+    }
 }
