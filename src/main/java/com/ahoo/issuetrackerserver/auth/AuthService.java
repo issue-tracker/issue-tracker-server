@@ -4,8 +4,11 @@ import com.ahoo.issuetrackerserver.auth.dto.AuthUserResponse;
 import com.ahoo.issuetrackerserver.auth.dto.GithubEmailResponse;
 import com.ahoo.issuetrackerserver.member.MemberService;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -35,16 +38,17 @@ public class AuthService {
     }
 
     public AuthUserResponse requestAuthUser(AuthProviderType authProvider, AccessToken accessToken) {
-        AuthUserResponse authUserResponse = webClient.get()
+        JSONObject jsonResponse = new JSONObject(webClient.get()
             .uri(authProvider.getRequestAuthUserUrl())
             .header(HttpHeaders.AUTHORIZATION, accessToken.convertAuthorizationHeader())
             .accept(MediaType.APPLICATION_JSON)
             .acceptCharset(StandardCharsets.UTF_8)
             .retrieve()
-            .bodyToMono(AuthUserResponse.class)
-            .block();
+            .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+            })
+            .block());
 
-        if (authProvider == AuthProviderType.GITHUB && authUserResponse.getEmail() == null) {
+        if (authProvider == AuthProviderType.GITHUB && !jsonResponse.has("email")) {
             String email = webClient.get()
                 .uri("https://api.github.com/user/emails")
                 .header(HttpHeaders.AUTHORIZATION, accessToken.convertAuthorizationHeader())
@@ -55,9 +59,10 @@ public class AuthService {
                 .filter(GithubEmailResponse::getPrimary)
                 .blockFirst()
                 .getEmail();
-            authUserResponse.setEmail(email);
+            jsonResponse.put("email", email);
         }
 
+        AuthUserResponse authUserResponse = authProvider.parseAuthUserResponse(jsonResponse);
         memberService.validateDuplicatedEmail(authUserResponse.getEmail());
 
         return authUserResponse;

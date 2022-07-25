@@ -1,12 +1,14 @@
 package com.ahoo.issuetrackerserver.auth;
 
+import com.ahoo.issuetrackerserver.auth.dto.AuthUserResponse;
 import java.util.function.Function;
+import org.json.JSONObject;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 public enum AuthProviderType {
 
-    NONE("일반 회원가입", null, null, null),
+    NONE("일반 회원가입", null, null, null, null),
     GITHUB("깃허브",
         (code) -> {
             MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
@@ -16,7 +18,12 @@ public enum AuthProviderType {
             return formData;
         },
         "https://github.com/login/oauth/access_token",
-        "https://api.github.com/user"),
+        "https://api.github.com/user",
+        (json) -> new AuthUserResponse(
+            json.getString("email"),
+            json.getString("avatar_url")
+        )
+    ),
     NAVER("네이버",
         (code) -> {
             MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
@@ -28,7 +35,15 @@ public enum AuthProviderType {
             return formData;
         },
         "https://nid.naver.com/oauth2.0/token",
-        "https://openapi.naver.com/v1/nid/me"),
+        "https://openapi.naver.com/v1/nid/me",
+        (json) -> {
+            JSONObject response = json.getJSONObject("response");
+            return new AuthUserResponse(
+                response.getString("email"),
+                response.getString("profile_image")
+            );
+        }
+    ),
     KAKAO("카카오",
         (code) -> {
             MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
@@ -39,19 +54,31 @@ public enum AuthProviderType {
             return formData;
         },
         "https://kauth.kakao.com/oauth/token",
-        "https://kapi.kakao.com/v2/user/me");
+        "https://kapi.kakao.com/v2/user/me",
+    (json) -> {
+        JSONObject kakaoAccount = json.getJSONObject("kakao_account");
+        JSONObject profile = kakaoAccount.getJSONObject("profile");
+        return new AuthUserResponse(
+            kakaoAccount.getString("email"),
+            profile.getString("profile_image_url")
+        );
+    }
+    );
 
     private String providerName;
     private Function<String, MultiValueMap<String, String>> createAccessTokenRequest;
     private String requestAccessTokenUrl;
     private String requestAuthUserUrl;
+    private Function<JSONObject, AuthUserResponse> parseAuthUserResponse;
 
     AuthProviderType(String providerName, Function<String, MultiValueMap<String, String>> createAccessTokenRequest,
-        String requestAccessTokenUrl, String requestAuthUserUrl) {
+        String requestAccessTokenUrl, String requestAuthUserUrl,
+        Function<JSONObject, AuthUserResponse> parseAuthUserResponse) {
         this.providerName = providerName;
         this.createAccessTokenRequest = createAccessTokenRequest;
         this.requestAccessTokenUrl = requestAccessTokenUrl;
         this.requestAuthUserUrl = requestAuthUserUrl;
+        this.parseAuthUserResponse = parseAuthUserResponse;
     }
 
     public String getProviderName() {
@@ -68,5 +95,9 @@ public enum AuthProviderType {
 
     public MultiValueMap<String, String> createAccessTokenRequest(String code) {
         return createAccessTokenRequest.apply(code);
+    }
+
+    public AuthUserResponse parseAuthUserResponse(JSONObject response) {
+        return parseAuthUserResponse.apply(response);
     }
 }

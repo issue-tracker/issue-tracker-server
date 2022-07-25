@@ -1,16 +1,17 @@
 package com.ahoo.issuetrackerserver.auth.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class AuthUserResponse {
 
     private String email;
 
-    @JsonProperty("avatar_url")
     private String profileImage;
 
     public void setEmail(String email) {
