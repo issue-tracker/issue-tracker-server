@@ -1,6 +1,5 @@
 package com.ahoo.issuetrackerserver.auth;
 
-import com.ahoo.issuetrackerserver.auth.dto.AccessTokenRequest;
 import com.ahoo.issuetrackerserver.auth.dto.AuthUserResponse;
 import com.ahoo.issuetrackerserver.auth.dto.GithubEmailResponse;
 import com.ahoo.issuetrackerserver.member.MemberService;
@@ -10,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
@@ -20,14 +20,12 @@ public class AuthService {
     private final WebClient webClient;
     private final MemberService memberService;
 
-    public AccessToken requestAccessToken(String code) {
-        AccessTokenRequest accessTokenRequest = new AccessTokenRequest(
-            System.getenv("GITHUB_CLIENT_ID"),
-            System.getenv("GITHUB_CLIENT_SECRET"),
-            code);
+    public AccessToken requestAccessToken(AuthProviderType authProvider, String code) {
+        MultiValueMap<String, String> accessTokenRequest = authProvider.createAccessTokenRequest(code);
 
         return webClient.post()
-            .uri("https://github.com/login/oauth/access_token")
+            .uri(authProvider.getRequestAccessTokenUrl())
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .accept(MediaType.APPLICATION_JSON)
             .acceptCharset(StandardCharsets.UTF_8)
             .bodyValue(accessTokenRequest)
@@ -36,9 +34,9 @@ public class AuthService {
             .block();
     }
 
-    public AuthUserResponse requestAuthUser(AccessToken accessToken) {
+    public AuthUserResponse requestAuthUser(AuthProviderType authProvider, AccessToken accessToken) {
         AuthUserResponse authUserResponse = webClient.get()
-            .uri("https://api.github.com/user")
+            .uri(authProvider.getRequestAuthUserUrl())
             .header(HttpHeaders.AUTHORIZATION, accessToken.convertAuthorizationHeader())
             .accept(MediaType.APPLICATION_JSON)
             .acceptCharset(StandardCharsets.UTF_8)
@@ -46,7 +44,7 @@ public class AuthService {
             .bodyToMono(AuthUserResponse.class)
             .block();
 
-        if (authUserResponse.getEmail() == null) {
+        if (authProvider == AuthProviderType.GITHUB && authUserResponse.getEmail() == null) {
             String email = webClient.get()
                 .uri("https://api.github.com/user/emails")
                 .header(HttpHeaders.AUTHORIZATION, accessToken.convertAuthorizationHeader())
