@@ -133,7 +133,7 @@ class MemberServiceTest {
     }
 
     @Nested
-    @DisplayName("간편 회원가입은")
+    @DisplayName("Auth 회원가입은")
     class Describe_signUpByAuth {
 
         @BeforeTestClass
