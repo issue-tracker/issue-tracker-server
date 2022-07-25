@@ -25,7 +25,7 @@ public class AuthService {
     private final WebClient webClient;
     private final MemberService memberService;
 
-    public AccessToken requestAccessToken(AuthProviderType authProvider, String code) {
+    public AccessToken requestAccessToken(AuthProvider authProvider, String code) {
         MultiValueMap<String, String> accessTokenRequest = authProvider.createAccessTokenRequest(code);
 
         return webClient.post()
@@ -39,7 +39,7 @@ public class AuthService {
             .block();
     }
 
-    public AuthUserResponse requestAuthUser(AuthProviderType authProvider, AccessToken accessToken) {
+    public AuthUserResponse requestAuthUser(AuthProvider authProvider, AccessToken accessToken) {
         JSONObject jsonResponse = new JSONObject(webClient.get()
             .uri(authProvider.getRequestAuthUserUrl())
             .header(HttpHeaders.AUTHORIZATION, accessToken.convertAuthorizationHeader())
@@ -50,7 +50,7 @@ public class AuthService {
             })
             .block());
 
-        if (authProvider == AuthProviderType.GITHUB && !jsonResponse.has("email")) {
+        if (authProvider == AuthProvider.GITHUB && !jsonResponse.has("email")) {
             String email = webClient.get()
                 .uri("https://api.github.com/user/emails")
                 .header(HttpHeaders.AUTHORIZATION, accessToken.convertAuthorizationHeader())

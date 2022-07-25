@@ -17,7 +17,7 @@ public class AuthController {
 
     @GetMapping("/{provider}")
     public AuthUserResponse authMemberInfo(@PathVariable String provider, @RequestParam String code) {
-        AuthProviderType authProviderType = AuthProviderType.valueOf(provider.toUpperCase());
+        AuthProvider authProviderType = AuthProvider.valueOf(provider.toUpperCase());
         AccessToken accessTokenResponse = authService.requestAccessToken(authProviderType, code);
         AuthUserResponse authUser = authService.requestAuthUser(authProviderType, accessTokenResponse);
 

@@ -6,7 +6,7 @@ import org.json.JSONObject;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public enum AuthProviderType {
+public enum AuthProvider {
 
     NONE("일반 회원가입", null, null, null, null),
     GITHUB("깃허브",
@@ -71,7 +71,7 @@ public enum AuthProviderType {
     private String requestAuthUserUrl;
     private Function<JSONObject, AuthUserResponse> parseAuthUserResponse;
 
-    AuthProviderType(String providerName, Function<String, MultiValueMap<String, String>> createAccessTokenRequest,
+    AuthProvider(String providerName, Function<String, MultiValueMap<String, String>> createAccessTokenRequest,
         String requestAccessTokenUrl, String requestAuthUserUrl,
         Function<JSONObject, AuthUserResponse> parseAuthUserResponse) {
         this.providerName = providerName;

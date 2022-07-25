@@ -6,7 +6,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
-import com.ahoo.issuetrackerserver.auth.AuthProviderType;
+import com.ahoo.issuetrackerserver.auth.AuthProvider;
 import com.ahoo.issuetrackerserver.exception.DuplicateMemberException;
 import com.ahoo.issuetrackerserver.member.dto.GeneralMemberCreateRequest;
 import com.ahoo.issuetrackerserver.member.dto.MemberResponse;
@@ -36,7 +36,7 @@ class MemberServiceTest {
         @BeforeTestClass
         void beforeTestClass() {
             Member member = Member.of(1L, "who-hoo", "1234", "who.ho3ov@gmail.com", "hoo",
-                "https://avatars.githubusercontent.com/u/68011320?v=4", AuthProviderType.GITHUB);
+                "https://avatars.githubusercontent.com/u/68011320?v=4", AuthProvider.GITHUB);
             given(memberRepository.findByEmail("who.ho3ov@gmail.com")).willReturn(Optional.of(member));
             given(memberRepository.existsByLoginId("who-hoo")).willReturn(true);
             given(memberRepository.existsByNickname("hoo")).willReturn(true);
@@ -50,7 +50,7 @@ class MemberServiceTest {
                 "https://avatars.githubusercontent.com/u/29879110?v=4");
             Member newMember = successRequest.toEntity();
             Member savedMember = Member.of(2L, "ak2j38", "1234", "ak2j38@gmail.com", "ader",
-                "https://avatars.githubusercontent.com/u/29879110?v=4", AuthProviderType.NONE);
+                "https://avatars.githubusercontent.com/u/29879110?v=4", AuthProvider.NONE);
             given(memberRepository.findByEmail(successRequest.getEmail())).willReturn(Optional.empty());
             given(memberRepository.existsByLoginId(successRequest.getLoginId())).willReturn(false);
             given(memberRepository.existsByNickname(successRequest.getNickname())).willReturn(false);
@@ -75,7 +75,7 @@ class MemberServiceTest {
                 "who.ho3ov@gmail.com", "ader",
                 "https://avatars.githubusercontent.com/u/29879110?v=4");
             Member duplicatedMember = Member.of(1L, "who-hoo", "1234", "who.ho3ov@gmail.com", "hoo",
-                "https://avatars.githubusercontent.com/u/68011320?v=4", AuthProviderType.GITHUB);
+                "https://avatars.githubusercontent.com/u/68011320?v=4", AuthProvider.GITHUB);
             given(memberRepository.findByEmail(failureRequest.getEmail())).willReturn(Optional.of(duplicatedMember));
 
             //when
