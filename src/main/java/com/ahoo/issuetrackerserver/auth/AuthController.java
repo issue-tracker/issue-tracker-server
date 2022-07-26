@@ -2,14 +2,22 @@ package com.ahoo.issuetrackerserver.auth;
 
 import com.ahoo.issuetrackerserver.auth.dto.AuthResponse;
 import com.ahoo.issuetrackerserver.auth.dto.AuthUserResponse;
+import com.ahoo.issuetrackerserver.auth.jwt.JwtGenerator;
 import com.ahoo.issuetrackerserver.exception.ErrorResponse;
 import com.ahoo.issuetrackerserver.exception.EssentialFieldDisagreeException;
 import com.ahoo.issuetrackerserver.member.Member;
 import com.ahoo.issuetrackerserver.member.dto.MemberResponse;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import java.security.Key;
+import java.time.Instant;
+import java.util.Date;
+import javax.crypto.SecretKey;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -59,11 +67,19 @@ public class AuthController {
         if (authMember == null) {
             return authService.responseSignUpFormData(authUserResponse);
         }
+
+        String accessToken = JwtGenerator.generateAccessToken(authMember.getId());
+        String refreshToken = JwtGenerator.generateRefreshToken(authMember.getId());
+
         //TODO
-        // access_token, refresh_token 발급
+        // 토큰 응답 방법 논의
         // refresh_token 저장
-        response.addCookie(new Cookie("access_token", ""));
-        response.addCookie(new Cookie("refresh_token", ""));
+        Cookie accessTokenCookie = new Cookie("access_token", accessToken);
+        accessTokenCookie.setHttpOnly(true);
+        Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
+        refreshTokenCookie.setHttpOnly(true);
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
         return authService.responseSignInMember(authMember);
     }
 }
