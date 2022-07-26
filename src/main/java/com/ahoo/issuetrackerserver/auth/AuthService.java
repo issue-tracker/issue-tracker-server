@@ -9,6 +9,7 @@ import com.ahoo.issuetrackerserver.member.MemberService;
 import com.ahoo.issuetrackerserver.member.dto.MemberResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
@@ -54,15 +55,15 @@ public class AuthService {
             .block());
 
         if (authProvider == AuthProvider.GITHUB && !jsonResponse.has("email")) {
-            String email = webClient.get()
-                .uri("https://api.github.com/user/emails")
-                .header(HttpHeaders.AUTHORIZATION, accessToken.convertAuthorizationHeader())
-                .accept(MediaType.APPLICATION_JSON)
-                .acceptCharset(StandardCharsets.UTF_8)
-                .retrieve()
-                .bodyToFlux(GithubEmailResponse.class)
-                .filter(GithubEmailResponse::getPrimary)
-                .blockFirst()
+            String email = Objects.requireNonNull(webClient.get()
+                    .uri("https://api.github.com/user/emails")
+                    .header(HttpHeaders.AUTHORIZATION, accessToken.convertAuthorizationHeader())
+                    .accept(MediaType.APPLICATION_JSON)
+                    .acceptCharset(StandardCharsets.UTF_8)
+                    .retrieve()
+                    .bodyToFlux(GithubEmailResponse.class)
+                    .filter(GithubEmailResponse::getPrimary)
+                    .blockFirst())
                 .getEmail();
             jsonResponse.put("email", email);
         }
