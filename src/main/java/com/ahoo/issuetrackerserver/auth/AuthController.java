@@ -1,5 +1,6 @@
 package com.ahoo.issuetrackerserver.auth;
 
+import com.ahoo.issuetrackerserver.auth.dto.AuthResponse;
 import com.ahoo.issuetrackerserver.auth.dto.AuthUserResponse;
 import com.ahoo.issuetrackerserver.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,19 +21,19 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Operation(summary = "OAuth 유저정보 조회",
-        description = "OAuth 유저정보를 조회합니다. provider로는 현재 GITHUB, NAVER, KAKAO만 가능합니다.",
+    @Operation(summary = "OAuth 유저정보 조회/로그인",
+        description = "기존 가입 유저이면 로그인을, 기존 가입 유저가 아니면 OAuth 유저정보를 조회합니다. provider로는 현재 GITHUB, NAVER, KAKAO만 가능합니다.",
         responses = {
             @ApiResponse(responseCode = "200",
-                description = "OAuth 유저정보 조회 성공",
+                description = "OAuth 유저정보 조회/로그인 성공",
                 content = {
                     @Content(
                         mediaType = "application/json",
-                        schema = @Schema(implementation = AuthUserResponse.class)
+                        schema = @Schema(implementation = AuthResponse.class)
                     )
                 }),
             @ApiResponse(responseCode = "400",
-                description = "OAuth 유저정보 조회 실패",
+                description = "OAuth 유저정보 조회/로그인 실패",
                 content = {
                     @Content(
                         mediaType = "application/json",
@@ -42,11 +43,10 @@ public class AuthController {
             )}
     )
     @GetMapping("/{provider}")
-    public AuthUserResponse authMemberInfo(@PathVariable String provider, @RequestParam String code) {
+    public AuthResponse authMemberInfo(@PathVariable String provider, @RequestParam String code) {
         AuthProvider authProviderType = AuthProvider.valueOf(provider.toUpperCase());
         AccessToken accessTokenResponse = authService.requestAccessToken(authProviderType, code);
-        AuthUserResponse authUser = authService.requestAuthUser(authProviderType, accessTokenResponse);
 
-        return authUser;
+        return authService.requestAuthUser(authProviderType, accessTokenResponse);
     }
 }

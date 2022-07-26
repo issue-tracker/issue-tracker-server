@@ -1,9 +1,12 @@
 package com.ahoo.issuetrackerserver.auth;
 
+import com.ahoo.issuetrackerserver.auth.dto.AuthResponse;
 import com.ahoo.issuetrackerserver.auth.dto.AuthUserResponse;
 import com.ahoo.issuetrackerserver.auth.dto.GithubEmailResponse;
 import com.ahoo.issuetrackerserver.exception.EssentialFieldDisagreeException;
+import com.ahoo.issuetrackerserver.member.Member;
 import com.ahoo.issuetrackerserver.member.MemberService;
+import com.ahoo.issuetrackerserver.member.dto.MemberResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +42,7 @@ public class AuthService {
             .block();
     }
 
-    public AuthUserResponse requestAuthUser(AuthProvider authProvider, AccessToken accessToken) {
+    public AuthResponse requestAuthUser(AuthProvider authProvider, AccessToken accessToken) {
         JSONObject jsonResponse = new JSONObject(webClient.get()
             .uri(authProvider.getRequestAuthUserUrl())
             .header(HttpHeaders.AUTHORIZATION, accessToken.convertAuthorizationHeader())
@@ -66,8 +69,12 @@ public class AuthService {
 
         try {
             AuthUserResponse authUserResponse = authProvider.parseAuthUserResponse(jsonResponse);
-            memberService.validateDuplicatedEmail(authUserResponse.getEmail());
-            return authUserResponse;
+            Member authMember = memberService.findAuthMember(authProvider, authUserResponse.getResourceOwnerId());
+            if (authMember == null) {
+                memberService.validateDuplicatedEmail(authUserResponse.getEmail());
+                return AuthResponse.from(authUserResponse);
+            }
+            return AuthResponse.from(MemberResponse.from(authMember));
         } catch (JSONException e) {
             throw new EssentialFieldDisagreeException("필수 제공 동의 항목을 동의하지 않았습니다.");
         }
