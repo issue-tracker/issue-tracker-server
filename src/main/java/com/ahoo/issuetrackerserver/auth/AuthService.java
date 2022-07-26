@@ -43,7 +43,7 @@ public class AuthService {
             .block();
     }
 
-    public AuthResponse requestAuthUser(AuthProvider authProvider, AccessToken accessToken) {
+    public AuthUserResponse requestAuthUser(AuthProvider authProvider, AccessToken accessToken) {
         JSONObject jsonResponse = new JSONObject(webClient.get()
             .uri(authProvider.getRequestAuthUserUrl())
             .header(HttpHeaders.AUTHORIZATION, accessToken.convertAuthorizationHeader())
@@ -69,15 +69,22 @@ public class AuthService {
         }
 
         try {
-            AuthUserResponse authUserResponse = authProvider.parseAuthUserResponse(jsonResponse);
-            Member authMember = memberService.findAuthMember(authProvider, authUserResponse.getResourceOwnerId());
-            if (authMember == null) {
-                memberService.validateDuplicatedEmail(authUserResponse.getEmail());
-                return AuthResponse.from(authUserResponse);
-            }
-            return AuthResponse.from(MemberResponse.from(authMember));
+            return authProvider.parseAuthUserResponse(jsonResponse);
         } catch (JSONException e) {
             throw new EssentialFieldDisagreeException("필수 제공 동의 항목을 동의하지 않았습니다.");
         }
+    }
+
+    public Member findAuthMember(AuthProvider authProvider, String resourceOwnerId) {
+        return memberService.findAuthMember(authProvider, resourceOwnerId);
+    }
+
+    public AuthResponse responseSignUpFormData(AuthUserResponse authUserResponse) {
+        memberService.validateDuplicatedEmail(authUserResponse.getEmail());
+        return AuthResponse.from(authUserResponse);
+    }
+
+    public AuthResponse responseSignInMember(Member authMember) {
+        return AuthResponse.from(MemberResponse.from(authMember));
     }
 }

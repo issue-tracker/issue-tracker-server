@@ -3,11 +3,17 @@ package com.ahoo.issuetrackerserver.auth;
 import com.ahoo.issuetrackerserver.auth.dto.AuthResponse;
 import com.ahoo.issuetrackerserver.auth.dto.AuthUserResponse;
 import com.ahoo.issuetrackerserver.exception.ErrorResponse;
+import com.ahoo.issuetrackerserver.exception.EssentialFieldDisagreeException;
+import com.ahoo.issuetrackerserver.member.Member;
+import com.ahoo.issuetrackerserver.member.dto.MemberResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,10 +49,21 @@ public class AuthController {
             )}
     )
     @GetMapping("/{provider}")
-    public AuthResponse authMemberInfo(@PathVariable String provider, @RequestParam String code) {
-        AuthProvider authProviderType = AuthProvider.valueOf(provider.toUpperCase());
-        AccessToken accessTokenResponse = authService.requestAccessToken(authProviderType, code);
+    public AuthResponse authSign(@PathVariable String provider, @RequestParam String code,
+        HttpServletResponse response) {
+        AuthProvider authProvider = AuthProvider.valueOf(provider.toUpperCase());
+        AccessToken accessTokenResponse = authService.requestAccessToken(authProvider, code);
+        AuthUserResponse authUserResponse = authService.requestAuthUser(authProvider, accessTokenResponse);
 
-        return authService.requestAuthUser(authProviderType, accessTokenResponse);
+        Member authMember = authService.findAuthMember(authProvider, authUserResponse.getResourceOwnerId());
+        if (authMember == null) {
+            return authService.responseSignUpFormData(authUserResponse);
+        }
+        //TODO
+        // access_token, refresh_token 발급
+        // refresh_token 저장
+        response.addCookie(new Cookie("access_token", ""));
+        response.addCookie(new Cookie("refresh_token", ""));
+        return authService.responseSignInMember(authMember);
     }
 }
