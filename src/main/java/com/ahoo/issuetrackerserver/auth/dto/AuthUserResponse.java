@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AuthUserResponse {
 
+    private String resourceOwnerId;
+
     @Schema(description = "이메일", example = "hoo@gmail.com")
     private String email;
 

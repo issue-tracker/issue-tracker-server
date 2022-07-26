@@ -37,7 +37,7 @@ class MemberServiceTest {
         @BeforeTestClass
         void beforeTestClass() {
             Member member = Member.of(1L, "who-hoo", "1234", "who.ho3ov@gmail.com", "hoo",
-                "https://avatars.githubusercontent.com/u/68011320?v=4", AuthProvider.GITHUB);
+                "https://avatars.githubusercontent.com/u/68011320?v=4", AuthProvider.GITHUB, "68011320");
             given(memberRepository.findByEmail("who.ho3ov@gmail.com")).willReturn(Optional.of(member));
             given(memberRepository.existsByLoginId("who-hoo")).willReturn(true);
             given(memberRepository.existsByNickname("hoo")).willReturn(true);
@@ -51,7 +51,7 @@ class MemberServiceTest {
                 "https://avatars.githubusercontent.com/u/29879110?v=4");
             Member newMember = successRequest.toEntity();
             Member savedMember = Member.of(2L, "ak2j38", "1234", "ak2j38@gmail.com", "ader",
-                "https://avatars.githubusercontent.com/u/29879110?v=4", AuthProvider.NONE);
+                "https://avatars.githubusercontent.com/u/29879110?v=4", AuthProvider.NONE, null);
             given(memberRepository.findByEmail(successRequest.getEmail())).willReturn(Optional.empty());
             given(memberRepository.existsByLoginId(successRequest.getLoginId())).willReturn(false);
             given(memberRepository.existsByNickname(successRequest.getNickname())).willReturn(false);
@@ -76,7 +76,7 @@ class MemberServiceTest {
                 "who.ho3ov@gmail.com", "ader",
                 "https://avatars.githubusercontent.com/u/29879110?v=4");
             Member duplicatedMember = Member.of(1L, "who-hoo", "1234", "who.ho3ov@gmail.com", "hoo",
-                "https://avatars.githubusercontent.com/u/68011320?v=4", AuthProvider.GITHUB);
+                "https://avatars.githubusercontent.com/u/68011320?v=4", AuthProvider.GITHUB, "68011320");
             given(memberRepository.findByEmail(failureRequest.getEmail())).willReturn(Optional.of(duplicatedMember));
 
             //when
@@ -139,7 +139,7 @@ class MemberServiceTest {
         @BeforeTestClass
         void beforeTestClass() {
             Member member = Member.of(1L, "who-hoo", "1234", "who.ho3ov@gmail.com", "hoo",
-                "https://avatars.githubusercontent.com/u/68011320?v=4", AuthProvider.GITHUB);
+                "https://avatars.githubusercontent.com/u/68011320?v=4", AuthProvider.GITHUB, "68011320");
             given(memberRepository.findByEmail("who.ho3ov@gmail.com")).willReturn(Optional.of(member));
             given(memberRepository.existsByLoginId("who-hoo")).willReturn(true);
             given(memberRepository.existsByNickname("hoo")).willReturn(true);
@@ -149,10 +149,10 @@ class MemberServiceTest {
         void 중복되지_않는_이메일_닉네임을_가진_회원가입_요청_입력이_주어지면_회원가입이_성공한다() {
             //given
             AuthMemberCreateRequest successRequest = AuthMemberCreateRequest.of("ak2j38@gmail.com", "ader",
-                "https://avatars.githubusercontent.com/u/29879110?v=4", "GITHUB");
+                "https://avatars.githubusercontent.com/u/29879110?v=4", "GITHUB", "68011320");
             Member newMember = successRequest.toEntity();
             Member savedMember = Member.of(2L, null, null, "ak2j38@gmail.com", "ader",
-                "https://avatars.githubusercontent.com/u/29879110?v=4", AuthProvider.GITHUB);
+                "https://avatars.githubusercontent.com/u/29879110?v=4", AuthProvider.GITHUB, "12345678");
             given(memberRepository.findByEmail(successRequest.getEmail())).willReturn(Optional.empty());
             given(memberRepository.existsByNickname(successRequest.getNickname())).willReturn(false);
             given(memberRepository.save(newMember)).willReturn(savedMember);
@@ -172,9 +172,9 @@ class MemberServiceTest {
         void 중복된_이메일을_가진_회원가입_요청이_주어지면_이미_가입된_이메일이라는_메시지를_가진_중복_회원_에러가_반환되고_회원가입이_실패한다() {
             //given
             AuthMemberCreateRequest failureRequest = AuthMemberCreateRequest.of("who.ho3ov@gmail.com", "ader",
-                "https://avatars.githubusercontent.com/u/29879110?v=4", "GITHUB");
+                "https://avatars.githubusercontent.com/u/29879110?v=4", "GITHUB", "68011320");
             Member duplicatedMember = Member.of(1L, "who-hoo", "1234", "who.ho3ov@gmail.com", "hoo",
-                "https://avatars.githubusercontent.com/u/68011320?v=4", AuthProvider.GITHUB);
+                "https://avatars.githubusercontent.com/u/68011320?v=4", AuthProvider.GITHUB, "68011320");
             given(memberRepository.findByEmail(failureRequest.getEmail())).willReturn(Optional.of(duplicatedMember));
 
             //when
@@ -191,7 +191,7 @@ class MemberServiceTest {
         void 중복된_닉네임을_가진_회원가입_요청이_주어지면_이미_가입된_닉네임이라는_메시지를_가진_중복_회원_에러가_반환되고_회원가입이_실패한다() {
             //given
             AuthMemberCreateRequest failureRequest = AuthMemberCreateRequest.of("ak2j38@gmail.com", "hoo",
-                "https://avatars.githubusercontent.com/u/29879110?v=4", "GITHUB");
+                "https://avatars.githubusercontent.com/u/29879110?v=4", "GITHUB", "68011320");
             given(memberRepository.findByEmail(failureRequest.getEmail())).willReturn(Optional.empty());
             given(memberRepository.existsByNickname(failureRequest.getNickname())).willReturn(true);
 

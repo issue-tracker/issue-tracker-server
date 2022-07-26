@@ -36,6 +36,8 @@ public class AuthMemberCreateRequest {
     @Schema(description = "Auth Provider 이름", example = "GITHUB")
     private String authProviderType;
 
+    private String resourceOwnerId;
+
     public Member toEntity() {
         return Member.of(
             null,
@@ -44,12 +46,13 @@ public class AuthMemberCreateRequest {
             this.email,
             this.nickname,
             Optional.ofNullable(this.profileImage).orElse("defaultS3ImageUrl"),
-            AuthProvider.valueOf(this.authProviderType)
+            AuthProvider.valueOf(this.authProviderType),
+            this.resourceOwnerId
         );
     }
 
     public static AuthMemberCreateRequest of(String email, String nickname, String profileImage,
-        String authProviderType) {
-        return new AuthMemberCreateRequest(email, nickname, profileImage, authProviderType);
+        String authProviderType, String resourceOwnerId) {
+        return new AuthMemberCreateRequest(email, nickname, profileImage, authProviderType, resourceOwnerId);
     }
 }

@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@EqualsAndHashCode(exclude = {"loginId", "password", "email", "nickname", "profileImage"})
+@EqualsAndHashCode(exclude = {"loginId", "password", "email", "nickname", "profileImage", "resourceOwnerId"}, callSuper = false)
 public class Member extends BaseEntity {
 
     @Id
@@ -44,13 +44,16 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private AuthProvider authProviderType;
 
+    @Column(updatable = false)
+    private String resourceOwnerId;
+
     public static Member of(Long id, String loginId, String password, String email, String nickname,
-        String profileImage, AuthProvider authProviderType) {
-        return new Member(id, loginId, password, email, nickname, profileImage, authProviderType);
+        String profileImage, AuthProvider authProviderType, String resourceOwnerId) {
+        return new Member(id, loginId, password, email, nickname, profileImage, authProviderType, resourceOwnerId);
     }
 
     public static Member of(String loginId, String password, String email, String nickname,
-        String profileImage, AuthProvider authProviderType) {
-        return new Member(null, loginId, password, email, nickname, profileImage, authProviderType);
+        String profileImage, AuthProvider authProviderType, String resourceOwnerId) {
+        return new Member(null, loginId, password, email, nickname, profileImage, authProviderType, resourceOwnerId);
     }
 }
