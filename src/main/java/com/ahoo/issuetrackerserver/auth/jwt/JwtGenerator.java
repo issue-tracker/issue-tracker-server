@@ -1,5 +1,7 @@
 package com.ahoo.issuetrackerserver.auth.jwt;
 
+import com.ahoo.issuetrackerserver.auth.AccessToken;
+import com.ahoo.issuetrackerserver.auth.RefreshToken;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.time.Duration;
@@ -17,23 +19,27 @@ public class JwtGenerator {
     private static final long REFRESH_TOKEN_EXPIRED_TIME = Duration.ofDays(1).toSeconds();
     private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(System.getenv("JWT_SECRET_KEY").getBytes());
 
-    public static String generateAccessToken(Long memberId) {
+    public static AccessToken generateAccessToken(Long memberId) {
         Date now = new Date();
-        return Jwts.builder()
+        String accessToken = Jwts.builder()
             .setIssuedAt(now)
             .setExpiration(Date.from(Instant.now().plusSeconds(ACCESS_TOKEN_EXPIRED_TIME)))
             .claim(CLAIM_NAME, memberId)
             .signWith(SECRET_KEY)
             .compact();
+
+        return new AccessToken(accessToken);
     }
 
-    public static String generateRefreshToken(Long memberId) {
+    public static RefreshToken generateRefreshToken(Long memberId) {
         Date now = new Date();
-        return Jwts.builder()
+        String refreshToken = Jwts.builder()
             .setIssuedAt(now)
             .setExpiration(Date.from(Instant.now().plusSeconds(REFRESH_TOKEN_EXPIRED_TIME)))
             .claim(CLAIM_NAME, memberId)
             .signWith(SECRET_KEY)
             .compact();
+
+        return new RefreshToken(refreshToken);
     }
 }

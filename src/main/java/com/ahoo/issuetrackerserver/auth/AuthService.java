@@ -1,5 +1,6 @@
 package com.ahoo.issuetrackerserver.auth;
 
+import com.ahoo.issuetrackerserver.auth.dto.AuthAccessToken;
 import com.ahoo.issuetrackerserver.auth.dto.AuthResponse;
 import com.ahoo.issuetrackerserver.auth.dto.AuthUserResponse;
 import com.ahoo.issuetrackerserver.auth.dto.GithubEmailResponse;
@@ -29,7 +30,7 @@ public class AuthService {
     private final WebClient webClient;
     private final MemberService memberService;
 
-    public AccessToken requestAccessToken(AuthProvider authProvider, String code) {
+    public AuthAccessToken requestAccessToken(AuthProvider authProvider, String code) {
         MultiValueMap<String, String> accessTokenRequest = authProvider.createAccessTokenRequest(code);
 
         return webClient.post()
@@ -39,11 +40,11 @@ public class AuthService {
             .acceptCharset(StandardCharsets.UTF_8)
             .bodyValue(accessTokenRequest)
             .retrieve()
-            .bodyToMono(AccessToken.class)
+            .bodyToMono(AuthAccessToken.class)
             .block();
     }
 
-    public AuthUserResponse requestAuthUser(AuthProvider authProvider, AccessToken accessToken) {
+    public AuthUserResponse requestAuthUser(AuthProvider authProvider, AuthAccessToken accessToken) {
         JSONObject jsonResponse = new JSONObject(webClient.get()
             .uri(authProvider.getRequestAuthUserUrl())
             .header(HttpHeaders.AUTHORIZATION, accessToken.convertAuthorizationHeader())

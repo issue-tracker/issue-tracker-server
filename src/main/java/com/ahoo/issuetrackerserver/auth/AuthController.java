@@ -1,27 +1,19 @@
 package com.ahoo.issuetrackerserver.auth;
 
+import com.ahoo.issuetrackerserver.auth.dto.AuthAccessToken;
 import com.ahoo.issuetrackerserver.auth.dto.AuthResponse;
 import com.ahoo.issuetrackerserver.auth.dto.AuthUserResponse;
 import com.ahoo.issuetrackerserver.auth.jwt.JwtGenerator;
 import com.ahoo.issuetrackerserver.exception.ErrorResponse;
-import com.ahoo.issuetrackerserver.exception.EssentialFieldDisagreeException;
 import com.ahoo.issuetrackerserver.member.Member;
-import com.ahoo.issuetrackerserver.member.dto.MemberResponse;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import java.security.Key;
-import java.time.Instant;
-import java.util.Date;
-import javax.crypto.SecretKey;
+import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Operation(summary = "OAuth 유저정보 조회/로그인",
         description = "기존 가입 유저이면 로그인을, 기존 가입 유저가 아니면 OAuth 유저정보를 조회합니다. provider로는 현재 GITHUB, NAVER, KAKAO만 가능합니다.",
@@ -60,7 +53,7 @@ public class AuthController {
     public AuthResponse authSign(@PathVariable String provider, @RequestParam String code,
         HttpServletResponse response) {
         AuthProvider authProvider = AuthProvider.valueOf(provider.toUpperCase());
-        AccessToken accessTokenResponse = authService.requestAccessToken(authProvider, code);
+        AuthAccessToken accessTokenResponse = authService.requestAccessToken(authProvider, code);
         AuthUserResponse authUserResponse = authService.requestAuthUser(authProvider, accessTokenResponse);
 
         Member authMember = authService.findAuthMember(authProvider, authUserResponse.getResourceOwnerId());
@@ -68,18 +61,21 @@ public class AuthController {
             return authService.responseSignUpFormData(authUserResponse);
         }
 
-        String accessToken = JwtGenerator.generateAccessToken(authMember.getId());
-        String refreshToken = JwtGenerator.generateRefreshToken(authMember.getId());
+        AccessToken accessToken = JwtGenerator.generateAccessToken(authMember.getId());
+        RefreshToken refreshToken = JwtGenerator.generateRefreshToken(authMember.getId());
 
-        //TODO
-        // 토큰 응답 방법 논의
-        // refresh_token 저장
-        Cookie accessTokenCookie = new Cookie("access_token", accessToken);
+        refreshTokenRepository.save(refreshToken);
+
+        addTokenCookies(response, accessToken, refreshToken);
+        return authService.responseSignInMember(authMember);
+    }
+
+    private void addTokenCookies(HttpServletResponse response, AccessToken accessToken, RefreshToken refreshToken) {
+        Cookie accessTokenCookie = new Cookie("access_token", accessToken.getAccessToken());
         accessTokenCookie.setHttpOnly(true);
-        Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
+        Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken.getRefreshToken());
         refreshTokenCookie.setHttpOnly(true);
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
-        return authService.responseSignInMember(authMember);
     }
 }
