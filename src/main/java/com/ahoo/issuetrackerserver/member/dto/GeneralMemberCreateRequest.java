@@ -50,7 +50,8 @@ public class GeneralMemberCreateRequest {
             this.email,
             this.nickname,
             Optional.ofNullable(this.profileImage).orElse("defaultS3ImageUrl"),
-            AuthProvider.NONE);
+            AuthProvider.NONE,
+            null);
     }
 
     public static GeneralMemberCreateRequest of(String loginId, String password, String email, String nickname,

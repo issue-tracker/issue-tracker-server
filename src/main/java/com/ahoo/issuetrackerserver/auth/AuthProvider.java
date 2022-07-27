@@ -20,6 +20,7 @@ public enum AuthProvider {
         "https://github.com/login/oauth/access_token",
         "https://api.github.com/user",
         (json) -> new AuthUserResponse(
+            String.valueOf(json.getBigInteger("id")),
             json.getString("email"),
             json.getString("avatar_url")
         )
@@ -39,6 +40,7 @@ public enum AuthProvider {
         (json) -> {
             JSONObject response = json.getJSONObject("response");
             return new AuthUserResponse(
+                response.getString("id"),
                 response.getString("email"),
                 response.getString("profile_image")
             );
@@ -59,6 +61,7 @@ public enum AuthProvider {
         JSONObject kakaoAccount = json.getJSONObject("kakao_account");
         JSONObject profile = kakaoAccount.getJSONObject("profile");
         return new AuthUserResponse(
+            String.valueOf(json.getBigInteger("id")),
             kakaoAccount.getString("email"),
             profile.getString("profile_image_url")
         );

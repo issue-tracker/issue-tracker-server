@@ -1,5 +1,6 @@
 package com.ahoo.issuetrackerserver.member;
 
+import com.ahoo.issuetrackerserver.auth.AuthProvider;
 import com.ahoo.issuetrackerserver.exception.DuplicateMemberException;
 import com.ahoo.issuetrackerserver.exception.IllegalAuthProviderTypeException;
 import com.ahoo.issuetrackerserver.member.dto.AuthMemberCreateRequest;
@@ -71,10 +72,16 @@ public class MemberService {
         }
     }
 
+    @Transactional(readOnly = true)
     public void validateDuplicatedEmail(String email) {
         memberRepository.findByEmail(email).ifPresent(m -> {
             String authProviderName = m.getAuthProviderType().getProviderName();
             throw new DuplicateMemberException(authProviderName + "(으)로 이미 가입된 이메일입니다.");
         });
+    }
+
+    @Transactional(readOnly = true)
+    public Member findAuthMember(AuthProvider authProvider, String resourceOwnerId) {
+        return memberRepository.findByAuthProviderTypeAndResourceOwnerId(authProvider, resourceOwnerId).orElse(null);
     }
 }

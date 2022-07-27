@@ -4,6 +4,10 @@ spring:
     url: jdbc:h2:mem:issue-tracker;DB_CLOSE_DELAY=-1;MODE=MYSQL
     username: sa
     password:
+  data:
+    redis:
+      host : localhost
+      port : 6379
   h2:
     console:
       enabled: true
