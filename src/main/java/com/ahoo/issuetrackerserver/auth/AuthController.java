@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +62,6 @@ public class AuthController {
 
         AccessToken accessToken = JwtGenerator.generateAccessToken(authMember.getId());
         RefreshToken refreshToken = JwtGenerator.generateRefreshToken(authMember.getId());
-
         refreshTokenRepository.save(refreshToken);
 
         addTokenCookies(response, accessToken, refreshToken);

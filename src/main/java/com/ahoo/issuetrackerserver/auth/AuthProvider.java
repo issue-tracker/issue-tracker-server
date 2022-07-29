@@ -57,15 +57,15 @@ public enum AuthProvider {
         },
         "https://kauth.kakao.com/oauth/token",
         "https://kapi.kakao.com/v2/user/me",
-    (json) -> {
-        JSONObject kakaoAccount = json.getJSONObject("kakao_account");
-        JSONObject profile = kakaoAccount.getJSONObject("profile");
-        return new AuthUserResponse(
-            String.valueOf(json.getBigInteger("id")),
-            kakaoAccount.getString("email"),
-            profile.getString("profile_image_url")
-        );
-    }
+        (json) -> {
+            JSONObject kakaoAccount = json.getJSONObject("kakao_account");
+            JSONObject profile = kakaoAccount.getJSONObject("profile");
+            return new AuthUserResponse(
+                String.valueOf(json.getBigInteger("id")),
+                kakaoAccount.getString("email"),
+                profile.getString("profile_image_url")
+            );
+        }
     );
 
     private String providerName;
