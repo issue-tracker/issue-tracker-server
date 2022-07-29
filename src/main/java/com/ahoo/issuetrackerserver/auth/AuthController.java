@@ -76,4 +76,30 @@ public class AuthController {
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
     }
+
+    @Operation(summary = "로그인 검사 테스트용 API",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "로그인 검사 성공(we did it!)",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = String.class)
+                    )
+                }),
+            @ApiResponse(responseCode = "401",
+                description = "로그인 검사 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @SignInRequired
+    @GetMapping("/test")
+    public String signInRequiredTest() {
+        return "we did it!";
+    }
 }
