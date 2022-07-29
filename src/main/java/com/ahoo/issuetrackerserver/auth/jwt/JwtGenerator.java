@@ -17,7 +17,7 @@ public class JwtGenerator {
     private static final String CLAIM_NAME = "memberId";
     private static final long ACCESS_TOKEN_EXPIRED_TIME = Duration.ofMinutes(30).toSeconds();
     private static final long REFRESH_TOKEN_EXPIRED_TIME = Duration.ofDays(1).toSeconds();
-    private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(System.getenv("JWT_SECRET_KEY").getBytes());
+    public static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(System.getenv("JWT_SECRET_KEY").getBytes());
 
     public static AccessToken generateAccessToken(Long memberId) {
         Date now = new Date();

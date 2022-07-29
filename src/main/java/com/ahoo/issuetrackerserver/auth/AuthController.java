@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +62,6 @@ public class AuthController {
 
         AccessToken accessToken = JwtGenerator.generateAccessToken(authMember.getId());
         RefreshToken refreshToken = JwtGenerator.generateRefreshToken(authMember.getId());
-
         refreshTokenRepository.save(refreshToken);
 
         addTokenCookies(response, accessToken, refreshToken);
@@ -77,5 +75,31 @@ public class AuthController {
         refreshTokenCookie.setHttpOnly(true);
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
+    }
+
+    @Operation(summary = "로그인 검사 테스트용 API",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "로그인 검사 성공(we did it!)",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = String.class)
+                    )
+                }),
+            @ApiResponse(responseCode = "401",
+                description = "로그인 검사 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @SignInRequired
+    @GetMapping("/test")
+    public String signInRequiredTest() {
+        return "we did it!";
     }
 }
