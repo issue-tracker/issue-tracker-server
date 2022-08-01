@@ -22,11 +22,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "members", description = "회원 API")
 @RestController
+@RequestMapping("/api/members")
 @RequiredArgsConstructor
 public class MemberController {
 
@@ -54,7 +56,7 @@ public class MemberController {
                 }
             )}
     )
-    @PostMapping("/members/new/general")
+    @PostMapping("/new/general")
     @ResponseStatus(HttpStatus.CREATED)
     public MemberResponse signUpByGeneral(@Valid @RequestBody GeneralMemberCreateRequest memberCreateRequest) {
         return memberService.signUpByGeneral(memberCreateRequest);
@@ -81,9 +83,10 @@ public class MemberController {
                 }
             )}
     )
-    @PostMapping("/members/new/auth")
+    @PostMapping("/new/auth")
     @ResponseStatus(HttpStatus.CREATED)
-    public MemberResponse signUpByAuth(@Valid @RequestBody AuthMemberCreateRequest memberCreateRequest, HttpServletResponse response) {
+    public MemberResponse signUpByAuth(@Valid @RequestBody AuthMemberCreateRequest memberCreateRequest,
+        HttpServletResponse response) {
         MemberResponse memberResponse = memberService.signUpByAuth(memberCreateRequest);
 
         AccessToken accessToken = JwtGenerator.generateAccessToken(memberResponse.getId());
@@ -108,7 +111,7 @@ public class MemberController {
                 })
         }
     )
-    @GetMapping("/members/login-id/{loginId}/exists")
+    @GetMapping("/login-id/{loginId}/exists")
     public Boolean checkDuplicatedLoginId(@PathVariable String loginId) {
         return memberService.isDuplicatedLoginId(loginId);
     }
@@ -126,7 +129,7 @@ public class MemberController {
                 })
         }
     )
-    @GetMapping("/members/nickname/{nickname}/exists")
+    @GetMapping("/nickname/{nickname}/exists")
     public Boolean checkDuplicatedNickname(@PathVariable String nickname) {
         return memberService.isDuplicatedNickname(nickname);
     }
@@ -144,7 +147,7 @@ public class MemberController {
                 })
         }
     )
-    @GetMapping("/members/email/{email}/exists")
+    @GetMapping("/email/{email}/exists")
     public Boolean checkDuplicatedEmail(@PathVariable String email) {
         return memberService.isDuplicatedEmail(email);
     }
