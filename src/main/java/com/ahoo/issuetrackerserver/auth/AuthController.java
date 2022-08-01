@@ -80,7 +80,7 @@ public class AuthController {
     @Operation(summary = "로그인 검사 테스트용 API",
         responses = {
             @ApiResponse(responseCode = "200",
-                description = "로그인 검사 성공(we did it!)",
+                description = "로그인 검사 성공(로그인 사용자의 id를 반환합니다.)",
                 content = {
                     @Content(
                         mediaType = "application/json",
@@ -97,9 +97,8 @@ public class AuthController {
                 }
             )}
     )
-    @SignInRequired
     @GetMapping("/test")
-    public String signInRequiredTest() {
-        return "we did it!";
+    public Long signInRequiredTest(@SignInMemberId Long memberId) {
+        return memberId;
     }
 }
