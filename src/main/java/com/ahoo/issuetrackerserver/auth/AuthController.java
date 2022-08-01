@@ -5,6 +5,7 @@ import com.ahoo.issuetrackerserver.auth.dto.AuthResponse;
 import com.ahoo.issuetrackerserver.auth.dto.AuthUserResponse;
 import com.ahoo.issuetrackerserver.auth.jwt.JwtGenerator;
 import com.ahoo.issuetrackerserver.exception.ErrorResponse;
+import com.ahoo.issuetrackerserver.exception.UnAuthorizedException;
 import com.ahoo.issuetrackerserver.member.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -52,8 +54,14 @@ public class AuthController {
     public AuthResponse authSign(@PathVariable String provider, @RequestParam String code,
         HttpServletResponse response) {
         AuthProvider authProvider = AuthProvider.valueOf(provider.toUpperCase());
-        AuthAccessToken accessTokenResponse = authService.requestAccessToken(authProvider, code);
-        AuthUserResponse authUserResponse = authService.requestAuthUser(authProvider, accessTokenResponse);
+
+        AuthUserResponse authUserResponse;
+        try {
+            AuthAccessToken accessTokenResponse = authService.requestAccessToken(authProvider, code);
+            authUserResponse = authService.requestAuthUser(authProvider, accessTokenResponse);
+        } catch (WebClientResponseException e) {
+            throw new UnAuthorizedException("code가 유효하지 않습니다.", e);
+        }
 
         Member authMember = authService.findAuthMember(authProvider, authUserResponse.getResourceOwnerId());
         if (authMember == null) {
