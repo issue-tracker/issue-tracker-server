@@ -6,6 +6,7 @@ import com.ahoo.issuetrackerserver.exception.IllegalAuthProviderTypeException;
 import com.ahoo.issuetrackerserver.member.dto.AuthMemberCreateRequest;
 import com.ahoo.issuetrackerserver.member.dto.GeneralMemberCreateRequest;
 import com.ahoo.issuetrackerserver.member.dto.MemberResponse;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,5 +84,10 @@ public class MemberService {
     @Transactional(readOnly = true)
     public Member findAuthMember(AuthProvider authProvider, String resourceOwnerId) {
         return memberRepository.findByAuthProviderTypeAndResourceOwnerId(authProvider, resourceOwnerId).orElse(null);
+    }
+
+    @Transactional
+    public Member findById(Long id) {
+        return memberRepository.findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
     }
 }
