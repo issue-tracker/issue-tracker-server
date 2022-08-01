@@ -37,7 +37,7 @@ public class SignInMemberIdArgumentResolver implements HandlerMethodArgumentReso
             .map(c -> new AccessToken(c.getValue()))
             .findFirst()
             .orElseThrow(() -> new UnAuthorizedException("요청에 access_token 쿠키가 존재하지 않습니다."));
-        jwtService.validateAccessToken(accessToken);
+        jwtService.validateToken(accessToken);
 
         return jwtService.extractMemberId(accessToken);
     }

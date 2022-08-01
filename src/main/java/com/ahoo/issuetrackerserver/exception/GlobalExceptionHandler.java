@@ -1,6 +1,7 @@
 package com.ahoo.issuetrackerserver.exception;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -34,6 +35,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleUnAuthorizedException(UnAuthorizedException e) {
         e.printStackTrace();
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(value = NoSuchElementException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleNoSuchElementException(NoSuchElementException e) {
         return new ErrorResponse(e.getMessage());
     }
 
