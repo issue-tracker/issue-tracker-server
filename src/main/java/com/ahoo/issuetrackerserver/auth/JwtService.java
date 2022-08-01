@@ -14,23 +14,23 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class JwtService {
 
-    public void validateAccessToken(AccessToken accessToken) {
+    public void validateToken(JwtToken token) {
         try {
             Jwts.parserBuilder()
                 .setSigningKey(JwtGenerator.SECRET_KEY)
                 .build()
-                .parseClaimsJws(accessToken.getAccessToken())
+                .parseClaimsJws(token.getToken())
                 .getBody();
         } catch (SignatureException | ExpiredJwtException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
             throw new JwtException("유효하지 않은 토큰입니다.", e);
         }
     }
 
-    public Long extractMemberId(AccessToken accessToken) {
+    public Long extractMemberId(JwtToken token) {
         return Jwts.parserBuilder()
             .setSigningKey(JwtGenerator.SECRET_KEY)
             .build()
-            .parseClaimsJws(accessToken.getAccessToken())
+            .parseClaimsJws(token.getToken())
             .getBody()
             .get("memberId", Long.class);
     }
