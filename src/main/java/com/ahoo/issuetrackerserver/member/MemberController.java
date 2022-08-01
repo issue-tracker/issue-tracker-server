@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -153,11 +152,7 @@ public class MemberController {
     }
 
     private void addTokenCookies(HttpServletResponse response, AccessToken accessToken, RefreshToken refreshToken) {
-        Cookie accessTokenCookie = new Cookie("access_token", accessToken.getAccessToken());
-        accessTokenCookie.setHttpOnly(true);
-        Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken.getRefreshToken());
-        refreshTokenCookie.setHttpOnly(true);
-        response.addCookie(accessTokenCookie);
-        response.addCookie(refreshTokenCookie);
+        response.addCookie(accessToken.toCookie());
+        response.addCookie(refreshToken.toCookie());
     }
 }
