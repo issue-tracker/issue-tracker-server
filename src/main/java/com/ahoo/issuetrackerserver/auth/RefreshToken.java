@@ -23,7 +23,7 @@ public class RefreshToken implements JwtToken {
     public Cookie toCookie() {
         Cookie cookie = new Cookie("refresh_token", this.refreshToken);
         cookie.setHttpOnly(true);
-        cookie.setPath("/");
+        cookie.setPath("/api");
         return cookie;
     }
 }
