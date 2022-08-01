@@ -93,9 +93,9 @@ public class AuthController {
             .filter(c -> c.getName().equals("refresh_token"))
             .map(c -> new RefreshToken(c.getValue()))
             .findFirst()
-            .orElseThrow(() -> new UnAuthorizedException("요청에 access_token 쿠키가 존재하지 않습니다."));
+            .orElseThrow(() -> new UnAuthorizedException("요청에 refresh_token 쿠키가 존재하지 않습니다."));
 
-        refreshTokenRepository.findById(refreshToken.getToken()).orElseThrow(() -> new UnAuthorizedException("refresh_token의 유효기간이 만료되었습니다."));
+        refreshTokenRepository.findById(refreshToken.getToken()).orElseThrow(() -> new UnAuthorizedException("유효하지 않은 refresh_token입니다."));
 
         Long memberId = jwtService.extractMemberId(refreshToken);
         Member signInMember = memberService.findById(memberId);
