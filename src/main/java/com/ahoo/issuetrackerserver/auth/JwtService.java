@@ -25,4 +25,13 @@ public class JwtService {
             throw new JwtException("유효하지 않은 토큰입니다.", e);
         }
     }
+
+    public Long extractMemberId(AccessToken accessToken) {
+        return Jwts.parserBuilder()
+            .setSigningKey(JwtGenerator.SECRET_KEY)
+            .build()
+            .parseClaimsJws(accessToken.getAccessToken())
+            .getBody()
+            .get("memberId", Long.class);
+    }
 }
