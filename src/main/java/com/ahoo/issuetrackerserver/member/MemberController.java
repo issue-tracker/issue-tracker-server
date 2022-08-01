@@ -1,5 +1,9 @@
 package com.ahoo.issuetrackerserver.member;
 
+import com.ahoo.issuetrackerserver.auth.AccessToken;
+import com.ahoo.issuetrackerserver.auth.RefreshToken;
+import com.ahoo.issuetrackerserver.auth.RefreshTokenRepository;
+import com.ahoo.issuetrackerserver.auth.jwt.JwtGenerator;
 import com.ahoo.issuetrackerserver.exception.ErrorResponse;
 import com.ahoo.issuetrackerserver.member.dto.AuthMemberCreateRequest;
 import com.ahoo.issuetrackerserver.member.dto.GeneralMemberCreateRequest;
@@ -9,6 +13,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Operation(summary = "일반 회원가입",
         description = "일반 회원으로 가입합니다.",
@@ -76,8 +83,16 @@ public class MemberController {
     )
     @PostMapping("/members/new/auth")
     @ResponseStatus(HttpStatus.CREATED)
-    public MemberResponse signUpByAuth(@Valid @RequestBody AuthMemberCreateRequest memberCreateRequest) {
-        return memberService.signUpByAuth(memberCreateRequest);
+    public MemberResponse signUpByAuth(@Valid @RequestBody AuthMemberCreateRequest memberCreateRequest, HttpServletResponse response) {
+        MemberResponse memberResponse = memberService.signUpByAuth(memberCreateRequest);
+
+        AccessToken accessToken = JwtGenerator.generateAccessToken(memberResponse.getId());
+        RefreshToken refreshToken = JwtGenerator.generateRefreshToken(memberResponse.getId());
+        refreshTokenRepository.save(refreshToken);
+
+        addTokenCookies(response, accessToken, refreshToken);
+
+        return memberResponse;
     }
 
     @Operation(summary = "로그인 아이디 중복 검사",
@@ -132,5 +147,14 @@ public class MemberController {
     @GetMapping("/members/email/{email}/exists")
     public Boolean checkDuplicatedEmail(@PathVariable String email) {
         return memberService.isDuplicatedEmail(email);
+    }
+
+    private void addTokenCookies(HttpServletResponse response, AccessToken accessToken, RefreshToken refreshToken) {
+        Cookie accessTokenCookie = new Cookie("access_token", accessToken.getAccessToken());
+        accessTokenCookie.setHttpOnly(true);
+        Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken.getRefreshToken());
+        refreshTokenCookie.setHttpOnly(true);
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
     }
 }
