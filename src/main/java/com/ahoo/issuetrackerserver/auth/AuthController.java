@@ -120,7 +120,7 @@ public class AuthController {
                 content = {
                     @Content(
                         mediaType = "application/json",
-                        schema = @Schema(implementation = String.class)
+                        schema = @Schema(implementation = Long.class)
                     )
                 }),
             @ApiResponse(responseCode = "401",
