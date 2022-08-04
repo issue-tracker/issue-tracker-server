@@ -58,6 +58,6 @@ public class Member extends BaseEntity {
     }
 
     public boolean isCorrectPassword(String password) {
-        return this.password.toLowerCase().equals(password);
+        return this.password.equalsIgnoreCase(password);
     }
 }

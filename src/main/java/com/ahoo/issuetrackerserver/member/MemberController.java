@@ -119,7 +119,7 @@ public class MemberController {
                 }
             )}
     )
-    @PostMapping("/general")
+    @PostMapping("/signin")
     public MemberResponse singInByGeneral(@RequestBody GeneralSignInRequest generalSignInRequest, HttpServletResponse response) {
         MemberResponse memberResponse = memberService.signInByGeneral(generalSignInRequest.getId(), generalSignInRequest.getPassword());
 
