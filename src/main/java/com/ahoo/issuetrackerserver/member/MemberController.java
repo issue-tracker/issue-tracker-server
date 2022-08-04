@@ -7,6 +7,7 @@ import com.ahoo.issuetrackerserver.auth.jwt.JwtGenerator;
 import com.ahoo.issuetrackerserver.exception.ErrorResponse;
 import com.ahoo.issuetrackerserver.member.dto.AuthMemberCreateRequest;
 import com.ahoo.issuetrackerserver.member.dto.GeneralMemberCreateRequest;
+import com.ahoo.issuetrackerserver.member.dto.GeneralSignInRequest;
 import com.ahoo.issuetrackerserver.member.dto.MemberResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -87,6 +88,40 @@ public class MemberController {
     public MemberResponse signUpByAuth(@Valid @RequestBody AuthMemberCreateRequest memberCreateRequest,
         HttpServletResponse response) {
         MemberResponse memberResponse = memberService.signUpByAuth(memberCreateRequest);
+
+        AccessToken accessToken = JwtGenerator.generateAccessToken(memberResponse.getId());
+        RefreshToken refreshToken = JwtGenerator.generateRefreshToken(memberResponse.getId());
+        refreshTokenRepository.save(refreshToken);
+
+        addTokenCookies(response, accessToken, refreshToken);
+
+        return memberResponse;
+    }
+
+    @Operation(summary = "일반 로그인",
+        description = "일반 로그인을 진행합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "일반 로그인 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = MemberResponse.class)
+                    )
+                }),
+            @ApiResponse(responseCode = "400",
+                description = "일반 로그인 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @PostMapping("/general")
+    public MemberResponse singInByGeneral(@RequestBody GeneralSignInRequest generalSignInRequest, HttpServletResponse response) {
+        MemberResponse memberResponse = memberService.signInByGeneral(generalSignInRequest.getId(), generalSignInRequest.getPassword());
 
         AccessToken accessToken = JwtGenerator.generateAccessToken(memberResponse.getId());
         RefreshToken refreshToken = JwtGenerator.generateRefreshToken(memberResponse.getId());

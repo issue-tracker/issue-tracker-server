@@ -39,6 +39,17 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
+    public MemberResponse signInByGeneral(String id, String password) {
+        Member findMember = memberRepository.findByLoginId(id).orElseThrow(() -> new IllegalArgumentException("로그인에 실패했습니다. 아이디와 비밀번호를 다시 확인해주세요."));
+
+        if (!findMember.getPassword().equals(password)) {
+            throw new IllegalArgumentException("로그인에 실패했습니다. 아이디와 비밀번호를 다시 확인해주세요.");
+        }
+
+        return MemberResponse.from(findMember);
+    }
+
+    @Transactional(readOnly = true)
     public Boolean isDuplicatedNickname(String nickname) {
         return memberRepository.existsByNickname(nickname);
     }
@@ -86,7 +97,7 @@ public class MemberService {
         return memberRepository.findByAuthProviderTypeAndResourceOwnerId(authProvider, resourceOwnerId).orElse(null);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Member findById(Long id) {
         return memberRepository.findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
     }
