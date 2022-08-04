@@ -17,7 +17,7 @@ public class AccessToken implements JwtToken {
     public Cookie toCookie() {
         Cookie cookie = new Cookie("access_token", this.accessToken);
         cookie.setHttpOnly(true);
-        cookie.setPath("/api");
+        cookie.setPath("/");
         return cookie;
     }
 }
