@@ -56,4 +56,8 @@ public class Member extends BaseEntity {
         String profileImage, AuthProvider authProviderType, String resourceOwnerId) {
         return new Member(null, loginId, password, email, nickname, profileImage, authProviderType, resourceOwnerId);
     }
+
+    public boolean isCorrectPassword(String password) {
+        return this.password.toLowerCase().equals(password);
+    }
 }
