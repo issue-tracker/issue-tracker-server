@@ -3,7 +3,9 @@ package com.ahoo.issuetrackerserver.member;
 import com.ahoo.issuetrackerserver.auth.AccessToken;
 import com.ahoo.issuetrackerserver.auth.RefreshToken;
 import com.ahoo.issuetrackerserver.auth.RefreshTokenRepository;
+import com.ahoo.issuetrackerserver.auth.SignInMemberId;
 import com.ahoo.issuetrackerserver.auth.jwt.JwtGenerator;
+import com.ahoo.issuetrackerserver.exception.DoNotMatchIdException;
 import com.ahoo.issuetrackerserver.exception.ErrorResponse;
 import com.ahoo.issuetrackerserver.member.dto.AuthMemberCreateRequest;
 import com.ahoo.issuetrackerserver.member.dto.GeneralMemberCreateRequest;
@@ -14,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.Objects;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -184,6 +187,37 @@ public class MemberController {
     @GetMapping("/email/{email}/exists")
     public Boolean checkDuplicatedEmail(@PathVariable String email) {
         return memberService.isDuplicatedEmail(email);
+    }
+
+    @Operation(summary = "회원 로그인 정보",
+        description = "회원 로그인 정보를 요청합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "회원 로그인 정보 응답 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = MemberResponse.class)
+                    )
+                }),
+            @ApiResponse(responseCode = "400",
+                description = "회원 로그인 정보 응답 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @GetMapping("/{id}")
+    public MemberResponse getMemberInfo(@SignInMemberId Long memberId, @PathVariable Long id) {
+        if (!Objects.equals(memberId, id)) {
+            throw new DoNotMatchIdException("아이디가 일치하지 않습니다.");
+        }
+        Member findMember = memberService.findById(id);
+
+        return MemberResponse.from(findMember);
     }
 
     private void addTokenCookies(HttpServletResponse response, AccessToken accessToken, RefreshToken refreshToken) {
