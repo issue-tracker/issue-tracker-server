@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    Boolean existsByLoginId(String loginId);
+    Boolean existsBySignInId(String signInId);
 
     Boolean existsByNickname(String nickname);
 
@@ -16,5 +16,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByAuthProviderTypeAndResourceOwnerId(AuthProvider authProviderType, String resourceOwnerId);
 
-    Optional<Member> findByLoginId(String loginId);
+    Optional<Member> findBySignInId(String signInId);
 }

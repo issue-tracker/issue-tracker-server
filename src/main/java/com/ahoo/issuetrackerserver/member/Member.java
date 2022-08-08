@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@EqualsAndHashCode(exclude = {"loginId", "password", "email", "nickname", "profileImage", "resourceOwnerId"}, callSuper = false)
+@EqualsAndHashCode(exclude = {"signInId", "password", "email", "nickname", "profileImage", "resourceOwnerId"}, callSuper = false)
 public class Member extends BaseEntity {
 
     @Id
@@ -26,7 +26,7 @@ public class Member extends BaseEntity {
     private Long id;
 
     @Column(unique = true, length = 12)
-    private String loginId;
+    private String signInId;
 
     @Column(length = 16)
     private String password;
@@ -47,14 +47,14 @@ public class Member extends BaseEntity {
     @Column(updatable = false)
     private String resourceOwnerId;
 
-    public static Member of(Long id, String loginId, String password, String email, String nickname,
+    public static Member of(Long id, String signInId, String password, String email, String nickname,
         String profileImage, AuthProvider authProviderType, String resourceOwnerId) {
-        return new Member(id, loginId, password, email, nickname, profileImage, authProviderType, resourceOwnerId);
+        return new Member(id, signInId, password, email, nickname, profileImage, authProviderType, resourceOwnerId);
     }
 
-    public static Member of(String loginId, String password, String email, String nickname,
+    public static Member of(String signInId, String password, String email, String nickname,
         String profileImage, AuthProvider authProviderType, String resourceOwnerId) {
-        return new Member(null, loginId, password, email, nickname, profileImage, authProviderType, resourceOwnerId);
+        return new Member(null, signInId, password, email, nickname, profileImage, authProviderType, resourceOwnerId);
     }
 
     public boolean isCorrectPassword(String password) {

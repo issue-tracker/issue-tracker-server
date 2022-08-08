@@ -145,9 +145,9 @@ public class MemberController {
                 })
         }
     )
-    @GetMapping("/login-id/{loginId}/exists")
-    public Boolean checkDuplicatedLoginId(@PathVariable String loginId) {
-        return memberService.isDuplicatedLoginId(loginId);
+    @GetMapping("/signin-id/{signInId}/exists")
+    public Boolean checkDuplicatedSignInId(@PathVariable String signInId) {
+        return memberService.isDuplicatedSignInId(signInId);
     }
 
     @Operation(summary = "닉네임 중복 검사",

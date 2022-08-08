@@ -40,7 +40,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberResponse signInByGeneral(String id, String password) {
-        Member findMember = memberRepository.findByLoginId(id).orElseThrow(() -> new IllegalArgumentException("로그인에 실패했습니다. 아이디와 비밀번호를 다시 확인해주세요."));
+        Member findMember = memberRepository.findBySignInId(id).orElseThrow(() -> new IllegalArgumentException("로그인에 실패했습니다. 아이디와 비밀번호를 다시 확인해주세요."));
 
         if (!findMember.isCorrectPassword(password)) {
             throw new IllegalArgumentException("로그인에 실패했습니다. 아이디와 비밀번호를 다시 확인해주세요.");
@@ -55,8 +55,8 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Boolean isDuplicatedLoginId(String loginId) {
-        return memberRepository.existsByLoginId(loginId);
+    public Boolean isDuplicatedSignInId(String signInId) {
+        return memberRepository.existsBySignInId(signInId);
     }
 
     @Transactional(readOnly = true)
@@ -67,7 +67,7 @@ public class MemberService {
     private void validateGeneralMemberRequest(GeneralMemberCreateRequest generalMemberCreateRequest) {
         validateDuplicatedEmail(generalMemberCreateRequest.getEmail());
 
-        if (isDuplicatedLoginId(generalMemberCreateRequest.getLoginId())) {
+        if (isDuplicatedSignInId(generalMemberCreateRequest.getSignInId())) {
             throw new DuplicateMemberException("중복되는 아이디가 존재합니다.");
         }
 
