@@ -44,7 +44,7 @@ class MemberServiceTest {
             Member savedMember = Member.of(2L, "ak2j38", "1234", "ak2j38@gmail.com", "ader",
                 "https://avatars.githubusercontent.com/u/29879110?v=4", AuthProvider.NONE, null);
             given(memberRepository.findByEmail(successRequest.getEmail())).willReturn(Optional.empty());
-            given(memberRepository.existsByLoginId(successRequest.getLoginId())).willReturn(false);
+            given(memberRepository.existsBySignInId(successRequest.getSignInId())).willReturn(false);
             given(memberRepository.existsByNickname(successRequest.getNickname())).willReturn(false);
             given(memberRepository.save(newMember)).willReturn(savedMember);
 
@@ -53,7 +53,7 @@ class MemberServiceTest {
 
             //then
             then(memberRepository).should(times(1)).findByEmail(successRequest.getEmail());
-            then(memberRepository).should(times(1)).existsByLoginId(successRequest.getLoginId());
+            then(memberRepository).should(times(1)).existsBySignInId(successRequest.getSignInId());
             then(memberRepository).should(times(1)).existsByNickname(successRequest.getNickname());
             then(memberRepository).should(times(1)).save(newMember);
             then(memberRepository).shouldHaveNoMoreInteractions();
@@ -87,7 +87,7 @@ class MemberServiceTest {
                 "ak2j38@gmail.com", "ader",
                 "https://avatars.githubusercontent.com/u/29879110?v=4");
             given(memberRepository.findByEmail(failureRequest.getEmail())).willReturn(Optional.empty());
-            given(memberRepository.existsByLoginId(failureRequest.getLoginId())).willReturn(true);
+            given(memberRepository.existsBySignInId(failureRequest.getSignInId())).willReturn(true);
 
             //when
 
@@ -96,7 +96,7 @@ class MemberServiceTest {
                 .isInstanceOf(DuplicateMemberException.class)
                 .hasMessage("중복되는 아이디가 존재합니다.");
             then(memberRepository).should(times(1)).findByEmail(failureRequest.getEmail());
-            then(memberRepository).should(times(1)).existsByLoginId(failureRequest.getLoginId());
+            then(memberRepository).should(times(1)).existsBySignInId(failureRequest.getSignInId());
             then(memberRepository).shouldHaveNoMoreInteractions();
         }
 
@@ -107,7 +107,7 @@ class MemberServiceTest {
                 "ak2j38@gmail.com", "hoo",
                 "https://avatars.githubusercontent.com/u/29879110?v=4");
             given(memberRepository.findByEmail(failureRequest.getEmail())).willReturn(Optional.empty());
-            given(memberRepository.existsByLoginId(failureRequest.getLoginId())).willReturn(false);
+            given(memberRepository.existsBySignInId(failureRequest.getSignInId())).willReturn(false);
             given(memberRepository.existsByNickname(failureRequest.getNickname())).willReturn(true);
 
             //when
@@ -117,7 +117,7 @@ class MemberServiceTest {
                 .isInstanceOf(DuplicateMemberException.class)
                 .hasMessage("중복되는 닉네임이 존재합니다.");
             then(memberRepository).should(times(1)).findByEmail(failureRequest.getEmail());
-            then(memberRepository).should(times(1)).existsByLoginId(failureRequest.getLoginId());
+            then(memberRepository).should(times(1)).existsBySignInId(failureRequest.getSignInId());
             then(memberRepository).should(times(1)).existsByNickname(failureRequest.getNickname());
             then(memberRepository).shouldHaveNoMoreInteractions();
         }
@@ -198,7 +198,7 @@ class MemberServiceTest {
             // given
             Member member = Member.of(1L, "who-hoo", "1234", "who.ho3ov@gmail.com", "hoo",
                 "https://avatars.githubusercontent.com/u/68011320?v=4", AuthProvider.GITHUB, "68011320");
-            given(memberRepository.findByLoginId("who-hoo")).willReturn(Optional.of(member));
+            given(memberRepository.findBySignInId("who-hoo")).willReturn(Optional.of(member));
             GeneralSignInRequest generalSignInRequest = GeneralSignInRequest.of("who-hoo", "1234");
 
             // when
@@ -206,7 +206,7 @@ class MemberServiceTest {
                 generalSignInRequest.getPassword());
 
             // then
-            then(memberRepository).should(times(1)).findByLoginId(generalSignInRequest.getId());
+            then(memberRepository).should(times(1)).findBySignInId(generalSignInRequest.getId());
             then(memberRepository).shouldHaveNoMoreInteractions();
             assertThat(memberResponse.getId()).isEqualTo(1L);
         }
@@ -215,7 +215,7 @@ class MemberServiceTest {
         void 존재하지_않는_아이디로_로그인_요청_입력이_주어지면_IllegalArgumentException_예외가_발생하며_로그인이_실패한다() {
             // given
             GeneralSignInRequest generalSignInRequest = GeneralSignInRequest.of("ader", "1234");
-            given(memberRepository.findByLoginId(generalSignInRequest.getId())).willReturn(Optional.empty());
+            given(memberRepository.findBySignInId(generalSignInRequest.getId())).willReturn(Optional.empty());
 
             // when
 
@@ -223,7 +223,7 @@ class MemberServiceTest {
             assertThatThrownBy(() -> memberService.signInByGeneral(generalSignInRequest.getId(), generalSignInRequest.getPassword()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("로그인에 실패했습니다. 아이디와 비밀번호를 다시 확인해주세요.");
-            then(memberRepository).should(times(1)).findByLoginId(generalSignInRequest.getId());
+            then(memberRepository).should(times(1)).findBySignInId(generalSignInRequest.getId());
             then(memberRepository).shouldHaveNoMoreInteractions();
         }
 
@@ -232,7 +232,7 @@ class MemberServiceTest {
             // given
             Member member = Member.of(1L, "who-hoo", "1234", "who.ho3ov@gmail.com", "hoo",
                 "https://avatars.githubusercontent.com/u/68011320?v=4", AuthProvider.GITHUB, "68011320");
-            given(memberRepository.findByLoginId("who-hoo")).willReturn(Optional.of(member));
+            given(memberRepository.findBySignInId("who-hoo")).willReturn(Optional.of(member));
             GeneralSignInRequest generalSignInRequest = GeneralSignInRequest.of("who-hoo", "4321");
 
             // when
@@ -241,7 +241,7 @@ class MemberServiceTest {
             assertThatThrownBy(() -> memberService.signInByGeneral(generalSignInRequest.getId(), generalSignInRequest.getPassword()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("로그인에 실패했습니다. 아이디와 비밀번호를 다시 확인해주세요.");
-            then(memberRepository).should(times(1)).findByLoginId(generalSignInRequest.getId());
+            then(memberRepository).should(times(1)).findBySignInId(generalSignInRequest.getId());
             then(memberRepository).shouldHaveNoMoreInteractions();
         }
     }

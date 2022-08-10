@@ -1,5 +1,6 @@
 package com.ahoo.issuetrackerserver.auth.dto;
 
+import com.ahoo.issuetrackerserver.auth.AccessToken;
 import com.ahoo.issuetrackerserver.member.dto.MemberResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -19,11 +20,14 @@ public class AuthResponse {
     @Schema(title = "로그인 성공 응답")
     private MemberResponse signInMember;
 
+    @Schema(title = "AccessToken 값")
+    private AccessToken accessToken;
+
     public static AuthResponse from(AuthUserResponse authUserResponse) {
-        return new AuthResponse(authUserResponse, null);
+        return new AuthResponse(authUserResponse, null, null);
     }
 
-    public static AuthResponse from(MemberResponse memberResponse) {
-        return new AuthResponse(null, memberResponse);
+    public static AuthResponse from(MemberResponse memberResponse, AccessToken accessToken) {
+        return new AuthResponse(null, memberResponse, accessToken);
     }
 }

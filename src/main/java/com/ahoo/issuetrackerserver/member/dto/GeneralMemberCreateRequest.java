@@ -22,7 +22,7 @@ public class GeneralMemberCreateRequest {
     @Schema(description = "아이디", required = true, minLength = 6, maxLength = 12)
     @NotBlank(message = "아이디는 필수 입력 값입니다.")
     @Size(min = 6, max = 12, message = "아이디는 최소 6자리, 최대 12자리여야 합니다.")
-    private String loginId;
+    private String signInId;
 
     @Schema(description = "비밀번호", required = true, minLength = 8, maxLength = 16)
     @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
@@ -45,7 +45,7 @@ public class GeneralMemberCreateRequest {
     public Member toEntity() {
         return Member.of(
             null,
-            this.loginId,
+            this.signInId,
             this.password,
             this.email,
             this.nickname,
@@ -54,9 +54,9 @@ public class GeneralMemberCreateRequest {
             null);
     }
 
-    public static GeneralMemberCreateRequest of(String loginId, String password, String email, String nickname,
+    public static GeneralMemberCreateRequest of(String signInId, String password, String email, String nickname,
         String profileImage) {
-        return new GeneralMemberCreateRequest(loginId, password, email, nickname,
+        return new GeneralMemberCreateRequest(signInId, password, email, nickname,
             Optional.ofNullable(profileImage).orElse("defaultS3ImageUrl"));
     }
 }

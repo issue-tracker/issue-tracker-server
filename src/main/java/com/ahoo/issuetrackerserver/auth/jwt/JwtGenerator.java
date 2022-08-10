@@ -28,7 +28,7 @@ public class JwtGenerator {
             .signWith(SECRET_KEY)
             .compact();
 
-        return new AccessToken(accessToken);
+        return AccessToken.of(accessToken);
     }
 
     public static RefreshToken generateRefreshToken(Long memberId) {
@@ -40,6 +40,6 @@ public class JwtGenerator {
             .signWith(SECRET_KEY)
             .compact();
 
-        return new RefreshToken(refreshToken);
+        return RefreshToken.of(refreshToken);
     }
 }

@@ -1,14 +1,15 @@
 package com.ahoo.issuetrackerserver.auth;
 
 import javax.servlet.http.Cookie;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@RedisHash(timeToLive = 60)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@RedisHash(value = "refreshToken", timeToLive = 60)
 public class RefreshToken implements JwtToken {
 
     @Id
@@ -24,6 +25,11 @@ public class RefreshToken implements JwtToken {
         Cookie cookie = new Cookie("refresh_token", this.refreshToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 24);
         return cookie;
+    }
+
+    public static RefreshToken of(String refreshToken) {
+        return new RefreshToken(refreshToken);
     }
 }

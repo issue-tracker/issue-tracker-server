@@ -1,9 +1,10 @@
 package com.ahoo.issuetrackerserver.auth;
 
 import javax.servlet.http.Cookie;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AccessToken implements JwtToken {
 
     private String accessToken;
@@ -19,5 +20,13 @@ public class AccessToken implements JwtToken {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
+    }
+
+    public static AccessToken of(String accessToken) {
+        return new AccessToken(accessToken);
+    }
+
+    public static AccessToken headerToAccessToken(String accessTokenHeader) {
+        return new AccessToken(accessTokenHeader.split(" ")[1]);
     }
 }
