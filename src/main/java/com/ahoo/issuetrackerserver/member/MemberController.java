@@ -10,8 +10,8 @@ import com.ahoo.issuetrackerserver.exception.ErrorResponse;
 import com.ahoo.issuetrackerserver.member.dto.AuthMemberCreateRequest;
 import com.ahoo.issuetrackerserver.member.dto.GeneralMemberCreateRequest;
 import com.ahoo.issuetrackerserver.member.dto.GeneralSignInRequest;
-import com.ahoo.issuetrackerserver.member.dto.MemberAndTokenResponse;
 import com.ahoo.issuetrackerserver.member.dto.MemberResponse;
+import com.ahoo.issuetrackerserver.member.dto.SignResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -77,7 +77,7 @@ public class MemberController {
                 content = {
                     @Content(
                         mediaType = "application/json",
-                        schema = @Schema(implementation = MemberAndTokenResponse.class)
+                        schema = @Schema(implementation = SignResponse.class)
                     )
                 }),
             @ApiResponse(responseCode = "400",
@@ -92,7 +92,7 @@ public class MemberController {
     )
     @PostMapping("/new/auth")
     @ResponseStatus(HttpStatus.CREATED)
-    public MemberAndTokenResponse signUpByAuth(@Valid @RequestBody AuthMemberCreateRequest memberCreateRequest,
+    public SignResponse signUpByAuth(@Valid @RequestBody AuthMemberCreateRequest memberCreateRequest,
         HttpServletResponse response) {
         MemberResponse memberResponse = memberService.signUpByAuth(memberCreateRequest);
 
@@ -101,7 +101,7 @@ public class MemberController {
         refreshTokenRepository.save(refreshToken);
 
         response.addCookie(refreshToken.toCookie());
-        return MemberAndTokenResponse.of(memberResponse, accessToken);
+        return SignResponse.of(memberResponse, accessToken);
     }
 
     @Operation(summary = "일반 로그인",
@@ -112,7 +112,7 @@ public class MemberController {
                 content = {
                     @Content(
                         mediaType = "application/json",
-                        schema = @Schema(implementation = MemberAndTokenResponse.class)
+                        schema = @Schema(implementation = SignResponse.class)
                     )
                 }),
             @ApiResponse(responseCode = "400",
@@ -126,7 +126,7 @@ public class MemberController {
             )}
     )
     @PostMapping("/signin")
-    public MemberAndTokenResponse singInByGeneral(@RequestBody GeneralSignInRequest generalSignInRequest, HttpServletResponse response) {
+    public SignResponse signInByGeneral(@RequestBody GeneralSignInRequest generalSignInRequest, HttpServletResponse response) {
         MemberResponse memberResponse = memberService.signInByGeneral(generalSignInRequest.getId(), generalSignInRequest.getPassword());
 
         AccessToken accessToken = JwtGenerator.generateAccessToken(memberResponse.getId());
@@ -134,7 +134,7 @@ public class MemberController {
         refreshTokenRepository.save(refreshToken);
 
         response.addCookie(refreshToken.toCookie());
-        return MemberAndTokenResponse.of(memberResponse, accessToken);
+        return SignResponse.of(memberResponse, accessToken);
     }
 
     @Operation(summary = "로그인 아이디 중복 검사",
@@ -214,9 +214,7 @@ public class MemberController {
     )
     @GetMapping("/info")
     public MemberResponse getMemberInfo(@SignInMemberId Long memberId) {
-        Member findMember = memberService.findById(memberId);
-
-        return MemberResponse.from(findMember);
+        return memberService.findById(memberId);
     }
 
     @Operation(summary = "로그아웃",
@@ -237,7 +235,7 @@ public class MemberController {
     @RequestMapping(method = RequestMethod.HEAD, value = "/signout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void signOut(@CookieValue(value = "refresh_token") Cookie refreshTokenCookie, HttpServletResponse response) {
-        RefreshToken refreshToken = new RefreshToken(refreshTokenCookie.getValue());
+        RefreshToken refreshToken = RefreshToken.of(refreshTokenCookie.getValue());
         jwtService.validateToken(refreshToken);
 
         Cookie cookie = new Cookie("refresh_token", null);
@@ -245,6 +243,6 @@ public class MemberController {
         cookie.setPath("/");
         response.addCookie(cookie);
 
-        refreshTokenRepository.findById(refreshToken.getToken()).ifPresent(refreshTokenRepository::delete);
+        refreshTokenRepository.delete(refreshToken);
     }
 }

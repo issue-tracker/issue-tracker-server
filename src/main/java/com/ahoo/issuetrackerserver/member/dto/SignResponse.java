@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class MemberAndTokenResponse {
+public class SignResponse {
 
     @Schema(description = "회원 응답")
     private MemberResponse memberResponse;
@@ -19,7 +19,7 @@ public class MemberAndTokenResponse {
     @Schema(description = "액세스 토큰 응답")
     private AccessToken accessToken;
 
-    public static MemberAndTokenResponse of(MemberResponse memberResponse, AccessToken accessToken) {
-        return new MemberAndTokenResponse(memberResponse, accessToken);
+    public static SignResponse of(MemberResponse memberResponse, AccessToken accessToken) {
+        return new SignResponse(memberResponse, accessToken);
     }
 }

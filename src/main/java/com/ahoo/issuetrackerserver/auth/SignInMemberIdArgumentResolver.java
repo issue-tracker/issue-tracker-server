@@ -28,9 +28,8 @@ public class SignInMemberIdArgumentResolver implements HandlerMethodArgumentReso
         if (authorizationHeader == null) {
             throw new UnAuthorizedException("요청에 Authorization 헤더가 존재하지 않습니다.");
         }
-        String splitAccessToken = authorizationHeader.split(" ")[1];
-        AccessToken accessToken = new AccessToken(splitAccessToken);
 
+        AccessToken accessToken = AccessToken.headerToAccessToken(authorizationHeader);
         jwtService.validateToken(accessToken);
 
         return jwtService.extractMemberId(accessToken);

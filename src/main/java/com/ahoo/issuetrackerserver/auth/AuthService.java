@@ -5,7 +5,6 @@ import com.ahoo.issuetrackerserver.auth.dto.AuthResponse;
 import com.ahoo.issuetrackerserver.auth.dto.AuthUserResponse;
 import com.ahoo.issuetrackerserver.auth.dto.GithubEmailResponse;
 import com.ahoo.issuetrackerserver.exception.EssentialFieldDisagreeException;
-import com.ahoo.issuetrackerserver.member.Member;
 import com.ahoo.issuetrackerserver.member.MemberService;
 import com.ahoo.issuetrackerserver.member.dto.MemberResponse;
 import java.nio.charset.StandardCharsets;
@@ -76,7 +75,7 @@ public class AuthService {
         }
     }
 
-    public Member findAuthMember(AuthProvider authProvider, String resourceOwnerId) {
+    public MemberResponse findAuthMember(AuthProvider authProvider, String resourceOwnerId) {
         return memberService.findAuthMember(authProvider, resourceOwnerId);
     }
 
@@ -85,7 +84,7 @@ public class AuthService {
         return AuthResponse.from(authUserResponse);
     }
 
-    public AuthResponse responseSignInMember(Member authMember, AccessToken accessToken) {
-        return AuthResponse.from(MemberResponse.from(authMember), accessToken);
+    public AuthResponse responseSignInMember(MemberResponse authMemberResponse, AccessToken accessToken) {
+        return AuthResponse.from(authMemberResponse, accessToken);
     }
 }

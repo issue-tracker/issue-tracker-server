@@ -6,21 +6,19 @@ import com.ahoo.issuetrackerserver.auth.dto.AuthUserResponse;
 import com.ahoo.issuetrackerserver.auth.jwt.JwtGenerator;
 import com.ahoo.issuetrackerserver.exception.ErrorResponse;
 import com.ahoo.issuetrackerserver.exception.UnAuthorizedException;
-import com.ahoo.issuetrackerserver.member.Member;
 import com.ahoo.issuetrackerserver.member.MemberService;
+import com.ahoo.issuetrackerserver.member.dto.MemberResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import java.util.Arrays;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -69,7 +67,7 @@ public class AuthController {
             throw new UnAuthorizedException("code가 유효하지 않습니다.", e);
         }
 
-        Member authMember = authService.findAuthMember(authProvider, authUserResponse.getResourceOwnerId());
+        MemberResponse authMember = authService.findAuthMember(authProvider, authUserResponse.getResourceOwnerId());
         if (authMember == null) {
             return authService.responseSignUpFormData(authUserResponse);
         }
@@ -78,38 +76,25 @@ public class AuthController {
         RefreshToken refreshToken = JwtGenerator.generateRefreshToken(authMember.getId());
         refreshTokenRepository.save(refreshToken);
 
-        addTokenCookies(response, refreshToken);
+        response.addCookie(refreshToken.toCookie());
         return authService.responseSignInMember(authMember, accessToken);
     }
 
-    @RequestMapping(method = RequestMethod.HEAD, value = "/reissue")
-    public AuthResponse reissueToken(HttpServletRequest request, HttpServletResponse response) {
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies == null) {
-            throw new UnAuthorizedException("요청에 refresh_token 쿠키가 존재하지 않습니다.");
-        }
-        RefreshToken refreshToken = Arrays.stream(cookies)
-            .filter(c -> c.getName().equals("refresh_token"))
-            .map(c -> new RefreshToken(c.getValue()))
-            .findFirst()
-            .orElseThrow(() -> new UnAuthorizedException("요청에 refresh_token 쿠키가 존재하지 않습니다."));
+    @GetMapping("/reissue")
+    public AuthResponse reissueToken(@CookieValue(value = "refresh_token") Cookie refreshTokenCookie, HttpServletResponse response) {
+        RefreshToken refreshToken = RefreshToken.of(refreshTokenCookie.getValue());
 
         refreshTokenRepository.findById(refreshToken.getToken()).orElseThrow(() -> new UnAuthorizedException("유효하지 않은 refresh_token입니다."));
 
         Long memberId = jwtService.extractMemberId(refreshToken);
-        Member signInMember = memberService.findById(memberId);
+        MemberResponse memberResponse = memberService.findById(memberId);
 
         AccessToken newAccessToken = JwtGenerator.generateAccessToken(memberId);
         RefreshToken newRefreshToken = JwtGenerator.generateRefreshToken(memberId);
         refreshTokenRepository.save(newRefreshToken);
 
-        addTokenCookies(response, newRefreshToken);
-        return authService.responseSignInMember(signInMember, newAccessToken);
-    }
-
-    private void addTokenCookies(HttpServletResponse response, RefreshToken refreshToken) {
         response.addCookie(refreshToken.toCookie());
+        return authService.responseSignInMember(memberResponse, newAccessToken);
     }
 
     @Operation(summary = "로그인 검사 테스트용 API",

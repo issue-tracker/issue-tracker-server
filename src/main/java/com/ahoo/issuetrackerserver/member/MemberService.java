@@ -93,12 +93,20 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Member findAuthMember(AuthProvider authProvider, String resourceOwnerId) {
-        return memberRepository.findByAuthProviderTypeAndResourceOwnerId(authProvider, resourceOwnerId).orElse(null);
+    public MemberResponse findAuthMember(AuthProvider authProvider, String resourceOwnerId) {
+        Member findMember = memberRepository.findByAuthProviderTypeAndResourceOwnerId(authProvider, resourceOwnerId)
+            .orElse(null);
+
+        if (findMember == null) {
+            return null;
+        }
+
+        return MemberResponse.from(findMember);
     }
 
     @Transactional(readOnly = true)
-    public Member findById(Long id) {
-        return memberRepository.findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
+    public MemberResponse findById(Long id) {
+        Member findMember = memberRepository.findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
+        return MemberResponse.from(findMember);
     }
 }
