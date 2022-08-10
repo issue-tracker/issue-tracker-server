@@ -78,8 +78,8 @@ public class AuthController {
         RefreshToken refreshToken = JwtGenerator.generateRefreshToken(authMember.getId());
         refreshTokenRepository.save(refreshToken);
 
-        addTokenCookies(response, accessToken, refreshToken);
-        return authService.responseSignInMember(authMember);
+        addTokenCookies(response, refreshToken);
+        return authService.responseSignInMember(authMember, accessToken);
     }
 
     @RequestMapping(method = RequestMethod.HEAD, value = "/reissue")
@@ -104,12 +104,11 @@ public class AuthController {
         RefreshToken newRefreshToken = JwtGenerator.generateRefreshToken(memberId);
         refreshTokenRepository.save(newRefreshToken);
 
-        addTokenCookies(response, newAccessToken, newRefreshToken);
-        return authService.responseSignInMember(signInMember);
+        addTokenCookies(response, newRefreshToken);
+        return authService.responseSignInMember(signInMember, newAccessToken);
     }
 
-    private void addTokenCookies(HttpServletResponse response, AccessToken accessToken, RefreshToken refreshToken) {
-        response.addCookie(accessToken.toCookie());
+    private void addTokenCookies(HttpServletResponse response, RefreshToken refreshToken) {
         response.addCookie(refreshToken.toCookie());
     }
 

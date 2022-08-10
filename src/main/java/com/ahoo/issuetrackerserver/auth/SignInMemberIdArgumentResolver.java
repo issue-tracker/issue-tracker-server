@@ -26,17 +26,27 @@ public class SignInMemberIdArgumentResolver implements HandlerMethodArgumentReso
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
         NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
-        Cookie[] cookies = nativeRequest.getCookies();
 
-        if (cookies == null) {
-            throw new UnAuthorizedException("요청에 access_token 쿠키가 존재하지 않습니다.");
+        // 현재 쿠키에서 꺼내오는 방법이지만 Header의 Authorization에서 꺼내와야한다.
+        String authorizationHeader = webRequest.getHeader("Authorization");
+        if (authorizationHeader == null) {
+            throw new UnAuthorizedException("요청에 Authorization 헤더가 존재하지 않습니다.");
         }
-        AccessToken accessToken = Arrays.stream(cookies)
-            .filter(c -> c.getName().equals("access_token"))
-            .map(c -> new AccessToken(c.getValue()))
-            .findFirst()
-            .orElseThrow(() -> new UnAuthorizedException("요청에 access_token 쿠키가 존재하지 않습니다."));
+        String[] authorizations = authorizationHeader.split(" ");
+        String tempAccessToken = authorizations[1];
+        AccessToken accessToken = new AccessToken(tempAccessToken);
+//        HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
+//        Cookie[] cookies = nativeRequest.getCookies();
+//
+//        if (cookies == null) {
+//            throw new UnAuthorizedException("요청에 access_token 쿠키가 존재하지 않습니다.");
+//        }
+//        AccessToken accessToken = Arrays.stream(cookies)
+//            .filter(c -> c.getName().equals("access_token"))
+//            .map(c -> new AccessToken(c.getValue()))
+//            .findFirst()
+//            .orElseThrow(() -> new UnAuthorizedException("요청에 access_token 쿠키가 존재하지 않습니다."));
+
         jwtService.validateToken(accessToken);
 
         return jwtService.extractMemberId(accessToken);

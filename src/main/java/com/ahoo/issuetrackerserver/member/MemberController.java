@@ -10,6 +10,7 @@ import com.ahoo.issuetrackerserver.exception.ErrorResponse;
 import com.ahoo.issuetrackerserver.member.dto.AuthMemberCreateRequest;
 import com.ahoo.issuetrackerserver.member.dto.GeneralMemberCreateRequest;
 import com.ahoo.issuetrackerserver.member.dto.GeneralSignInRequest;
+import com.ahoo.issuetrackerserver.member.dto.MemberAndTokenResponse;
 import com.ahoo.issuetrackerserver.member.dto.MemberResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -88,7 +89,7 @@ public class MemberController {
     )
     @PostMapping("/new/auth")
     @ResponseStatus(HttpStatus.CREATED)
-    public MemberResponse signUpByAuth(@Valid @RequestBody AuthMemberCreateRequest memberCreateRequest,
+    public MemberAndTokenResponse signUpByAuth(@Valid @RequestBody AuthMemberCreateRequest memberCreateRequest,
         HttpServletResponse response) {
         MemberResponse memberResponse = memberService.signUpByAuth(memberCreateRequest);
 
@@ -96,9 +97,8 @@ public class MemberController {
         RefreshToken refreshToken = JwtGenerator.generateRefreshToken(memberResponse.getId());
         refreshTokenRepository.save(refreshToken);
 
-        addTokenCookies(response, accessToken, refreshToken);
-
-        return memberResponse;
+        response.addCookie(refreshToken.toCookie());
+        return MemberAndTokenResponse.of(memberResponse, accessToken);
     }
 
     @Operation(summary = "일반 로그인",
@@ -123,16 +123,15 @@ public class MemberController {
             )}
     )
     @PostMapping("/signin")
-    public MemberResponse singInByGeneral(@RequestBody GeneralSignInRequest generalSignInRequest, HttpServletResponse response) {
+    public MemberAndTokenResponse singInByGeneral(@RequestBody GeneralSignInRequest generalSignInRequest, HttpServletResponse response) {
         MemberResponse memberResponse = memberService.signInByGeneral(generalSignInRequest.getId(), generalSignInRequest.getPassword());
 
         AccessToken accessToken = JwtGenerator.generateAccessToken(memberResponse.getId());
         RefreshToken refreshToken = JwtGenerator.generateRefreshToken(memberResponse.getId());
         refreshTokenRepository.save(refreshToken);
 
-        addTokenCookies(response, accessToken, refreshToken);
-
-        return memberResponse;
+        response.addCookie(refreshToken.toCookie());
+        return MemberAndTokenResponse.of(memberResponse, accessToken);
     }
 
     @Operation(summary = "로그인 아이디 중복 검사",
@@ -210,18 +209,10 @@ public class MemberController {
                 }
             )}
     )
-    @GetMapping("/{id}")
-    public MemberResponse getMemberInfo(@SignInMemberId Long memberId, @PathVariable Long id) {
-        if (!Objects.equals(memberId, id)) {
-            throw new DoNotMatchIdException("아이디가 일치하지 않습니다.");
-        }
-        Member findMember = memberService.findById(id);
+    @GetMapping("/info")
+    public MemberResponse getMemberInfo(@SignInMemberId Long memberId) {
+        Member findMember = memberService.findById(memberId);
 
         return MemberResponse.from(findMember);
-    }
-
-    private void addTokenCookies(HttpServletResponse response, AccessToken accessToken, RefreshToken refreshToken) {
-        response.addCookie(accessToken.toCookie());
-        response.addCookie(refreshToken.toCookie());
     }
 }

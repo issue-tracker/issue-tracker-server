@@ -85,7 +85,7 @@ public class AuthService {
         return AuthResponse.from(authUserResponse);
     }
 
-    public AuthResponse responseSignInMember(Member authMember) {
-        return AuthResponse.from(MemberResponse.from(authMember));
+    public AuthResponse responseSignInMember(Member authMember, AccessToken accessToken) {
+        return AuthResponse.from(MemberResponse.from(authMember), accessToken);
     }
 }
