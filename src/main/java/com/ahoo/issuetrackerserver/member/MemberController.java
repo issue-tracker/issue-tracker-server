@@ -77,7 +77,7 @@ public class MemberController {
                 content = {
                     @Content(
                         mediaType = "application/json",
-                        schema = @Schema(implementation = MemberResponse.class)
+                        schema = @Schema(implementation = MemberAndTokenResponse.class)
                     )
                 }),
             @ApiResponse(responseCode = "400",
@@ -112,7 +112,7 @@ public class MemberController {
                 content = {
                     @Content(
                         mediaType = "application/json",
-                        schema = @Schema(implementation = MemberResponse.class)
+                        schema = @Schema(implementation = MemberAndTokenResponse.class)
                     )
                 }),
             @ApiResponse(responseCode = "400",
