@@ -1,11 +1,11 @@
 package com.ahoo.issuetrackerserver.member;
 
 import com.ahoo.issuetrackerserver.auth.AccessToken;
+import com.ahoo.issuetrackerserver.auth.JwtService;
 import com.ahoo.issuetrackerserver.auth.RefreshToken;
 import com.ahoo.issuetrackerserver.auth.RefreshTokenRepository;
 import com.ahoo.issuetrackerserver.auth.SignInMemberId;
 import com.ahoo.issuetrackerserver.auth.jwt.JwtGenerator;
-import com.ahoo.issuetrackerserver.exception.DoNotMatchIdException;
 import com.ahoo.issuetrackerserver.exception.ErrorResponse;
 import com.ahoo.issuetrackerserver.member.dto.AuthMemberCreateRequest;
 import com.ahoo.issuetrackerserver.member.dto.GeneralMemberCreateRequest;
@@ -17,16 +17,18 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.Objects;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
+    private final JwtService jwtService;
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Operation(summary = "일반 회원가입",
@@ -214,5 +217,34 @@ public class MemberController {
         Member findMember = memberService.findById(memberId);
 
         return MemberResponse.from(findMember);
+    }
+
+    @Operation(summary = "로그아웃",
+        description = "로그아웃을 요청합니다.",
+        responses = {
+            @ApiResponse(responseCode = "204",
+                description = "로그아웃 성공"),
+            @ApiResponse(responseCode = "400",
+                description = "로그아웃 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @RequestMapping(method = RequestMethod.HEAD, value = "/signout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void signOut(@CookieValue(value = "refresh_token") Cookie refreshTokenCookie, HttpServletResponse response) {
+        RefreshToken refreshToken = new RefreshToken(refreshTokenCookie.getValue());
+        jwtService.validateToken(refreshToken);
+
+        Cookie cookie = new Cookie("refresh_token", null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        refreshTokenRepository.findById(refreshToken.getToken()).ifPresent(refreshTokenRepository::delete);
     }
 }

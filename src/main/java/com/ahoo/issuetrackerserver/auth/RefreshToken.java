@@ -8,7 +8,7 @@ import org.springframework.data.redis.core.RedisHash;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@RedisHash(timeToLive = 60)
+@RedisHash(value = "refreshToken", timeToLive = 60)
 public class RefreshToken implements JwtToken {
 
     @Id
@@ -24,6 +24,7 @@ public class RefreshToken implements JwtToken {
         Cookie cookie = new Cookie("refresh_token", this.refreshToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 24);
         return cookie;
     }
 }
