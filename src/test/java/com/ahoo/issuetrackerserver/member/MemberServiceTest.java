@@ -6,12 +6,16 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
-import com.ahoo.issuetrackerserver.auth.AuthProvider;
-import com.ahoo.issuetrackerserver.exception.DuplicateMemberException;
-import com.ahoo.issuetrackerserver.member.dto.AuthMemberCreateRequest;
-import com.ahoo.issuetrackerserver.member.dto.GeneralMemberCreateRequest;
-import com.ahoo.issuetrackerserver.member.dto.GeneralSignInRequest;
-import com.ahoo.issuetrackerserver.member.dto.MemberResponse;
+import com.ahoo.issuetrackerserver.auth.domain.AuthProvider;
+import com.ahoo.issuetrackerserver.common.exception.DuplicateMemberException;
+import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
+import com.ahoo.issuetrackerserver.member.application.MemberService;
+import com.ahoo.issuetrackerserver.member.domain.Member;
+import com.ahoo.issuetrackerserver.member.infrastructure.MemberRepository;
+import com.ahoo.issuetrackerserver.member.presentation.dto.AuthMemberCreateRequest;
+import com.ahoo.issuetrackerserver.member.presentation.dto.GeneralMemberCreateRequest;
+import com.ahoo.issuetrackerserver.member.presentation.dto.GeneralSignInRequest;
+import com.ahoo.issuetrackerserver.member.presentation.dto.MemberResponse;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -94,7 +98,7 @@ class MemberServiceTest {
             //then
             assertThatThrownBy(() -> memberService.signUpByGeneral(failureRequest))
                 .isInstanceOf(DuplicateMemberException.class)
-                .hasMessage("중복되는 아이디가 존재합니다.");
+                .hasMessage(ErrorMessage.DUPLICATED_ID);
             then(memberRepository).should(times(1)).findByEmail(failureRequest.getEmail());
             then(memberRepository).should(times(1)).existsBySignInId(failureRequest.getSignInId());
             then(memberRepository).shouldHaveNoMoreInteractions();
@@ -115,7 +119,7 @@ class MemberServiceTest {
             //then
             assertThatThrownBy(() -> memberService.signUpByGeneral(failureRequest))
                 .isInstanceOf(DuplicateMemberException.class)
-                .hasMessage("중복되는 닉네임이 존재합니다.");
+                .hasMessage(ErrorMessage.DUPLICATED_NICKNAME);
             then(memberRepository).should(times(1)).findByEmail(failureRequest.getEmail());
             then(memberRepository).should(times(1)).existsBySignInId(failureRequest.getSignInId());
             then(memberRepository).should(times(1)).existsByNickname(failureRequest.getNickname());
@@ -164,7 +168,7 @@ class MemberServiceTest {
             //then
             assertThatThrownBy(() -> memberService.signUpByAuth(failureRequest))
                 .isInstanceOf(DuplicateMemberException.class)
-                .hasMessage(duplicatedMember.getAuthProviderType().getProviderName() + "(으)로 이미 가입된 이메일입니다.");
+                .hasMessage(duplicatedMember.getAuthProviderType().getProviderName() + ErrorMessage.DUPLICATED_EMAIL);
             then(memberRepository).should(times(1)).findByEmail(failureRequest.getEmail());
             then(memberRepository).shouldHaveNoMoreInteractions();
         }
@@ -182,7 +186,7 @@ class MemberServiceTest {
             //then
             assertThatThrownBy(() -> memberService.signUpByAuth(failureRequest))
                 .isInstanceOf(DuplicateMemberException.class)
-                .hasMessage("중복되는 닉네임이 존재합니다.");
+                .hasMessage(ErrorMessage.DUPLICATED_NICKNAME);
             then(memberRepository).should(times(1)).findByEmail(failureRequest.getEmail());
             then(memberRepository).should(times(1)).existsByNickname(failureRequest.getNickname());
             then(memberRepository).shouldHaveNoMoreInteractions();
@@ -220,9 +224,10 @@ class MemberServiceTest {
             // when
 
             // then
-            assertThatThrownBy(() -> memberService.signInByGeneral(generalSignInRequest.getId(), generalSignInRequest.getPassword()))
+            assertThatThrownBy(
+                () -> memberService.signInByGeneral(generalSignInRequest.getId(), generalSignInRequest.getPassword()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("로그인에 실패했습니다. 아이디와 비밀번호를 다시 확인해주세요.");
+                .hasMessage(ErrorMessage.SIGN_IN_FAIL);
             then(memberRepository).should(times(1)).findBySignInId(generalSignInRequest.getId());
             then(memberRepository).shouldHaveNoMoreInteractions();
         }
@@ -238,9 +243,10 @@ class MemberServiceTest {
             // when
 
             // then
-            assertThatThrownBy(() -> memberService.signInByGeneral(generalSignInRequest.getId(), generalSignInRequest.getPassword()))
+            assertThatThrownBy(
+                () -> memberService.signInByGeneral(generalSignInRequest.getId(), generalSignInRequest.getPassword()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("로그인에 실패했습니다. 아이디와 비밀번호를 다시 확인해주세요.");
+                .hasMessage(ErrorMessage.SIGN_IN_FAIL);
             then(memberRepository).should(times(1)).findBySignInId(generalSignInRequest.getId());
             then(memberRepository).shouldHaveNoMoreInteractions();
         }
