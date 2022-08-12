@@ -1,21 +1,18 @@
 package com.ahoo.issuetrackerserver.auth.infrastructure.jwt;
 
+import static com.ahoo.issuetrackerserver.auth.infrastructure.jwt.JwtConstant.ACCESS_TOKEN_EXPIRED_TIME;
+import static com.ahoo.issuetrackerserver.auth.infrastructure.jwt.JwtConstant.CLAIM_NAME;
+import static com.ahoo.issuetrackerserver.auth.infrastructure.jwt.JwtConstant.REFRESH_TOKEN_EXPIRED_TIME;
+import static com.ahoo.issuetrackerserver.auth.infrastructure.jwt.JwtConstant.SECRET_KEY;
+
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
-import javax.crypto.SecretKey;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JwtGenerator {
-
-    private static final String CLAIM_NAME = "memberId";
-    private static final long ACCESS_TOKEN_EXPIRED_TIME = Duration.ofMinutes(30).toSeconds();
-    private static final long REFRESH_TOKEN_EXPIRED_TIME = Duration.ofDays(1).toSeconds();
-    public static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(System.getenv("JWT_SECRET_KEY").getBytes());
 
     public static AccessToken generateAccessToken(Long memberId) {
         Date now = new Date();

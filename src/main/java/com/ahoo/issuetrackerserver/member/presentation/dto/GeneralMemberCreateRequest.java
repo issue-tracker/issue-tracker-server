@@ -19,6 +19,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class GeneralMemberCreateRequest {
 
+    private static final String DEFAULT_S3_IMAGE_URL = "defaultS3ImageUrl";
+
     @Schema(description = "아이디", required = true, minLength = 6, maxLength = 12)
     @NotBlank(message = "아이디는 필수 입력 값입니다.")
     @Size(min = 6, max = 12, message = "아이디는 최소 6자리, 최대 12자리여야 합니다.")
@@ -49,7 +51,7 @@ public class GeneralMemberCreateRequest {
             this.password,
             this.email,
             this.nickname,
-            Optional.ofNullable(this.profileImage).orElse("defaultS3ImageUrl"),
+            Optional.ofNullable(this.profileImage).orElse(DEFAULT_S3_IMAGE_URL),
             AuthProvider.NONE,
             null);
     }
@@ -57,6 +59,6 @@ public class GeneralMemberCreateRequest {
     public static GeneralMemberCreateRequest of(String signInId, String password, String email, String nickname,
         String profileImage) {
         return new GeneralMemberCreateRequest(signInId, password, email, nickname,
-            Optional.ofNullable(profileImage).orElse("defaultS3ImageUrl"));
+            Optional.ofNullable(profileImage).orElse(DEFAULT_S3_IMAGE_URL));
     }
 }

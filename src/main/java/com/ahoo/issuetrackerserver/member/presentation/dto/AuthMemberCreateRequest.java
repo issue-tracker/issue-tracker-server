@@ -19,6 +19,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthMemberCreateRequest {
 
+    private static final String DEFAULT_S3_IMAGE_URL = "defaultS3ImageUrl";
+
     @Schema(description = "이메일", required = true, example = "ader@gmail.com")
     @NotNull(message = "이메일은 필수 입력 값입니다.")
     @Email
@@ -45,7 +47,7 @@ public class AuthMemberCreateRequest {
             null,
             this.email,
             this.nickname,
-            Optional.ofNullable(this.profileImage).orElse("defaultS3ImageUrl"),
+            Optional.ofNullable(this.profileImage).orElse(DEFAULT_S3_IMAGE_URL),
             AuthProvider.valueOf(this.authProviderType),
             this.resourceOwnerId
         );

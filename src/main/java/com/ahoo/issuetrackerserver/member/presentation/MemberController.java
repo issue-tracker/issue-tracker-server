@@ -1,11 +1,11 @@
 package com.ahoo.issuetrackerserver.member.presentation;
 
-import com.ahoo.issuetrackerserver.auth.infrastructure.jwt.AccessToken;
 import com.ahoo.issuetrackerserver.auth.application.JwtService;
-import com.ahoo.issuetrackerserver.auth.infrastructure.jwt.RefreshToken;
 import com.ahoo.issuetrackerserver.auth.infrastructure.RefreshTokenRepository;
-import com.ahoo.issuetrackerserver.common.argumentresolver.SignInMemberId;
+import com.ahoo.issuetrackerserver.auth.infrastructure.jwt.AccessToken;
 import com.ahoo.issuetrackerserver.auth.infrastructure.jwt.JwtGenerator;
+import com.ahoo.issuetrackerserver.auth.infrastructure.jwt.RefreshToken;
+import com.ahoo.issuetrackerserver.common.argumentresolver.SignInMemberId;
 import com.ahoo.issuetrackerserver.common.exception.ErrorResponse;
 import com.ahoo.issuetrackerserver.member.application.MemberService;
 import com.ahoo.issuetrackerserver.member.presentation.dto.AuthMemberCreateRequest;
@@ -38,6 +38,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/members")
 @RequiredArgsConstructor
 public class MemberController {
+
+    private static final String REFRESH_TOKEN = "refresh_token";
+    private static final String DELETE_COOKIE_PATH = "/";
+    private static final int DELETE_COOKIE_AGE = 0;
 
     private final MemberService memberService;
     private final JwtService jwtService;
@@ -127,8 +131,10 @@ public class MemberController {
             )}
     )
     @PostMapping("/signin")
-    public SignResponse signInByGeneral(@RequestBody GeneralSignInRequest generalSignInRequest, HttpServletResponse response) {
-        MemberResponse memberResponse = memberService.signInByGeneral(generalSignInRequest.getId(), generalSignInRequest.getPassword());
+    public SignResponse signInByGeneral(@RequestBody GeneralSignInRequest generalSignInRequest,
+        HttpServletResponse response) {
+        MemberResponse memberResponse = memberService.signInByGeneral(generalSignInRequest.getId(),
+            generalSignInRequest.getPassword());
 
         AccessToken accessToken = JwtGenerator.generateAccessToken(memberResponse.getId());
         RefreshToken refreshToken = JwtGenerator.generateRefreshToken(memberResponse.getId());
@@ -235,13 +241,13 @@ public class MemberController {
     )
     @RequestMapping(method = RequestMethod.HEAD, value = "/signout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void signOut(@CookieValue(value = "refresh_token") Cookie refreshTokenCookie, HttpServletResponse response) {
+    public void signOut(@CookieValue(value = REFRESH_TOKEN) Cookie refreshTokenCookie, HttpServletResponse response) {
         RefreshToken refreshToken = RefreshToken.of(refreshTokenCookie.getValue());
         jwtService.validateToken(refreshToken);
 
-        Cookie cookie = new Cookie("refresh_token", null);
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
+        Cookie cookie = new Cookie(REFRESH_TOKEN, null);
+        cookie.setMaxAge(DELETE_COOKIE_AGE);
+        cookie.setPath(DELETE_COOKIE_PATH);
         response.addCookie(cookie);
 
         refreshTokenRepository.delete(refreshToken);

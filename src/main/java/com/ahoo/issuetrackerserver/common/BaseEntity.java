@@ -1,4 +1,4 @@
-package com.ahoo.issuetrackerserver.member.domain;
+package com.ahoo.issuetrackerserver.common;
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;

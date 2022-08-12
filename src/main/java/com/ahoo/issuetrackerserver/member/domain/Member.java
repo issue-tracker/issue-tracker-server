@@ -1,6 +1,7 @@
 package com.ahoo.issuetrackerserver.member.domain;
 
 import com.ahoo.issuetrackerserver.auth.domain.AuthProvider;
+import com.ahoo.issuetrackerserver.common.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,7 +19,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@EqualsAndHashCode(exclude = {"signInId", "password", "email", "nickname", "profileImage", "resourceOwnerId"}, callSuper = false)
+@EqualsAndHashCode(exclude = {"signInId", "password", "email", "nickname", "profileImage",
+    "resourceOwnerId"}, callSuper = false)
 public class Member extends BaseEntity {
 
     @Id

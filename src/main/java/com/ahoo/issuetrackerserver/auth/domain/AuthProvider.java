@@ -12,26 +12,26 @@ public enum AuthProvider {
     GITHUB("깃허브",
         (code) -> {
             MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-            formData.add("client_id", System.getenv("GITHUB_CLIENT_ID"));
-            formData.add("client_secret", System.getenv("GITHUB_CLIENT_SECRET"));
-            formData.add("code", code);
+            formData.add(AuthProvider.CLIENT_ID, System.getenv("GITHUB_CLIENT_ID"));
+            formData.add(AuthProvider.CLIENT_SECRET, System.getenv("GITHUB_CLIENT_SECRET"));
+            formData.add(AuthProvider.CODE, code);
             return formData;
         },
         "https://github.com/login/oauth/access_token",
         "https://api.github.com/user",
         (json) -> new AuthUserResponse(
-            String.valueOf(json.getBigInteger("id")),
-            json.getString("email"),
+            String.valueOf(json.getBigInteger(AuthProvider.ID)),
+            json.getString(AuthProvider.EMAIL),
             json.getString("avatar_url")
         )
     ),
     NAVER("네이버",
         (code) -> {
             MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-            formData.add("client_id", System.getenv("NAVER_CLIENT_ID"));
-            formData.add("client_secret", System.getenv("NAVER_CLIENT_SECRET"));
-            formData.add("code", code);
-            formData.add("grant_type", "authorization_code");
+            formData.add(AuthProvider.CLIENT_ID, System.getenv("NAVER_CLIENT_ID"));
+            formData.add(AuthProvider.CLIENT_SECRET, System.getenv("NAVER_CLIENT_SECRET"));
+            formData.add(AuthProvider.CODE, code);
+            formData.add(AuthProvider.GRANT_TYPE, AuthProvider.AUTHORIZATION_CODE);
             formData.add("state", System.getenv("NAVER_STATE"));
             return formData;
         },
@@ -40,8 +40,8 @@ public enum AuthProvider {
         (json) -> {
             JSONObject response = json.getJSONObject("response");
             return new AuthUserResponse(
-                response.getString("id"),
-                response.getString("email"),
+                response.getString(AuthProvider.ID),
+                response.getString(AuthProvider.EMAIL),
                 response.getString("profile_image")
             );
         }
@@ -49,10 +49,10 @@ public enum AuthProvider {
     KAKAO("카카오",
         (code) -> {
             MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-            formData.add("client_id", System.getenv("KAKAO_CLIENT_ID"));
-            formData.add("client_secret", System.getenv("KAKAO_CLIENT_SECRET"));
-            formData.add("code", code);
-            formData.add("grant_type", "authorization_code");
+            formData.add(AuthProvider.CLIENT_ID, System.getenv("KAKAO_CLIENT_ID"));
+            formData.add(AuthProvider.CLIENT_SECRET, System.getenv("KAKAO_CLIENT_SECRET"));
+            formData.add(AuthProvider.CODE, code);
+            formData.add(AuthProvider.GRANT_TYPE, AuthProvider.AUTHORIZATION_CODE);
             return formData;
         },
         "https://kauth.kakao.com/oauth/token",
@@ -61,12 +61,20 @@ public enum AuthProvider {
             JSONObject kakaoAccount = json.getJSONObject("kakao_account");
             JSONObject profile = kakaoAccount.getJSONObject("profile");
             return new AuthUserResponse(
-                String.valueOf(json.getBigInteger("id")),
-                kakaoAccount.getString("email"),
+                String.valueOf(json.getBigInteger(AuthProvider.ID)),
+                kakaoAccount.getString(AuthProvider.EMAIL),
                 profile.getString("profile_image_url")
             );
         }
     );
+
+    private static final String CLIENT_ID = "client_id";
+    private static final String CLIENT_SECRET = "client_secret";
+    private static final String CODE = "code";
+    private static final String AUTHORIZATION_CODE = "authorization_code";
+    private static final String GRANT_TYPE = "grant_type";
+    private static final String ID = "id";
+    private static final String EMAIL = "email";
 
     private String providerName;
     private Function<String, MultiValueMap<String, String>> createAccessTokenRequest;

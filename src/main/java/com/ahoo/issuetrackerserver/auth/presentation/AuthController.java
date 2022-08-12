@@ -1,16 +1,17 @@
 package com.ahoo.issuetrackerserver.auth.presentation;
 
-import com.ahoo.issuetrackerserver.auth.infrastructure.jwt.AccessToken;
-import com.ahoo.issuetrackerserver.auth.domain.AuthProvider;
 import com.ahoo.issuetrackerserver.auth.application.AuthService;
 import com.ahoo.issuetrackerserver.auth.application.JwtService;
-import com.ahoo.issuetrackerserver.auth.infrastructure.jwt.RefreshToken;
+import com.ahoo.issuetrackerserver.auth.domain.AuthProvider;
 import com.ahoo.issuetrackerserver.auth.infrastructure.RefreshTokenRepository;
-import com.ahoo.issuetrackerserver.common.argumentresolver.SignInMemberId;
+import com.ahoo.issuetrackerserver.auth.infrastructure.jwt.AccessToken;
+import com.ahoo.issuetrackerserver.auth.infrastructure.jwt.JwtGenerator;
+import com.ahoo.issuetrackerserver.auth.infrastructure.jwt.RefreshToken;
 import com.ahoo.issuetrackerserver.auth.presentation.dto.AuthAccessToken;
 import com.ahoo.issuetrackerserver.auth.presentation.dto.AuthResponse;
 import com.ahoo.issuetrackerserver.auth.presentation.dto.AuthUserResponse;
-import com.ahoo.issuetrackerserver.auth.infrastructure.jwt.JwtGenerator;
+import com.ahoo.issuetrackerserver.common.argumentresolver.SignInMemberId;
+import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
 import com.ahoo.issuetrackerserver.common.exception.ErrorResponse;
 import com.ahoo.issuetrackerserver.common.exception.UnAuthorizedException;
 import com.ahoo.issuetrackerserver.member.application.MemberService;
@@ -71,7 +72,7 @@ public class AuthController {
             AuthAccessToken accessTokenResponse = authService.requestAccessToken(authProvider, code);
             authUserResponse = authService.requestAuthUser(authProvider, accessTokenResponse);
         } catch (WebClientResponseException e) {
-            throw new UnAuthorizedException("code가 유효하지 않습니다.", e);
+            throw new UnAuthorizedException(ErrorMessage.INVALID_CODE, e);
         }
 
         MemberResponse authMember = authService.findAuthMember(authProvider, authUserResponse.getResourceOwnerId());
@@ -88,10 +89,12 @@ public class AuthController {
     }
 
     @GetMapping("/reissue")
-    public AuthResponse reissueToken(@CookieValue(value = "refresh_token") Cookie refreshTokenCookie, HttpServletResponse response) {
+    public AuthResponse reissueToken(@CookieValue(value = "refresh_token") Cookie refreshTokenCookie,
+        HttpServletResponse response) {
         RefreshToken refreshToken = RefreshToken.of(refreshTokenCookie.getValue());
 
-        refreshTokenRepository.findById(refreshToken.getToken()).orElseThrow(() -> new UnAuthorizedException("유효하지 않은 refresh_token입니다."));
+        refreshTokenRepository.findById(refreshToken.getToken())
+            .orElseThrow(() -> new UnAuthorizedException(ErrorMessage.INVALID_REFRESH_TOKEN));
 
         Long memberId = jwtService.extractMemberId(refreshToken);
         MemberResponse memberResponse = memberService.findById(memberId);

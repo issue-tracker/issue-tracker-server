@@ -2,6 +2,7 @@ package com.ahoo.issuetrackerserver.common.argumentresolver;
 
 import com.ahoo.issuetrackerserver.auth.application.JwtService;
 import com.ahoo.issuetrackerserver.auth.infrastructure.jwt.AccessToken;
+import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
 import com.ahoo.issuetrackerserver.common.exception.UnAuthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -15,6 +16,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 public class SignInMemberIdArgumentResolver implements HandlerMethodArgumentResolver {
 
+    private static final String AUTHORIZATION_HEADER_NAME = "Authorization";
     private final JwtService jwtService;
 
     @Override
@@ -26,9 +28,9 @@ public class SignInMemberIdArgumentResolver implements HandlerMethodArgumentReso
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
         NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
-        String authorizationHeader = webRequest.getHeader("Authorization");
+        String authorizationHeader = webRequest.getHeader(AUTHORIZATION_HEADER_NAME);
         if (authorizationHeader == null) {
-            throw new UnAuthorizedException("요청에 Authorization 헤더가 존재하지 않습니다.");
+            throw new UnAuthorizedException(ErrorMessage.NO_AUTHORIZATION_HEADER);
         }
 
         AccessToken accessToken = AccessToken.headerToAccessToken(authorizationHeader);

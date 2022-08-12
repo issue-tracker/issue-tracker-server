@@ -2,6 +2,7 @@ package com.ahoo.issuetrackerserver.member.application;
 
 import com.ahoo.issuetrackerserver.auth.domain.AuthProvider;
 import com.ahoo.issuetrackerserver.common.exception.DuplicateMemberException;
+import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
 import com.ahoo.issuetrackerserver.common.exception.IllegalAuthProviderTypeException;
 import com.ahoo.issuetrackerserver.member.domain.Member;
 import com.ahoo.issuetrackerserver.member.infrastructure.MemberRepository;
@@ -42,10 +43,11 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberResponse signInByGeneral(String id, String password) {
-        Member findMember = memberRepository.findBySignInId(id).orElseThrow(() -> new IllegalArgumentException("로그인에 실패했습니다. 아이디와 비밀번호를 다시 확인해주세요."));
+        Member findMember = memberRepository.findBySignInId(id)
+            .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.SIGN_IN_FAIL));
 
         if (!findMember.isCorrectPassword(password)) {
-            throw new IllegalArgumentException("로그인에 실패했습니다. 아이디와 비밀번호를 다시 확인해주세요.");
+            throw new IllegalArgumentException(ErrorMessage.SIGN_IN_FAIL);
         }
 
         return MemberResponse.from(findMember);
@@ -70,11 +72,11 @@ public class MemberService {
         validateDuplicatedEmail(generalMemberCreateRequest.getEmail());
 
         if (isDuplicatedSignInId(generalMemberCreateRequest.getSignInId())) {
-            throw new DuplicateMemberException("중복되는 아이디가 존재합니다.");
+            throw new DuplicateMemberException(ErrorMessage.DUPLICATED_ID);
         }
 
         if (isDuplicatedNickname(generalMemberCreateRequest.getNickname())) {
-            throw new DuplicateMemberException("중복되는 닉네임이 존재합니다.");
+            throw new DuplicateMemberException(ErrorMessage.DUPLICATED_NICKNAME);
         }
     }
 
@@ -82,7 +84,7 @@ public class MemberService {
         validateDuplicatedEmail(authMemberCreateRequest.getEmail());
 
         if (isDuplicatedNickname(authMemberCreateRequest.getNickname())) {
-            throw new DuplicateMemberException("중복되는 닉네임이 존재합니다.");
+            throw new DuplicateMemberException(ErrorMessage.DUPLICATED_NICKNAME);
         }
     }
 
@@ -90,7 +92,7 @@ public class MemberService {
     public void validateDuplicatedEmail(String email) {
         memberRepository.findByEmail(email).ifPresent(m -> {
             String authProviderName = m.getAuthProviderType().getProviderName();
-            throw new DuplicateMemberException(authProviderName + "(으)로 이미 가입된 이메일입니다.");
+            throw new DuplicateMemberException(authProviderName + ErrorMessage.DUPLICATED_EMAIL);
         });
     }
 
@@ -108,7 +110,8 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberResponse findById(Long id) {
-        Member findMember = memberRepository.findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다."));
+        Member findMember = memberRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MEMBER));
         return MemberResponse.from(findMember);
     }
 }

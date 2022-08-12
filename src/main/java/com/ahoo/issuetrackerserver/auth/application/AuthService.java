@@ -1,11 +1,12 @@
 package com.ahoo.issuetrackerserver.auth.application;
 
-import com.ahoo.issuetrackerserver.auth.infrastructure.jwt.AccessToken;
 import com.ahoo.issuetrackerserver.auth.domain.AuthProvider;
+import com.ahoo.issuetrackerserver.auth.infrastructure.jwt.AccessToken;
 import com.ahoo.issuetrackerserver.auth.presentation.dto.AuthAccessToken;
 import com.ahoo.issuetrackerserver.auth.presentation.dto.AuthResponse;
 import com.ahoo.issuetrackerserver.auth.presentation.dto.AuthUserResponse;
 import com.ahoo.issuetrackerserver.auth.presentation.dto.GithubEmailResponse;
+import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
 import com.ahoo.issuetrackerserver.common.exception.EssentialFieldDisagreeException;
 import com.ahoo.issuetrackerserver.member.application.MemberService;
 import com.ahoo.issuetrackerserver.member.presentation.dto.MemberResponse;
@@ -27,6 +28,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthService {
+
+    private static final String EMAIL = "email";
 
     private final WebClient webClient;
     private final MemberService memberService;
@@ -56,7 +59,7 @@ public class AuthService {
             })
             .block());
 
-        if (authProvider == AuthProvider.GITHUB && !jsonResponse.has("email")) {
+        if (authProvider == AuthProvider.GITHUB && !jsonResponse.has(EMAIL)) {
             String email = Objects.requireNonNull(webClient.get()
                     .uri("https://api.github.com/user/emails")
                     .header(HttpHeaders.AUTHORIZATION, accessToken.convertAuthorizationHeader())
@@ -67,13 +70,13 @@ public class AuthService {
                     .filter(GithubEmailResponse::getPrimary)
                     .blockFirst())
                 .getEmail();
-            jsonResponse.put("email", email);
+            jsonResponse.put(EMAIL, email);
         }
 
         try {
             return authProvider.parseAuthUserResponse(jsonResponse);
         } catch (JSONException e) {
-            throw new EssentialFieldDisagreeException("필수 제공 동의 항목을 동의하지 않았습니다.");
+            throw new EssentialFieldDisagreeException(ErrorMessage.ESSENTIAL_FIELD_DISAGREE);
         }
     }
 
