@@ -1,6 +1,6 @@
 package com.ahoo.issuetrackerserver.config;
 
-import com.ahoo.issuetrackerserver.auth.SignInMemberIdArgumentResolver;
+import com.ahoo.issuetrackerserver.common.argumentresolver.SignInMemberIdArgumentResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
