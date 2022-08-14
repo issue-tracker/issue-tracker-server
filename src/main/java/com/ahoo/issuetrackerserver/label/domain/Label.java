@@ -21,12 +21,22 @@ public class Label {
     @Column(name = "label_id")
     private Long id;
 
+    @Column(nullable = false)
     private String title;
 
-    private String colorCode;
+    @Column(nullable = false)
+    private String backgroundColorCode;
 
     private String description;
 
+    @Column(nullable = false)
+    private TextBrightness textBrightness;
+
     //TODO
     // IssueLabel List
+
+    public static Label of(String title, String backgroundColorCode, String description,
+        TextBrightness textBrightness) {
+        return new Label(null, title, backgroundColorCode, description, textBrightness);
+    }
 }
