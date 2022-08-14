@@ -6,7 +6,7 @@ import com.ahoo.issuetrackerserver.common.exception.NotExistsLabelException;
 import com.ahoo.issuetrackerserver.label.domain.Label;
 import com.ahoo.issuetrackerserver.label.domain.TextBrightness;
 import com.ahoo.issuetrackerserver.label.infrastructure.LabelRepository;
-import com.ahoo.issuetrackerserver.label.presentation.dto.LabelsResponse;
+import com.ahoo.issuetrackerserver.label.presentation.dto.LabelResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +21,9 @@ public class LabelService {
     private final LabelRepository labelRepository;
 
     @Transactional(readOnly = true)
-    public List<LabelsResponse> findAll() {
+    public List<LabelResponse> findAll() {
         return labelRepository.findAll().stream()
-            .map(LabelsResponse::from)
+            .map(LabelResponse::from)
             .collect(Collectors.toUnmodifiableList());
     }
 
@@ -47,5 +47,13 @@ public class LabelService {
             throw new NotExistsLabelException(ErrorMessage.NOT_EXISTS_LABEL);
         }
 
+    }
+
+    @Transactional(readOnly = true)
+    public LabelResponse findById(Long id) {
+        Label findLabel = labelRepository.findById(id)
+            .orElseThrow(() -> new NotExistsLabelException(ErrorMessage.NOT_EXISTS_LABEL));
+
+        return LabelResponse.from(findLabel);
     }
 }

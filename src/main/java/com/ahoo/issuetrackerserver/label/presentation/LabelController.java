@@ -1,8 +1,9 @@
 package com.ahoo.issuetrackerserver.label.presentation;
 
+import com.ahoo.issuetrackerserver.common.exception.ErrorResponse;
 import com.ahoo.issuetrackerserver.label.application.LabelService;
 import com.ahoo.issuetrackerserver.label.presentation.dto.LabelCreateRequest;
-import com.ahoo.issuetrackerserver.label.presentation.dto.LabelsResponse;
+import com.ahoo.issuetrackerserver.label.presentation.dto.LabelResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,7 +29,6 @@ public class LabelController {
     private final LabelService labelService;
 
     //TODO
-    // 라벨 조회 기능 구현
     // 라벨 수정 기능 구현
 
     @Operation(summary = "라벨 리스트 조회",
@@ -39,13 +39,13 @@ public class LabelController {
                 content = {
                     @Content(
                         mediaType = "application/json",
-                        array = @ArraySchema(schema = @Schema(implementation = LabelsResponse.class))
+                        array = @ArraySchema(schema = @Schema(implementation = LabelResponse.class))
                     )
                 })
         }
     )
     @GetMapping
-    public List<LabelsResponse> getLabels() {
+    public List<LabelResponse> getLabels() {
         return labelService.findAll();
     }
 
@@ -56,7 +56,13 @@ public class LabelController {
                 description = "라벨 등록 성공"
             ),
             @ApiResponse(responseCode = "400",
-                description = "라벨 등록 실패"
+                description = "라벨 등록 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
             )
         }
     )
@@ -74,13 +80,46 @@ public class LabelController {
                 description = "라벨 삭제 성공"
             ),
             @ApiResponse(responseCode = "400",
-                description = "라벨 삭제 실패"
+                description = "라벨 삭제 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
             )
         }
     )
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         labelService.deleteById(id);
+    }
+
+    @Operation(summary = "라벨 상세 조회",
+        description = "라벨을 조회합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "라벨 조회 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = LabelResponse.class)
+                    )
+                }),
+            @ApiResponse(responseCode = "400",
+                description = "라벨 조회 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )
+        }
+    )
+    @GetMapping("/{id}")
+    public LabelResponse getLabel(@PathVariable Long id) {
+        return labelService.findById(id);
     }
 
 }

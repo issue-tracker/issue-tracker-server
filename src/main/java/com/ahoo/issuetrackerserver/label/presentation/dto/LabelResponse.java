@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class LabelsResponse {
+public class LabelResponse {
 
     private Long id;
     private String title;
@@ -18,8 +18,8 @@ public class LabelsResponse {
     private String description;
     private TextBrightness textBrightness;
 
-    public static LabelsResponse from(Label label) {
-        return new LabelsResponse(
+    public static LabelResponse from(Label label) {
+        return new LabelResponse(
             label.getId(),
             label.getTitle(),
             label.getBackgroundColorCode(),
