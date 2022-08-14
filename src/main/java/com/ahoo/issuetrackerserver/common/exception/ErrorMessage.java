@@ -24,4 +24,5 @@ public class ErrorMessage {
 
     // label
     public static final String DUPLICATED_LABEL_TITLE = "중복되는 라벨 이름이 존재합니다.";
+    public static final String NOT_EXISTS_LABEL = "해당하는 라벨이 없습니다.";
 }

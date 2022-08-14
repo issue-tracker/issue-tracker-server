@@ -12,13 +12,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class LabelsResponse {
 
+    private Long id;
     private String title;
     private String colorCode;
     private String description;
     private TextBrightness textBrightness;
 
     public static LabelsResponse from(Label label) {
-        return new LabelsResponse(label.getTitle(), label.getBackgroundColorCode(), label.getDescription(),
+        return new LabelsResponse(
+            label.getId(),
+            label.getTitle(),
+            label.getBackgroundColorCode(),
+            label.getDescription(),
             label.getTextBrightness());
     }
 }
