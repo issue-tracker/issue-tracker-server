@@ -30,6 +30,4 @@ public class Milestone {
 	@Column(nullable = false)
 	private boolean isClosed;
 
-	@Column(nullable = false)
-	private boolean isDeleted;
 }
