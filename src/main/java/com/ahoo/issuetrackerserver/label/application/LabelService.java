@@ -7,6 +7,7 @@ import com.ahoo.issuetrackerserver.label.domain.Label;
 import com.ahoo.issuetrackerserver.label.domain.TextBrightness;
 import com.ahoo.issuetrackerserver.label.infrastructure.LabelRepository;
 import com.ahoo.issuetrackerserver.label.presentation.dto.LabelResponse;
+import com.ahoo.issuetrackerserver.label.presentation.dto.LabelUpdateRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -56,4 +57,19 @@ public class LabelService {
 
         return LabelResponse.from(findLabel);
     }
+
+    @Transactional
+    public void update(LabelUpdateRequest labelUpdateRequest, Long id) {
+        if (isExistsTitle(labelUpdateRequest.getTitle())) {
+            throw new DuplicatedLabelTitleException(ErrorMessage.DUPLICATED_LABEL_TITLE);
+        }
+
+        Label findLabel = labelRepository.findById(id)
+            .orElseThrow(() -> new NotExistsLabelException(ErrorMessage.NOT_EXISTS_LABEL));
+        labelUpdateRequest.updateRequest(findLabel);
+
+        findLabel.update(labelUpdateRequest.getTitle(), labelUpdateRequest.getBackgroundColorCode(),
+            labelUpdateRequest.getDescription(), labelUpdateRequest.getTextBrightness());
+    }
+
 }

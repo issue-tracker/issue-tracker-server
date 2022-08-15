@@ -1,5 +1,6 @@
 package com.ahoo.issuetrackerserver.label.domain;
 
+import com.ahoo.issuetrackerserver.common.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Label {
+public class Label extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,5 +39,13 @@ public class Label {
     public static Label of(String title, String backgroundColorCode, String description,
         TextBrightness textBrightness) {
         return new Label(null, title, backgroundColorCode, description, textBrightness);
+    }
+
+    public void update(String title, String backgroundColorCode, String description,
+        TextBrightness textBrightness) {
+        this.title = title;
+        this.backgroundColorCode = backgroundColorCode;
+        this.description = description;
+        this.textBrightness = textBrightness;
     }
 }
