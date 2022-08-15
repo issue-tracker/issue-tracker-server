@@ -141,4 +141,31 @@ public class MilestoneController {
 		@Valid @RequestBody UpdateMilestoneRequest updateMilestoneRequest) {
 		return milestoneService.update(id, updateMilestoneRequest);
 	}
+
+	@Operation(summary = "마일스톤 상태 변경(toggle)",
+		description = "마일스톤의 상태를 변경(toggle)합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200",
+				description = "마일스톤 상태 변경(toggle) 성공",
+				content = {
+					@Content(
+						mediaType = "application/json",
+						schema = @Schema(implementation = MilestoneResponse.class)
+					)
+				}),
+			@ApiResponse(responseCode = "400",
+				description = "마일스톤 상태 변경(toggle) 실패",
+				content = {
+					@Content(
+						mediaType = "application/json",
+						schema = @Schema(implementation = ErrorResponse.class)
+					)
+				}
+			)}
+	)
+	@PatchMapping("/{id}/status")
+	@ResponseStatus(HttpStatus.OK)
+	public MilestoneResponse toggleMilestoneStatus(@PathVariable Long id) {
+		return milestoneService.toggleStatus(id);
+	}
 }

@@ -57,4 +57,12 @@ public class MilestoneService {
 		);
 		return MilestoneResponse.from(milestone);
 	}
+
+	@Transactional
+	public MilestoneResponse toggleStatus(Long id) {
+		Milestone milestone = milestoneRepository.findById(id)
+			.orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MILESTONE));
+		milestone.toggleStatus();
+		return MilestoneResponse.from(milestone);
+	}
 }

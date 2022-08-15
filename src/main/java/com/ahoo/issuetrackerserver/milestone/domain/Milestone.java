@@ -46,4 +46,8 @@ public class Milestone {
 		this.description = description;
 		this.dueDate = dueDate;
 	}
+
+	public void toggleStatus() {
+		this.isClosed = !this.isClosed;
+	}
 }
