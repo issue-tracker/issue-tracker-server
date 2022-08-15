@@ -4,6 +4,8 @@ import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
 import com.ahoo.issuetrackerserver.milestone.domain.Milestone;
 import com.ahoo.issuetrackerserver.milestone.infrastructure.MilestoneRepository;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestoneResponse;
+import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestonesResponse;
+import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,5 +20,15 @@ public class MilestoneService {
 		Milestone milestone = milestoneRepository.findById(id)
 			.orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MILESTONE));
 		return MilestoneResponse.from(milestone);
+	}
+
+	public MilestonesResponse findAll(Boolean isClosed) {
+		List<Milestone> milestones;
+		if (isClosed == null) {
+			milestones = milestoneRepository.findAll();
+		} else {
+			milestones = milestoneRepository.findAllByIsClosed(isClosed);
+		}
+		return MilestonesResponse.from(milestones);
 	}
 }
