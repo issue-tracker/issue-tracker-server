@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,12 +21,14 @@ public class MilestoneService {
 
 	private final MilestoneRepository milestoneRepository;
 
+	@Transactional(readOnly = true)
 	public MilestoneResponse findOne(Long id) {
 		Milestone milestone = milestoneRepository.findById(id)
 			.orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MILESTONE));
 		return MilestoneResponse.from(milestone);
 	}
 
+	@Transactional(readOnly = true)
 	public MilestonesResponse findAll(Boolean isClosed) {
 		List<Milestone> milestones;
 		if (isClosed == null) {
@@ -36,12 +39,14 @@ public class MilestoneService {
 		return MilestonesResponse.from(milestones);
 	}
 
+	@Transactional
 	public MilestoneResponse save(AddMilestoneRequest addMilestoneRequest) {
 		Milestone newMilestone = addMilestoneRequest.toEntity();
 		milestoneRepository.save(newMilestone);
 		return MilestoneResponse.from(newMilestone);
 	}
 
+	@Transactional
 	public MilestoneResponse update(Long id, UpdateMilestoneRequest updateMilestoneRequest) {
 		Milestone milestone = milestoneRepository.findById(id)
 			.orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MILESTONE));
