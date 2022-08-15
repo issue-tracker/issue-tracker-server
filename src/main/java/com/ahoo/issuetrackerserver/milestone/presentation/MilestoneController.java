@@ -5,6 +5,7 @@ import com.ahoo.issuetrackerserver.milestone.application.MilestoneService;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.AddMilestoneRequest;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestoneResponse;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestonesResponse;
+import com.ahoo.issuetrackerserver.milestone.presentation.dto.UpdateMilestoneRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,6 +15,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -109,5 +111,34 @@ public class MilestoneController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public MilestoneResponse addMilestone(@Valid @RequestBody AddMilestoneRequest addMilestoneRequest) {
 		return milestoneService.save(addMilestoneRequest);
+	}
+
+	@Operation(summary = "마일스톤 수정",
+		description = "마일스톤을 수정합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200",
+				description = "마일스톤 수정 성공",
+				content = {
+					@Content(
+						mediaType = "application/json",
+						schema = @Schema(implementation = MilestoneResponse.class)
+					)
+				}),
+			@ApiResponse(responseCode = "400",
+				description = "마일스톤 수정 실패",
+				content = {
+					@Content(
+						mediaType = "application/json",
+						schema = @Schema(implementation = ErrorResponse.class)
+					)
+				}
+			)}
+	)
+	@PatchMapping("/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	public MilestoneResponse updateMilestone(
+		@PathVariable Long id,
+		@Valid @RequestBody UpdateMilestoneRequest updateMilestoneRequest) {
+		return milestoneService.update(id, updateMilestoneRequest);
 	}
 }

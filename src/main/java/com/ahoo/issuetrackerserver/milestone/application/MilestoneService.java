@@ -6,6 +6,9 @@ import com.ahoo.issuetrackerserver.milestone.infrastructure.MilestoneRepository;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.AddMilestoneRequest;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestoneResponse;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestonesResponse;
+import com.ahoo.issuetrackerserver.milestone.presentation.dto.UpdateMilestoneRequest;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
@@ -37,5 +40,16 @@ public class MilestoneService {
 		Milestone newMilestone = addMilestoneRequest.toEntity();
 		milestoneRepository.save(newMilestone);
 		return MilestoneResponse.from(newMilestone);
+	}
+
+	public MilestoneResponse update(Long id, UpdateMilestoneRequest updateMilestoneRequest) {
+		Milestone milestone = milestoneRepository.findById(id)
+			.orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MILESTONE));
+		milestone.update(
+			updateMilestoneRequest.getTitle(),
+			updateMilestoneRequest.getDescription(),
+			LocalDate.parse(updateMilestoneRequest.getDueDate(), DateTimeFormatter.ISO_LOCAL_DATE)
+		);
+		return MilestoneResponse.from(milestone);
 	}
 }
