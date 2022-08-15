@@ -65,4 +65,12 @@ public class MilestoneService {
 		milestone.toggleStatus();
 		return MilestoneResponse.from(milestone);
 	}
+
+	@Transactional
+	public void delete(Long id) {
+		//TODO: 이슈 도메인 개발 시, 연관관계 끊어주는 로직 추가
+		Milestone milestone = milestoneRepository.findById(id)
+			.orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MILESTONE));
+		milestoneRepository.delete(milestone);
+	}
 }

@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -167,5 +169,27 @@ public class MilestoneController {
 	@ResponseStatus(HttpStatus.OK)
 	public MilestoneResponse toggleMilestoneStatus(@PathVariable Long id) {
 		return milestoneService.toggleStatus(id);
+	}
+
+	@Operation(summary = "마일스톤 삭제",
+		description = "마일스톤을 삭제합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200",
+				description = "마일스톤 삭제 성공"),
+			@ApiResponse(responseCode = "400",
+				description = "마일스톤 삭제 실패",
+				content = {
+					@Content(
+						mediaType = "application/json",
+						schema = @Schema(implementation = ErrorResponse.class)
+					)
+				}
+			)}
+	)
+	@DeleteMapping("/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
+		milestoneService.delete(id);
+		return ResponseEntity.ok().build();
 	}
 }
