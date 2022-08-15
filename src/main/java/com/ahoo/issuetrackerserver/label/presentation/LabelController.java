@@ -30,9 +30,6 @@ public class LabelController {
 
     private final LabelService labelService;
 
-    //TODO
-    // 라벨 수정 기능 구현
-
     @Operation(summary = "라벨 리스트 조회",
         description = "모든 라벨을 조회합니다.",
         responses = {
