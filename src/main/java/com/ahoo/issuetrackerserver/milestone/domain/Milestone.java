@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Milestone {
 
 	@Id
@@ -30,4 +31,13 @@ public class Milestone {
 	@Column(nullable = false)
 	private boolean isClosed;
 
+	public static Milestone of(String title, String description, LocalDate dueDate) {
+		return new Milestone(
+			null,
+			title,
+			description,
+			dueDate,
+			false
+		);
+	}
 }

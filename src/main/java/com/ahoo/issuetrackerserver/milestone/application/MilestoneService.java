@@ -3,6 +3,7 @@ package com.ahoo.issuetrackerserver.milestone.application;
 import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
 import com.ahoo.issuetrackerserver.milestone.domain.Milestone;
 import com.ahoo.issuetrackerserver.milestone.infrastructure.MilestoneRepository;
+import com.ahoo.issuetrackerserver.milestone.presentation.dto.AddMilestoneRequest;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestoneResponse;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestonesResponse;
 import java.util.List;
@@ -30,5 +31,11 @@ public class MilestoneService {
 			milestones = milestoneRepository.findAllByIsClosed(isClosed);
 		}
 		return MilestonesResponse.from(milestones);
+	}
+
+	public MilestoneResponse save(AddMilestoneRequest addMilestoneRequest) {
+		Milestone newMilestone = addMilestoneRequest.toEntity();
+		milestoneRepository.save(newMilestone);
+		return MilestoneResponse.from(newMilestone);
 	}
 }

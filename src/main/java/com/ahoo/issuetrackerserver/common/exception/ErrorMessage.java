@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ErrorMessage {
+    // common
+    public static final String INVALID_DATE_FORMAT = "유효하지 않은 날짜 형식(YYYY-MM-DD)입니다.";
 
     // auth
     public static final String ESSENTIAL_FIELD_DISAGREE = "필수 제공 동의 항목을 동의하지 않았습니다.";
