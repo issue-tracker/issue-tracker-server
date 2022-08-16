@@ -7,8 +7,6 @@ import com.ahoo.issuetrackerserver.milestone.presentation.dto.AddMilestoneReques
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestoneResponse;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestonesResponse;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.UpdateMilestoneRequest;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +47,7 @@ public class MilestoneService {
 		milestone.update(
 			updateMilestoneRequest.getTitle(),
 			updateMilestoneRequest.getDescription(),
-			LocalDate.parse(updateMilestoneRequest.getDueDate(), DateTimeFormatter.ISO_LOCAL_DATE)
+			updateMilestoneRequest.getDueDate()
 		);
 		return MilestoneResponse.from(milestone);
 	}
