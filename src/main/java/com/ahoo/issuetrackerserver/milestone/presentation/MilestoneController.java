@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -56,7 +55,6 @@ public class MilestoneController {
 			)}
 	)
 	@GetMapping("/{id}")
-	@ResponseStatus(HttpStatus.OK)
 	public MilestoneResponse milestone(@PathVariable Long id) {
 		return milestoneService.findOne(id);
 	}
@@ -83,7 +81,6 @@ public class MilestoneController {
 			)}
 	)
 	@GetMapping
-	@ResponseStatus(HttpStatus.OK)
 	public MilestonesResponse milestones() {
 		return milestoneService.findAll();
 	}
@@ -137,7 +134,6 @@ public class MilestoneController {
 			)}
 	)
 	@PatchMapping("/{id}")
-	@ResponseStatus(HttpStatus.OK)
 	public MilestoneResponse updateMilestone(
 		@PathVariable Long id,
 		@Valid @RequestBody UpdateMilestoneRequest updateMilestoneRequest) {
@@ -166,7 +162,6 @@ public class MilestoneController {
 			)}
 	)
 	@PatchMapping("/{id}/status")
-	@ResponseStatus(HttpStatus.OK)
 	public MilestoneResponse toggleMilestoneStatus(@PathVariable Long id) {
 		return milestoneService.toggleStatus(id);
 	}
@@ -187,7 +182,6 @@ public class MilestoneController {
 			)}
 	)
 	@DeleteMapping("/{id}")
-	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		milestoneService.delete(id);
 		return ResponseEntity.ok().build();
