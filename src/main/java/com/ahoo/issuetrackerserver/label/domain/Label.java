@@ -31,21 +31,21 @@ public class Label extends BaseEntity {
     private String description;
 
     @Column(nullable = false)
-    private TextBrightness textBrightness;
+    private TextColor textColor;
 
     //TODO
     // IssueLabel List
 
     public static Label of(String title, String backgroundColorCode, String description,
-        TextBrightness textBrightness) {
-        return new Label(null, title, backgroundColorCode, description, textBrightness);
+        TextColor textColor) {
+        return new Label(null, title, backgroundColorCode, description, textColor);
     }
 
     public void update(String title, String backgroundColorCode, String description,
-        TextBrightness textBrightness) {
+        TextColor textColor) {
         this.title = title;
         this.backgroundColorCode = backgroundColorCode;
         this.description = description;
-        this.textBrightness = textBrightness;
+        this.textColor = textColor;
     }
 }

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -51,8 +52,14 @@ public class LabelController {
     @Operation(summary = "라벨 등록",
         description = "라벨을 등록합니다.",
         responses = {
-            @ApiResponse(responseCode = "204",
-                description = "라벨 등록 성공"
+            @ApiResponse(responseCode = "201",
+                description = "라벨 등록 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = LabelResponse.class)
+                    )
+                }
             ),
             @ApiResponse(responseCode = "400",
                 description = "라벨 등록 실패",
@@ -66,10 +73,13 @@ public class LabelController {
         }
     )
     @PostMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void create(@RequestBody LabelCreateRequest labelCreateRequest) {
-        labelService.save(labelCreateRequest.getTitle(), labelCreateRequest.getBackgroundColorCode(),
-            labelCreateRequest.getDescription(), labelCreateRequest.getTextBrightness());
+    @ResponseStatus(HttpStatus.CREATED)
+    public LabelResponse create(@Valid @RequestBody LabelCreateRequest labelCreateRequest) {
+        LabelResponse labelResponse = labelService.save(labelCreateRequest.getTitle(),
+            labelCreateRequest.getBackgroundColorCode(),
+            labelCreateRequest.getDescription(), labelCreateRequest.getTextColor());
+
+        return labelResponse;
     }
 
     @Operation(summary = "라벨 삭제",
@@ -124,8 +134,14 @@ public class LabelController {
     @Operation(summary = "라벨 수정",
         description = "라벨을 수정합니다.",
         responses = {
-            @ApiResponse(responseCode = "204",
-                description = "라벨 수정 성공"
+            @ApiResponse(responseCode = "200",
+                description = "라벨 수정 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = LabelResponse.class)
+                    )
+                }
             ),
             @ApiResponse(responseCode = "400",
                 description = "라벨 수정 실패",
@@ -139,9 +155,8 @@ public class LabelController {
         }
     )
     @PatchMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestBody LabelUpdateRequest labelUpdateRequest, @PathVariable Long id) {
-        labelService.update(labelUpdateRequest, id);
+    public LabelResponse update(@Valid @RequestBody LabelUpdateRequest labelUpdateRequest, @PathVariable Long id) {
+        return labelService.update(labelUpdateRequest, id);
     }
 
 }

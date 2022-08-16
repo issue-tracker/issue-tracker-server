@@ -2,13 +2,13 @@ package com.ahoo.issuetrackerserver.label.application;
 
 import com.ahoo.issuetrackerserver.common.exception.DuplicatedLabelTitleException;
 import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
-import com.ahoo.issuetrackerserver.common.exception.NotExistsLabelException;
 import com.ahoo.issuetrackerserver.label.domain.Label;
-import com.ahoo.issuetrackerserver.label.domain.TextBrightness;
+import com.ahoo.issuetrackerserver.label.domain.TextColor;
 import com.ahoo.issuetrackerserver.label.infrastructure.LabelRepository;
 import com.ahoo.issuetrackerserver.label.presentation.dto.LabelResponse;
 import com.ahoo.issuetrackerserver.label.presentation.dto.LabelUpdateRequest;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -29,11 +29,13 @@ public class LabelService {
     }
 
     @Transactional
-    public void save(String title, String colorCode, String description, TextBrightness textBrightness) {
+    public LabelResponse save(String title, String colorCode, String description, TextColor textColor) {
         if (isExistsTitle(title)) {
             throw new DuplicatedLabelTitleException(ErrorMessage.DUPLICATED_LABEL_TITLE);
         }
-        labelRepository.save(Label.of(title, colorCode, description, textBrightness));
+        Label savedLabel = labelRepository.save(Label.of(title, colorCode, description, textColor));
+
+        return LabelResponse.from(savedLabel);
     }
 
     private boolean isExistsTitle(String title) {
@@ -45,7 +47,7 @@ public class LabelService {
         try {
             labelRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotExistsLabelException(ErrorMessage.NOT_EXISTS_LABEL);
+            throw new NoSuchElementException(ErrorMessage.NOT_EXISTS_LABEL);
         }
 
     }
@@ -53,23 +55,24 @@ public class LabelService {
     @Transactional(readOnly = true)
     public LabelResponse findById(Long id) {
         Label findLabel = labelRepository.findById(id)
-            .orElseThrow(() -> new NotExistsLabelException(ErrorMessage.NOT_EXISTS_LABEL));
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_LABEL));
 
         return LabelResponse.from(findLabel);
     }
 
     @Transactional
-    public void update(LabelUpdateRequest labelUpdateRequest, Long id) {
+    public LabelResponse update(LabelUpdateRequest labelUpdateRequest, Long id) {
+        Label findLabel = labelRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_LABEL));
+
         if (isExistsTitle(labelUpdateRequest.getTitle())) {
             throw new DuplicatedLabelTitleException(ErrorMessage.DUPLICATED_LABEL_TITLE);
         }
 
-        Label findLabel = labelRepository.findById(id)
-            .orElseThrow(() -> new NotExistsLabelException(ErrorMessage.NOT_EXISTS_LABEL));
-        labelUpdateRequest.updateRequest(findLabel);
-
         findLabel.update(labelUpdateRequest.getTitle(), labelUpdateRequest.getBackgroundColorCode(),
-            labelUpdateRequest.getDescription(), labelUpdateRequest.getTextBrightness());
+            labelUpdateRequest.getDescription(), labelUpdateRequest.getTextColor());
+
+        return LabelResponse.from(findLabel);
     }
 
 }

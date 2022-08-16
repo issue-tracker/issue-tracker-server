@@ -1,26 +1,33 @@
 package com.ahoo.issuetrackerserver.label.presentation.dto;
 
-import com.ahoo.issuetrackerserver.label.domain.Label;
-import com.ahoo.issuetrackerserver.label.domain.TextBrightness;
-import java.util.Optional;
+import com.ahoo.issuetrackerserver.label.domain.TextColor;
+import io.swagger.v3.oas.annotations.media.Schema;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Schema(description = "라벨 수정 요청")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class LabelUpdateRequest {
 
+    @Schema(description = "라벨 제목")
+    @NotBlank
     private String title;
-    private String backgroundColorCode;
-    private String description;
-    private TextBrightness textBrightness;
 
-    public void updateRequest(Label label) {
-        this.title = Optional.ofNullable(this.title).orElseGet(label::getTitle);
-        this.backgroundColorCode = Optional.ofNullable(this.backgroundColorCode)
-            .orElseGet(label::getBackgroundColorCode);
-        this.description = Optional.ofNullable(this.description).orElseGet(label::getDescription);
-        this.textBrightness = Optional.ofNullable(this.textBrightness).orElseGet(label::getTextBrightness);
-    }
+    @Schema(description = "라벨 배경색 코드")
+    @NotBlank
+    @Pattern(regexp = "^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$", message = "유효하지 않은 색상코드입니다.")
+    private String backgroundColorCode;
+
+    @Schema(description = "라벨 설명")
+    private String description;
+
+    @Schema(description = "라벨 글자색")
+    @NotNull
+    private TextColor textColor;
+
 }
