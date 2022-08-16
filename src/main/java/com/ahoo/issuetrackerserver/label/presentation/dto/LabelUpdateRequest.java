@@ -1,5 +1,6 @@
 package com.ahoo.issuetrackerserver.label.presentation.dto;
 
+import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
 import com.ahoo.issuetrackerserver.label.domain.TextColor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.NotBlank;
@@ -20,7 +21,7 @@ public class LabelUpdateRequest {
 
     @Schema(description = "라벨 배경색 코드")
     @NotBlank
-    @Pattern(regexp = "^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$", message = "유효하지 않은 색상코드입니다.")
+    @Pattern(regexp = "^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$", message = ErrorMessage.INVALID_HEX_COLOR_CODE)
     private String backgroundColorCode;
 
     @Schema(description = "라벨 설명")
