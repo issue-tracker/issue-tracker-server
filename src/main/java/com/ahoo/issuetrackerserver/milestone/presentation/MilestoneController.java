@@ -84,8 +84,8 @@ public class MilestoneController {
 	)
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
-	public MilestonesResponse milestones(@RequestParam(required = false) Boolean isClosed) {
-		return milestoneService.findAll(isClosed);
+	public MilestonesResponse milestones() {
+		return milestoneService.findAll();
 	}
 
 	@Operation(summary = "마일스톤 등록",

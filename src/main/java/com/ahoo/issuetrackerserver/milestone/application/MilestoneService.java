@@ -29,14 +29,9 @@ public class MilestoneService {
 	}
 
 	@Transactional(readOnly = true)
-	public MilestonesResponse findAll(Boolean isClosed) {
+	public MilestonesResponse findAll() {
 		//TODO: 이슈 개발 후, 연관된 이슈 count(open, close) 로직 추가
-		List<Milestone> milestones;
-		if (isClosed == null) {
-			milestones = milestoneRepository.findAll();
-		} else {
-			milestones = milestoneRepository.findAllByIsClosed(isClosed);
-		}
+		List<Milestone> milestones = milestoneRepository.findAll();
 		return MilestonesResponse.from(milestones);
 	}
 
