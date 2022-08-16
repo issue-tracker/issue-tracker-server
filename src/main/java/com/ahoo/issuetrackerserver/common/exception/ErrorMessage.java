@@ -23,4 +23,9 @@ public class ErrorMessage {
 
     // argument resolver
     public static final String NO_AUTHORIZATION_HEADER = "요청에 Authorization 헤더가 존재하지 않습니다.";
+
+    // label
+    public static final String DUPLICATED_LABEL_TITLE = "중복되는 라벨 이름이 존재합니다.";
+    public static final String NOT_EXISTS_LABEL = "해당하는 라벨이 없습니다.";
+    public static final String INVALID_HEX_COLOR_CODE = "유효하지않은 색상 코드입니다.";
 }
