@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 public class MilestonesResponse {
 
 	@Schema(description = "열린 마일스톤")
-	List<MilestoneResponse> openedMilestones;
+	private List<MilestoneResponse> openedMilestones;
 
 	@Schema(description = "닫힌 마일스톤")
-	List<MilestoneResponse> closedMilestones;
+	private List<MilestoneResponse> closedMilestones;
 
 	public static MilestonesResponse from(List<Milestone> milestones) {
 		List<MilestoneResponse> openedMilestoneResponses = milestones.stream()
