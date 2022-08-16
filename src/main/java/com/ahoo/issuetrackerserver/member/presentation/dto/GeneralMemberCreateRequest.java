@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class GeneralMemberCreateRequest {
 
-    private static final String DEFAULT_S3_IMAGE_URL = "defaultS3ImageUrl";
+    private static final String DEFAULT_S3_IMAGE_URL = "https://avatars.githubusercontent.com/u/85747667?v=4";
 
     @Schema(description = "아이디", required = true, minLength = 6, maxLength = 12)
     @NotBlank(message = "아이디는 필수 입력 값입니다.")
