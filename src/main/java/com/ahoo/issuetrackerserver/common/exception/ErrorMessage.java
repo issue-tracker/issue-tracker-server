@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ErrorMessage {
+
     // auth
     public static final String ESSENTIAL_FIELD_DISAGREE = "필수 제공 동의 항목을 동의하지 않았습니다.";
     public static final String INVALID_TOKEN = "유효하지 않은 토큰입니다.";
@@ -26,6 +27,9 @@ public class ErrorMessage {
 
     // label
     public static final String DUPLICATED_LABEL_TITLE = "중복되는 라벨 이름이 존재합니다.";
-    public static final String NOT_EXISTS_LABEL = "해당하는 라벨이 없습니다.";
+    public static final String NOT_EXISTS_LABEL = "존재하지 않는 라벨입니다.";
     public static final String INVALID_HEX_COLOR_CODE = "유효하지않은 색상 코드입니다.";
+
+    // issue
+    public static final String NOT_EXISTS_ISSUE = "존재하지 않는 이슈입니다.";
 }

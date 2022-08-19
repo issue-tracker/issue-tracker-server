@@ -65,4 +65,12 @@ public class IssueService {
 
         return IssueResponse.from(savedIssue);
     }
+
+    @Transactional(readOnly = true)
+    public IssueResponse findById(Long id) {
+        Issue findIssue = issueRepository.findByIdFetchJoin(id)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+
+        return IssueResponse.from(findIssue);
+    }
 }

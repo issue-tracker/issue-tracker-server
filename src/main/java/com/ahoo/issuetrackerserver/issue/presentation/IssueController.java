@@ -15,6 +15,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,4 +66,32 @@ public class IssueController {
         @Valid @RequestBody IssueCreateRequest issueCreateRequest) {
         return issueService.save(memberId, issueCreateRequest);
     }
+
+    @Operation(summary = "이슈 단건 조회",
+        description = "이슈를 조회합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "이슈 조회 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = IssueResponse.class)
+                    )
+                }),
+            @ApiResponse(responseCode = "400",
+                description = "이슈 조회 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @GetMapping("/{id}")
+    public IssueResponse getIssue(@PathVariable Long id) {
+        return issueService.findById(id);
+    }
+
+
 }
