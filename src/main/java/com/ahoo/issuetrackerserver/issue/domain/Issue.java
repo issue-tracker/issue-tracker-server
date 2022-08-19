@@ -15,10 +15,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Issue extends BaseEntity {
 
     @Id
@@ -46,4 +50,21 @@ public class Issue extends BaseEntity {
     private List<Comment> comments = new ArrayList<>();
 
     private boolean isClosed;
+
+    public static Issue of(String title, Member author, Milestone milestone) {
+        return new Issue(null, title, author, new ArrayList<>(), new ArrayList<>(), milestone, new ArrayList<>(),
+            false);
+    }
+
+    public void addAssignees(List<IssueAssignee> assignees) {
+        this.assignees.addAll(assignees);
+    }
+
+    public void addLabels(List<IssueLabel> labels) {
+        this.labels.addAll(labels);
+    }
+
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
+    }
 }

@@ -14,12 +14,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Comment extends BaseEntity {
 
     @Id
@@ -39,4 +41,8 @@ public class Comment extends BaseEntity {
 
     @OneToMany(mappedBy = "comment")
     private List<Reaction> reactions = new ArrayList<>();
+
+    public static Comment of(Member author, String contents, Issue issue) {
+        return new Comment(null, author, contents, issue, new ArrayList<>());
+    }
 }

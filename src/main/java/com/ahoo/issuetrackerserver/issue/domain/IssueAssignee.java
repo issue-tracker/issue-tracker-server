@@ -10,12 +10,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class IssueAssignee extends BaseEntity {
 
     @Id
@@ -29,4 +31,8 @@ public class IssueAssignee extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assignee_id")
     private Member assignee;
+
+    public static IssueAssignee of(Issue issue, Member assignee) {
+        return new IssueAssignee(null, issue, assignee);
+    }
 }

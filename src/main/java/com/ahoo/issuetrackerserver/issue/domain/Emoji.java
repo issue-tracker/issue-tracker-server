@@ -16,4 +16,8 @@ public enum Emoji {
     Emoji(String unicode) {
         this.unicode = unicode;
     }
+
+    public String getUnicode() {
+        return unicode;
+    }
 }
