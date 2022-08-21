@@ -57,6 +57,10 @@ public class Issue extends BaseEntity {
             false);
     }
 
+    public void addAssignee(IssueAssignee assignee) {
+        this.assignees.add(assignee);
+    }
+
     public void addAssignees(List<IssueAssignee> assignees) {
         this.assignees.addAll(assignees);
     }

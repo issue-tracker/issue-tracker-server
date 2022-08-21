@@ -143,4 +143,25 @@ public class IssueController {
     public IssueResponse updateTitle(@PathVariable Long id, @Valid @RequestBody IssueTitleUpdateRequest issueTitleUpdateRequest) {
         return issueService.updateTitle(id, issueTitleUpdateRequest.getTitle());
     }
+
+    @Operation(summary = "이슈 담당자 추가",
+        description = "이슈 담당자를 추가합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "이슈 담당자 추가 성공"
+            ),
+            @ApiResponse(responseCode = "400",
+                description = "이슈 담당자 추가 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @PostMapping("/{issueId}/assignees/{assigneeId}")
+    public IssueResponse addAssignee(@PathVariable("issueId") Long issueId, @PathVariable("assigneeId") Long assigneeId) {
+        return issueService.addAssignee(issueId, assigneeId);
+    }
 }

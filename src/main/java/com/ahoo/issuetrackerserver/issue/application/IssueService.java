@@ -79,4 +79,18 @@ public class IssueService {
 
         return IssueResponse.from(issue);
     }
+
+    @Transactional
+    public IssueResponse addAssignee(Long issueId, Long assigneeId) {
+        Issue issue = issueRepository.findById(issueId)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+
+        Member assignee = memberRepository.findById(assigneeId)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MEMBER));
+
+        IssueAssignee newAssignee = IssueAssignee.of(issue, assignee);
+        issue.addAssignee(newAssignee);
+
+        return IssueResponse.from(issue);
+    }
 }
