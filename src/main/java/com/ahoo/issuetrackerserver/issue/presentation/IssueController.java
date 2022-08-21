@@ -142,7 +142,9 @@ public class IssueController {
             )}
     )
     @PatchMapping("/{id}/title")
-    public IssueResponse updateTitle(@PathVariable Long id, @Valid @RequestBody IssueTitleUpdateRequest issueTitleUpdateRequest) {
+    public IssueResponse updateTitle(
+        @PathVariable Long id,
+        @Valid @RequestBody IssueTitleUpdateRequest issueTitleUpdateRequest) {
         return issueService.updateTitle(id, issueTitleUpdateRequest.getTitle());
     }
 
@@ -163,7 +165,9 @@ public class IssueController {
             )}
     )
     @PostMapping("/{issueId}/assignees/{assigneeId}")
-    public IssueResponse addAssignee(@PathVariable("issueId") Long issueId, @PathVariable("assigneeId") Long assigneeId) {
+    public IssueResponse addAssignee(
+        @PathVariable("issueId") Long issueId,
+        @PathVariable("assigneeId") Long assigneeId) {
         return issueService.addAssignee(issueId, assigneeId);
     }
 
