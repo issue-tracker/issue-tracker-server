@@ -67,4 +67,8 @@ public class Issue extends BaseEntity {
     public void addComment(Comment comment) {
         this.comments.add(comment);
     }
+
+    public void changeStatus(boolean status) {
+        this.isClosed = status;
+    }
 }

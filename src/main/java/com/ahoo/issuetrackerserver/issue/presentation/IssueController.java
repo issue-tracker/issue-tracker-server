@@ -5,6 +5,7 @@ import com.ahoo.issuetrackerserver.common.exception.ErrorResponse;
 import com.ahoo.issuetrackerserver.issue.application.IssueService;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCreateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueResponse;
+import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueStatusUpdateRequest;
 import com.ahoo.issuetrackerserver.label.application.LabelService;
 import com.ahoo.issuetrackerserver.milestone.application.MilestoneService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -93,5 +95,25 @@ public class IssueController {
         return issueService.findById(id);
     }
 
-
+    @Operation(summary = "이슈 상태 변경",
+        description = "이슈의 상태를 변경합니다.",
+        responses = {
+            @ApiResponse(responseCode = "204",
+                description = "이슈 상태 변경 성공"
+            ),
+            @ApiResponse(responseCode = "400",
+                description = "이슈 상태 변경 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @PatchMapping("/update-status")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void changeIssueStatus(@Valid @RequestBody IssueStatusUpdateRequest issueStatusUpdateRequest) {
+        issueService.updateStatus(issueStatusUpdateRequest.getStatus(), issueStatusUpdateRequest.getIds());
+    }
 }
