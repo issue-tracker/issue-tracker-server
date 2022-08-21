@@ -13,7 +13,7 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
     @Query("select distinct i "
         + "from Issue i left join fetch i.comments "
         + "where i.id = :id")
-    Optional<Issue> findByIdFetchJoin(@Param("id") Long id);
+    Optional<Issue> findByIdFetchJoinComments(@Param("id") Long id);
 
     @Modifying
     @Query("update Issue i "

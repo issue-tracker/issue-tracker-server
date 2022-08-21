@@ -59,7 +59,7 @@ public class IssueService {
 
     @Transactional(readOnly = true)
     public IssueResponse findById(Long id) {
-        Issue findIssue = issueRepository.findByIdFetchJoin(id)
+        Issue findIssue = issueRepository.findByIdFetchJoinComments(id)
             .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
 
         return IssueResponse.from(findIssue);
@@ -72,7 +72,7 @@ public class IssueService {
 
     @Transactional
     public IssueResponse updateTitle(Long id, String title) {
-        Issue issue = issueRepository.findByIdFetchJoin(id)
+        Issue issue = issueRepository.findByIdFetchJoinComments(id)
             .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
 
         issue.changeTitle(title);
