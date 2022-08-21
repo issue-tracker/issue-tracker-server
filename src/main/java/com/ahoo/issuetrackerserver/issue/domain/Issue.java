@@ -5,6 +5,7 @@ import com.ahoo.issuetrackerserver.member.domain.Member;
 import com.ahoo.issuetrackerserver.milestone.domain.Milestone;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,17 +37,17 @@ public class Issue extends BaseEntity {
     @JoinColumn(name = "author_id")
     private Member author;
 
-    @OneToMany(mappedBy = "issue")
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.PERSIST)
     private List<IssueAssignee> assignees = new ArrayList<>();
 
-    @OneToMany(mappedBy = "issue")
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.PERSIST)
     private List<IssueLabel> labels = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "milestone_id")
     private Milestone milestone;
 
-    @OneToMany(mappedBy = "issue")
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.PERSIST)
     private List<Comment> comments = new ArrayList<>();
 
     private boolean isClosed;

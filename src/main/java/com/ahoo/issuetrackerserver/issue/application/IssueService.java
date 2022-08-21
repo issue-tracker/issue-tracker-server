@@ -5,9 +5,6 @@ import com.ahoo.issuetrackerserver.issue.domain.Comment;
 import com.ahoo.issuetrackerserver.issue.domain.Issue;
 import com.ahoo.issuetrackerserver.issue.domain.IssueAssignee;
 import com.ahoo.issuetrackerserver.issue.domain.IssueLabel;
-import com.ahoo.issuetrackerserver.issue.infrastructure.CommentRepository;
-import com.ahoo.issuetrackerserver.issue.infrastructure.IssueAssigneeRepository;
-import com.ahoo.issuetrackerserver.issue.infrastructure.IssueLabelRepository;
 import com.ahoo.issuetrackerserver.issue.infrastructure.IssueRepository;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCreateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueResponse;
@@ -31,9 +28,6 @@ public class IssueService {
     private final MemberRepository memberRepository;
     private final LabelRepository labelRepository;
     private final MilestoneRepository milestoneRepository;
-    private final IssueAssigneeRepository issueAssigneeRepository;
-    private final IssueLabelRepository issueLabelRepository;
-    private final CommentRepository commentRepository;
 
     @Transactional
     public IssueResponse save(Long memberId, IssueCreateRequest issueCreateRequest) {
@@ -59,9 +53,6 @@ public class IssueService {
         issue.addComment(comment);
 
         Issue savedIssue = issueRepository.save(issue);
-        issueAssigneeRepository.saveAll(assignees);
-        issueLabelRepository.saveAll(labels);
-        commentRepository.save(comment);
 
         return IssueResponse.from(savedIssue);
     }
