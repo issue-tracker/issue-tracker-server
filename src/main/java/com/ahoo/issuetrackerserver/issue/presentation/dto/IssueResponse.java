@@ -21,6 +21,9 @@ public class IssueResponse {
     @Schema(description = "이슈 아이디")
     private Long id;
 
+    @Schema(description = "이슈 제목")
+    private String title;
+
     @Schema(description = "이슈 생성 시각")
     private LocalDateTime createdAt;
 
@@ -40,17 +43,18 @@ public class IssueResponse {
     private MilestoneResponse milestone;
 
 
-    public static IssueResponse from(Issue savedIssue) {
+    public static IssueResponse from(Issue issue) {
         return new IssueResponse(
-            savedIssue.getId(),
-            savedIssue.getCreatedAt(),
-            MemberResponse.from(savedIssue.getAuthor()),
-            savedIssue.getComments().stream()
+            issue.getId(),
+            issue.getTitle(),
+            issue.getCreatedAt(),
+            MemberResponse.from(issue.getAuthor()),
+            issue.getComments().stream()
                 .map(CommentResponse::from)
                 .collect(Collectors.toUnmodifiableList()),
-            IssueAssigneesResponse.from(savedIssue.getAssignees()),
-            IssueLabelsResponse.from(savedIssue.getLabels()),
-            MilestoneResponse.from(savedIssue.getMilestone())
+            IssueAssigneesResponse.from(issue.getAssignees()),
+            IssueLabelsResponse.from(issue.getLabels()),
+            MilestoneResponse.from(issue.getMilestone())
         );
     }
 }
