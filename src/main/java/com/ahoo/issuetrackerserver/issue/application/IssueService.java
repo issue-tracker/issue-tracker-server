@@ -93,4 +93,16 @@ public class IssueService {
 
         return IssueResponse.from(issue);
     }
+
+    @Transactional
+    public void deleteAssignee(Long issueId, boolean clear, Long assigneeId) {
+        Issue issue = issueRepository.findByIdFetchJoinAssignees(issueId)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+
+        if (clear) {
+            issue.clearAssignees();
+        } else {
+            issue.removeAssignee(assigneeId);
+        }
+    }
 }

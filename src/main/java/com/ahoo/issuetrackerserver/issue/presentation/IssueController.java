@@ -17,12 +17,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -163,5 +165,31 @@ public class IssueController {
     @PostMapping("/{issueId}/assignees/{assigneeId}")
     public IssueResponse addAssignee(@PathVariable("issueId") Long issueId, @PathVariable("assigneeId") Long assigneeId) {
         return issueService.addAssignee(issueId, assigneeId);
+    }
+
+    @Operation(summary = "이슈 담당자 삭제",
+        description = "이슈 담당자를 일괄삭제(clear=true)하거나 단일삭제합니다.",
+        responses = {
+            @ApiResponse(responseCode = "204",
+                description = "이슈 담당자 삭제 성공"
+            ),
+            @ApiResponse(responseCode = "400",
+                description = "이슈 담당자 삭제 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @DeleteMapping("/{issueId}/assignees")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAssignees(
+        @PathVariable Long issueId,
+        @RequestParam(required = false, defaultValue = "false") boolean clear,
+        @RequestParam(required = false) Long assigneeId
+    ) {
+        issueService.deleteAssignee(issueId, clear, assigneeId);
     }
 }
