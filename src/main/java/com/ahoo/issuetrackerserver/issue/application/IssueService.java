@@ -78,4 +78,14 @@ public class IssueService {
     public void updateStatus(boolean status, List<Long> ids) {
         issueRepository.updateStatus(status, ids);
     }
+
+    @Transactional
+    public IssueResponse updateTitle(Long id, String title) {
+        Issue issue = issueRepository.findByIdFetchJoin(id)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+
+        issue.changeTitle(title);
+
+        return IssueResponse.from(issue);
+    }
 }

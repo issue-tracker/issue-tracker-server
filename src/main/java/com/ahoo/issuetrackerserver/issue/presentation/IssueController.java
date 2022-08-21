@@ -6,6 +6,7 @@ import com.ahoo.issuetrackerserver.issue.application.IssueService;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCreateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueResponse;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueStatusUpdateRequest;
+import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueTitleUpdateRequest;
 import com.ahoo.issuetrackerserver.label.application.LabelService;
 import com.ahoo.issuetrackerserver.milestone.application.MilestoneService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -115,5 +116,31 @@ public class IssueController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void changeIssueStatus(@Valid @RequestBody IssueStatusUpdateRequest issueStatusUpdateRequest) {
         issueService.updateStatus(issueStatusUpdateRequest.getStatus(), issueStatusUpdateRequest.getIds());
+    }
+
+    @Operation(summary = "이슈 제목 수정",
+        description = "이슈 제목을 수정합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "이슈 제목 수정 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = IssueResponse.class)
+                    )
+                }),
+            @ApiResponse(responseCode = "400",
+                description = "이슈 제목 수정 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @PatchMapping("/{id}/title")
+    public IssueResponse updateTitle(@PathVariable Long id, @Valid @RequestBody IssueTitleUpdateRequest issueTitleUpdateRequest) {
+        return issueService.updateTitle(id, issueTitleUpdateRequest.getTitle());
     }
 }

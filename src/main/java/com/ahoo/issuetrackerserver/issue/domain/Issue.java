@@ -71,4 +71,8 @@ public class Issue extends BaseEntity {
     public void changeStatus(boolean status) {
         this.isClosed = status;
     }
+
+    public void changeTitle(String title) {
+        this.title = title;
+    }
 }
