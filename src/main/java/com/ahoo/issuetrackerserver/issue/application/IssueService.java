@@ -76,6 +76,6 @@ public class IssueService {
 
     @Transactional
     public void updateStatus(boolean status, List<Long> ids) {
-        issueRepository.findAllById(ids).forEach(issue -> issue.changeStatus(status));
+        issueRepository.updateStatus(status, ids);
     }
 }
