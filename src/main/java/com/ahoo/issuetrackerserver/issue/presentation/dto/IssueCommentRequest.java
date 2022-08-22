@@ -5,10 +5,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Schema(description = "이슈 코멘트 등록 요청")
+@Schema(description = "이슈 코멘트 요청")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class IssueCommentAddRequest {
+public class IssueCommentRequest {
 
     @Schema(description = "코멘트 내용")
     private String content;

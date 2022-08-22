@@ -3,7 +3,7 @@ package com.ahoo.issuetrackerserver.issue.presentation;
 import com.ahoo.issuetrackerserver.common.argumentresolver.SignInMemberId;
 import com.ahoo.issuetrackerserver.common.exception.ErrorResponse;
 import com.ahoo.issuetrackerserver.issue.application.IssueService;
-import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCommentAddRequest;
+import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCommentRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCreateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueResponse;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueStatusUpdateRequest;
@@ -357,7 +357,8 @@ public class IssueController {
     public IssueResponse addComment(
         @SignInMemberId Long memberId,
         @PathVariable Long issueId,
-        @RequestBody IssueCommentAddRequest issueCommentAddRequest) {
-        return issueService.addComment(memberId, issueId, issueCommentAddRequest.getContent());
+        @RequestBody IssueCommentRequest issueCommentRequest) {
+        return issueService.addComment(memberId, issueId, issueCommentRequest.getContent());
+    }
     }
 }
