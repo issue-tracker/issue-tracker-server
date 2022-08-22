@@ -1,6 +1,8 @@
 package com.ahoo.issuetrackerserver.issue.domain;
 
 import com.ahoo.issuetrackerserver.common.BaseEntity;
+import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
+import com.ahoo.issuetrackerserver.common.exception.UnAuthorizedException;
 import com.ahoo.issuetrackerserver.member.domain.Member;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +36,7 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "author_id")
     private Member author;
 
-    private String contents;
+    private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "issue_id")
@@ -43,7 +45,17 @@ public class Comment extends BaseEntity {
     @OneToMany(mappedBy = "comment", cascade = CascadeType.REMOVE)
     private List<Reaction> reactions = new ArrayList<>();
 
-    public static Comment of(Member author, String contents, Issue issue) {
-        return new Comment(null, author, contents, issue, new ArrayList<>());
+    public static Comment of(Member author, String content, Issue issue) {
+        return new Comment(null, author, content, issue, new ArrayList<>());
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void validateSameAuthor(Long memberId) {
+        if (this.author.getId() != memberId) {
+            throw new UnAuthorizedException(ErrorMessage.INVALID_AUTHOR);
+        }
     }
 }

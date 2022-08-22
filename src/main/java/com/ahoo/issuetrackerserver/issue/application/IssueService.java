@@ -178,4 +178,14 @@ public class IssueService {
 
         return IssueResponse.from(issue);
     }
+
+    @Transactional
+    public IssueResponse updateComment(Long memberId, Long issueId, Long commentId, String content) {
+        Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+
+        issue.updateComment(memberId, commentId, content);
+
+        return IssueResponse.from(issue);
+    }
 }

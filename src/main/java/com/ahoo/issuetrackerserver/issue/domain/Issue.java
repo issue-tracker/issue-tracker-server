@@ -2,6 +2,7 @@ package com.ahoo.issuetrackerserver.issue.domain;
 
 import com.ahoo.issuetrackerserver.common.BaseEntity;
 import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
+import com.ahoo.issuetrackerserver.common.exception.UnAuthorizedException;
 import com.ahoo.issuetrackerserver.member.domain.Member;
 import com.ahoo.issuetrackerserver.milestone.domain.Milestone;
 import java.util.ArrayList;
@@ -118,5 +119,14 @@ public class Issue extends BaseEntity {
     public void clearMilestone() {
         this.milestone.removeIssue(this);
         this.milestone = null;
+    }
+
+    public void updateComment(Long memberId, Long commentId, String content) {
+        Comment comment = this.comments.stream()
+            .filter(c -> Objects.equals(c.getId(), commentId))
+            .findFirst()
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_COMMENT));
+        comment.validateSameAuthor(memberId);
+        comment.updateContent(content);
     }
 }

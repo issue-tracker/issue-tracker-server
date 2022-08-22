@@ -25,7 +25,7 @@ public class CommentResponse {
     private MemberResponse author;
 
     @Schema(description = "코멘트 내용")
-    private String contents;
+    private String content;
 
     @Schema(description = "코멘트 생성 시간")
     private LocalDateTime createdAt;
@@ -37,7 +37,7 @@ public class CommentResponse {
         return new CommentResponse(
             comment.getId(),
             MemberResponse.from(comment.getAuthor()),
-            comment.getContents(),
+            comment.getContent(),
             comment.getCreatedAt(),
             comment.getReactions().stream()
                 .map(IssueCommentReactionResponse::from)

@@ -360,5 +360,35 @@ public class IssueController {
         @RequestBody IssueCommentRequest issueCommentRequest) {
         return issueService.addComment(memberId, issueId, issueCommentRequest.getContent());
     }
+
+    @Operation(summary = "이슈 코멘트 수정",
+        description = "이슈에 코멘트를 수정합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "이슈 코멘트 수정 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = IssueResponse.class)
+                    )
+                }
+            ),
+            @ApiResponse(responseCode = "400",
+                description = "이슈 코멘트 수정 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @PatchMapping("/{issueId}/comments/{commentId}")
+    public IssueResponse updateComment(
+        @SignInMemberId Long memberId,
+        @PathVariable("issueId") Long issueId,
+        @PathVariable("commentId") Long commentId,
+        @RequestBody IssueCommentRequest issueCommentRequest) {
+        return issueService.updateComment(memberId, issueId, commentId, issueCommentRequest.getContent());
     }
 }

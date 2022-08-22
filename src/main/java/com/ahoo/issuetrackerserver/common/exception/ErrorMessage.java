@@ -11,6 +11,7 @@ public class ErrorMessage {
     public static final String INVALID_TOKEN = "유효하지 않은 토큰입니다.";
     public static final String INVALID_REFRESH_TOKEN = "유효하지 않은 refresh_token입니다.";
     public static final String INVALID_CODE = "code가 유효하지 않습니다.";
+    public static final String INVALID_AUTHOR = "수정 권한이 없는 사용자입니다.";
 
     // member
     public static final String SIGN_IN_FAIL = "로그인에 실패했습니다. 아이디와 비밀번호를 다시 확인해주세요.";
@@ -32,4 +33,7 @@ public class ErrorMessage {
 
     // issue
     public static final String NOT_EXISTS_ISSUE = "존재하지 않는 이슈입니다.";
+
+    // comment
+    public static final String NOT_EXISTS_COMMENT = "존재하지 않는 코멘트입니다.";
 }

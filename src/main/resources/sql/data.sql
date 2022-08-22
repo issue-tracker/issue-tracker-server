@@ -52,7 +52,7 @@ VALUES (1, 1),
        (8, 1),
        (8, 2);
 
-INSERT INTO comment (author_id, contents, issue_id)
+INSERT INTO comment (author_id, content, issue_id)
 VALUES (1, '주문할 메뉴는 오리지널과 비프립플레이트입니다.', 1),
        (2, '너무 좋아요 소고기뭇국도 기대됩니다.', 1),
        (2, '물회에는 역시 오이가 들어가야죠!', 2),
