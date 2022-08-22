@@ -82,7 +82,7 @@ public class IssueService {
 
     @Transactional
     public IssueResponse addAssignee(Long issueId, Long assigneeId) {
-        Issue issue = issueRepository.findById(issueId)
+        Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
             .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
 
         Member assignee = memberRepository.findById(assigneeId)
