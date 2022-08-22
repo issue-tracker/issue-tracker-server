@@ -20,6 +20,11 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
         + "where i.id = :id")
     Optional<Issue> findByIdFetchJoinAssignees(@Param("id") Long id);
 
+    @Query("select distinct i "
+        + "from Issue i left join fetch i.labels "
+        + "where i.id = :id")
+    Optional<Issue> findByIdFetchJoinLabels(@Param("id") Long id);
+
     @Modifying
     @Query("update Issue i "
         + "set i.isClosed = :status "

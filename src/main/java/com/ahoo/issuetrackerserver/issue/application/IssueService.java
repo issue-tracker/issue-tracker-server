@@ -8,6 +8,7 @@ import com.ahoo.issuetrackerserver.issue.domain.IssueLabel;
 import com.ahoo.issuetrackerserver.issue.infrastructure.IssueRepository;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCreateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueResponse;
+import com.ahoo.issuetrackerserver.label.domain.Label;
 import com.ahoo.issuetrackerserver.label.infrastructure.LabelRepository;
 import com.ahoo.issuetrackerserver.member.domain.Member;
 import com.ahoo.issuetrackerserver.member.infrastructure.MemberRepository;
@@ -104,5 +105,27 @@ public class IssueService {
         } else {
             issue.removeAssignee(assigneeId);
         }
+    }
+
+    @Transactional
+    public IssueResponse addLabel(Long issueId, Long labelId) {
+        Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+
+        Label label = labelRepository.findById(labelId)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_LABEL));
+
+        IssueLabel newLabel = IssueLabel.of(issue, label);
+        issue.addLabel(newLabel);
+
+        return IssueResponse.from(issue);
+    }
+
+    @Transactional
+    public void deleteLabel(Long issueId, Long labelId) {
+        Issue issue = issueRepository.findByIdFetchJoinLabels(issueId)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+        
+        issue.removeLabel(labelId);
     }
 }

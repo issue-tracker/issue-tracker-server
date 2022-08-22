@@ -43,7 +43,7 @@ public class Issue extends BaseEntity {
     @OneToMany(mappedBy = "issue", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<IssueAssignee> assignees = new ArrayList<>();
 
-    @OneToMany(mappedBy = "issue", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<IssueLabel> labels = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -80,8 +80,20 @@ public class Issue extends BaseEntity {
         this.assignees.remove(issueAssignee);
     }
 
+    public void addLabel(IssueLabel label) {
+        this.labels.add(label);
+    }
+
     public void addLabels(List<IssueLabel> labels) {
         this.labels.addAll(labels);
+    }
+
+    public void removeLabel(Long labelId) {
+        IssueLabel issueLabel = this.labels.stream()
+            .filter(l -> Objects.equals(l.getLabel().getId(), labelId))
+            .findFirst()
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_LABEL));
+        this.labels.remove(issueLabel);
     }
 
     public void addComment(Comment comment) {

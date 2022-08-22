@@ -152,7 +152,13 @@ public class IssueController {
         description = "이슈 담당자를 추가합니다.",
         responses = {
             @ApiResponse(responseCode = "200",
-                description = "이슈 담당자 추가 성공"
+                description = "이슈 담당자 추가 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = IssueResponse.class)
+                    )
+                }
             ),
             @ApiResponse(responseCode = "400",
                 description = "이슈 담당자 추가 실패",
@@ -195,5 +201,59 @@ public class IssueController {
         @RequestParam(required = false) Long assigneeId
     ) {
         issueService.deleteAssignee(issueId, clear, assigneeId);
+    }
+
+    @Operation(summary = "이슈 라벨 추가",
+        description = "이슈 라벨을 추가합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "이슈 라벨 추가 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = IssueResponse.class)
+                    )
+                }
+            ),
+            @ApiResponse(responseCode = "400",
+                description = "이슈 라벨 추가 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @PostMapping("/{issueId}/labels/{labelId}")
+    public IssueResponse addLabel(
+        @PathVariable("issueId") Long issueId,
+        @PathVariable("labelId") Long labelId) {
+        return issueService.addLabel(issueId, labelId);
+    }
+
+    @Operation(summary = "이슈 라벨 삭제",
+        description = "이슈 라벨을 삭제합니다.",
+        responses = {
+            @ApiResponse(responseCode = "204",
+                description = "이슈 라벨 삭제 성공"
+            ),
+            @ApiResponse(responseCode = "400",
+                description = "이슈 라벨 삭제 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @DeleteMapping("/{issueId}/labels/{labelId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAssignees(
+        @PathVariable("issueId") Long issueId,
+        @PathVariable("labelId") Long labelId
+    ) {
+        issueService.deleteLabel(issueId, labelId);
     }
 }
