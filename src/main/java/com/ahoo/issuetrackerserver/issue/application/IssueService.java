@@ -5,6 +5,7 @@ import com.ahoo.issuetrackerserver.issue.domain.Comment;
 import com.ahoo.issuetrackerserver.issue.domain.Issue;
 import com.ahoo.issuetrackerserver.issue.domain.IssueAssignee;
 import com.ahoo.issuetrackerserver.issue.domain.IssueLabel;
+import com.ahoo.issuetrackerserver.issue.infrastructure.CommentRepository;
 import com.ahoo.issuetrackerserver.issue.infrastructure.IssueRepository;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCreateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueResponse;
@@ -29,6 +30,7 @@ public class IssueService {
     private final MemberRepository memberRepository;
     private final LabelRepository labelRepository;
     private final MilestoneRepository milestoneRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
     public IssueResponse save(Long memberId, IssueCreateRequest issueCreateRequest) {
@@ -160,5 +162,20 @@ public class IssueService {
         }
 
         issueRepository.delete(issue);
+    }
+
+    @Transactional
+    public IssueResponse addComment(Long memberId, Long issueId, String content) {
+        Member author = memberRepository.findById(memberId)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MEMBER));
+
+        Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+
+        Comment newComment = Comment.of(author, content, issue);
+        commentRepository.save(newComment);
+        issue.addComment(newComment);
+
+        return IssueResponse.from(issue);
     }
 }

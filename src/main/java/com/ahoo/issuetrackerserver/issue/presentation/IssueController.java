@@ -3,6 +3,7 @@ package com.ahoo.issuetrackerserver.issue.presentation;
 import com.ahoo.issuetrackerserver.common.argumentresolver.SignInMemberId;
 import com.ahoo.issuetrackerserver.common.exception.ErrorResponse;
 import com.ahoo.issuetrackerserver.issue.application.IssueService;
+import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCommentAddRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCreateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueResponse;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueStatusUpdateRequest;
@@ -327,5 +328,36 @@ public class IssueController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteIssue(@PathVariable Long id) {
         issueService.deleteIssue(id);
+    }
+
+    @Operation(summary = "이슈 코멘트 등록",
+        description = "이슈에 코멘트를 등록합니다.",
+        responses = {
+            @ApiResponse(responseCode = "201",
+                description = "이슈 코멘트 등록 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = IssueResponse.class)
+                    )
+                }
+            ),
+            @ApiResponse(responseCode = "400",
+                description = "이슈 코멘트 등록 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @PostMapping("/{issueId}/comments")
+    @ResponseStatus(HttpStatus.CREATED)
+    public IssueResponse addComment(
+        @SignInMemberId Long memberId,
+        @PathVariable Long issueId,
+        @RequestBody IssueCommentAddRequest issueCommentAddRequest) {
+        return issueService.addComment(memberId, issueId, issueCommentAddRequest.getContent());
     }
 }
