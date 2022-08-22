@@ -103,4 +103,20 @@ public class Issue extends BaseEntity {
     public void changeTitle(String title) {
         this.title = title;
     }
+
+    public void updateMilestone(Milestone milestone) {
+        if (milestone.equals(this.milestone)) {
+            return;
+        }
+        if (this.milestone != null) {
+            this.milestone.removeIssue(this);
+        }
+        this.milestone = milestone;
+        this.milestone.addIssue(this);
+    }
+
+    public void clearMilestone() {
+        this.milestone.removeIssue(this);
+        this.milestone = null;
+    }
 }

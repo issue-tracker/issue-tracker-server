@@ -128,4 +128,25 @@ public class IssueService {
         
         issue.removeLabel(labelId);
     }
+
+    @Transactional
+    public IssueResponse addMilestone(Long issueId, Long milestoneId) {
+        Milestone milestone = milestoneRepository.findById(milestoneId)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MILESTONE));
+
+        Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+
+        issue.updateMilestone(milestone);
+
+        return IssueResponse.from(issue);
+    }
+
+    @Transactional
+    public void deleteMilestone(Long id) {
+        Issue issue = issueRepository.findByIdFetchJoinMilestone(id)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+
+        issue.clearMilestone();
+    }
 }

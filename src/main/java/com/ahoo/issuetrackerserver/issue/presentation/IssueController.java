@@ -256,4 +256,55 @@ public class IssueController {
     ) {
         issueService.deleteLabel(issueId, labelId);
     }
+
+    @Operation(summary = "이슈 마일스톤 추가",
+        description = "이슈 마일스톤을 추가합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "이슈 마일스톤 추가 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = IssueResponse.class)
+                    )
+                }
+            ),
+            @ApiResponse(responseCode = "400",
+                description = "이슈 마일스톤 추가 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @PatchMapping("/{issueId}/milestones/{milestoneId}")
+    public IssueResponse addMilestone(
+        @PathVariable("issueId") Long issueId,
+        @PathVariable(name = "milestoneId", required = true) Long milestoneId) {
+        return issueService.addMilestone(issueId, milestoneId);
+    }
+
+    @Operation(summary = "이슈 마일스톤 삭제",
+        description = "이슈 마일스톤을 삭제합니다.",
+        responses = {
+            @ApiResponse(responseCode = "204",
+                description = "이슈 마일스톤 삭제 성공"
+            ),
+            @ApiResponse(responseCode = "400",
+                description = "이슈 마일스톤 삭제 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @DeleteMapping("/{id}/milestones")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMilestone(@PathVariable Long id) {
+        issueService.deleteMilestone(id);
+    }
 }
