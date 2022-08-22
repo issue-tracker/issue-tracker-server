@@ -149,4 +149,16 @@ public class IssueService {
 
         issue.clearMilestone();
     }
+
+    @Transactional
+    public void deleteIssue(Long id) {
+        Issue issue = issueRepository.findByIdFetchJoinMilestone(id)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+
+        if (issue.getMilestone() != null) {
+            issue.getMilestone().removeIssue(issue);
+        }
+
+        issueRepository.delete(issue);
+    }
 }

@@ -4,6 +4,7 @@ import com.ahoo.issuetrackerserver.common.BaseEntity;
 import com.ahoo.issuetrackerserver.member.domain.Member;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -39,7 +40,7 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "issue_id")
     private Issue issue;
 
-    @OneToMany(mappedBy = "comment")
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.REMOVE)
     private List<Reaction> reactions = new ArrayList<>();
 
     public static Comment of(Member author, String contents, Issue issue) {

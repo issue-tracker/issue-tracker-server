@@ -42,7 +42,6 @@ public class IssueController {
     // 1. 이슈 전체 목록
     // 2. 이슈 수정
     // 3. 이슈 삭제
-    // 4. 이슈 상태 변경
 
     @Operation(summary = "이슈 등록",
         description = "이슈를 등록합니다.",
@@ -306,5 +305,27 @@ public class IssueController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMilestone(@PathVariable Long id) {
         issueService.deleteMilestone(id);
+    }
+
+    @Operation(summary = "이슈 삭제",
+        description = "이슈 삭제합니다.",
+        responses = {
+            @ApiResponse(responseCode = "204",
+                description = "이슈 삭제 성공"
+            ),
+            @ApiResponse(responseCode = "400",
+                description = "이슈 삭제 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteIssue(@PathVariable Long id) {
+        issueService.deleteIssue(id);
     }
 }

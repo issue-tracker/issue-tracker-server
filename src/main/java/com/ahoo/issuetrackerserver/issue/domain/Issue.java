@@ -40,17 +40,17 @@ public class Issue extends BaseEntity {
     @JoinColumn(name = "author_id")
     private Member author;
 
-    @OneToMany(mappedBy = "issue", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "issue", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<IssueAssignee> assignees = new ArrayList<>();
 
-    @OneToMany(mappedBy = "issue", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "issue", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<IssueLabel> labels = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "milestone_id")
     private Milestone milestone;
 
-    @OneToMany(mappedBy = "issue", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "issue", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Comment> comments = new ArrayList<>();
 
     private boolean isClosed;
