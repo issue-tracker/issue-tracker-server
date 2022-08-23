@@ -391,4 +391,28 @@ public class IssueController {
         @RequestBody IssueCommentRequest issueCommentRequest) {
         return issueService.updateComment(memberId, issueId, commentId, issueCommentRequest.getContent());
     }
+
+    @Operation(summary = "이슈 코멘트 삭제",
+        description = "이슈에 코멘트를 삭제합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "이슈 코멘트 삭제 성공"
+            ),
+            @ApiResponse(responseCode = "400",
+                description = "이슈 코멘트 삭제 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @DeleteMapping("/{issueId}/comments/{commentId}")
+    public void deleteComment(
+        @SignInMemberId Long memberId,
+        @PathVariable("issueId") Long issueId,
+        @PathVariable("commentId") Long commentId) {
+        issueService.deleteComment(memberId, issueId, commentId);
+    }
 }

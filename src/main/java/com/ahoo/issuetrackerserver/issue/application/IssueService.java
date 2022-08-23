@@ -127,7 +127,7 @@ public class IssueService {
     public void deleteLabel(Long issueId, Long labelId) {
         Issue issue = issueRepository.findByIdFetchJoinLabels(issueId)
             .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
-        
+
         issue.removeLabel(labelId);
     }
 
@@ -187,5 +187,13 @@ public class IssueService {
         issue.updateComment(memberId, commentId, content);
 
         return IssueResponse.from(issue);
+    }
+
+    @Transactional
+    public void deleteComment(Long memberId, Long issueId, Long commentId) {
+        Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+
+        issue.deleteComment(memberId, commentId);
     }
 }
