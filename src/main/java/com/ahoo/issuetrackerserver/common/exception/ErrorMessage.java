@@ -36,4 +36,7 @@ public class ErrorMessage {
 
     // comment
     public static final String NOT_EXISTS_COMMENT = "존재하지 않는 코멘트입니다.";
+
+    // reaction
+    public static final String DUPLICATED_REACTION = "중복되는 리액션이 존재합니다.";
 }
