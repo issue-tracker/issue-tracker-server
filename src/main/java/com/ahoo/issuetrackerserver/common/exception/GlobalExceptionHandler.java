@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = DuplicateMemberException.class)
+    @ExceptionHandler(value = DuplicatedMemberException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleDuplicateMemberException(DuplicateMemberException e) {
+    public ErrorResponse handleDuplicateMemberException(DuplicatedMemberException e) {
         return new ErrorResponse(e.getMessage());
     }
 

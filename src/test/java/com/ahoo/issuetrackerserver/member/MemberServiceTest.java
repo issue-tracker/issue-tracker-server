@@ -7,7 +7,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
 import com.ahoo.issuetrackerserver.auth.domain.AuthProvider;
-import com.ahoo.issuetrackerserver.common.exception.DuplicateMemberException;
+import com.ahoo.issuetrackerserver.common.exception.DuplicatedMemberException;
 import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
 import com.ahoo.issuetrackerserver.member.application.MemberService;
 import com.ahoo.issuetrackerserver.member.domain.Member;
@@ -78,7 +78,7 @@ class MemberServiceTest {
 
             //then
             assertThatThrownBy(() -> memberService.signUpByGeneral(failureRequest))
-                .isInstanceOf(DuplicateMemberException.class)
+                .isInstanceOf(DuplicatedMemberException.class)
                 .hasMessage(duplicatedMember.getAuthProviderType().getProviderName() + "(으)로 이미 가입된 이메일입니다.");
             then(memberRepository).should(times(1)).findByEmail(failureRequest.getEmail());
             then(memberRepository).shouldHaveNoMoreInteractions();
@@ -97,7 +97,7 @@ class MemberServiceTest {
 
             //then
             assertThatThrownBy(() -> memberService.signUpByGeneral(failureRequest))
-                .isInstanceOf(DuplicateMemberException.class)
+                .isInstanceOf(DuplicatedMemberException.class)
                 .hasMessage(ErrorMessage.DUPLICATED_ID);
             then(memberRepository).should(times(1)).findByEmail(failureRequest.getEmail());
             then(memberRepository).should(times(1)).existsBySignInId(failureRequest.getSignInId());
@@ -118,7 +118,7 @@ class MemberServiceTest {
 
             //then
             assertThatThrownBy(() -> memberService.signUpByGeneral(failureRequest))
-                .isInstanceOf(DuplicateMemberException.class)
+                .isInstanceOf(DuplicatedMemberException.class)
                 .hasMessage(ErrorMessage.DUPLICATED_NICKNAME);
             then(memberRepository).should(times(1)).findByEmail(failureRequest.getEmail());
             then(memberRepository).should(times(1)).existsBySignInId(failureRequest.getSignInId());
@@ -167,7 +167,7 @@ class MemberServiceTest {
 
             //then
             assertThatThrownBy(() -> memberService.signUpByAuth(failureRequest))
-                .isInstanceOf(DuplicateMemberException.class)
+                .isInstanceOf(DuplicatedMemberException.class)
                 .hasMessage(duplicatedMember.getAuthProviderType().getProviderName() + ErrorMessage.DUPLICATED_EMAIL);
             then(memberRepository).should(times(1)).findByEmail(failureRequest.getEmail());
             then(memberRepository).shouldHaveNoMoreInteractions();
@@ -185,7 +185,7 @@ class MemberServiceTest {
 
             //then
             assertThatThrownBy(() -> memberService.signUpByAuth(failureRequest))
-                .isInstanceOf(DuplicateMemberException.class)
+                .isInstanceOf(DuplicatedMemberException.class)
                 .hasMessage(ErrorMessage.DUPLICATED_NICKNAME);
             then(memberRepository).should(times(1)).findByEmail(failureRequest.getEmail());
             then(memberRepository).should(times(1)).existsByNickname(failureRequest.getNickname());

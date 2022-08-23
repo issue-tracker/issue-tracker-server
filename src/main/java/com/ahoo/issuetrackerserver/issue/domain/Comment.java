@@ -1,6 +1,7 @@
 package com.ahoo.issuetrackerserver.issue.domain;
 
 import com.ahoo.issuetrackerserver.common.BaseEntity;
+import com.ahoo.issuetrackerserver.common.exception.DuplicatedReactionException;
 import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
 import com.ahoo.issuetrackerserver.common.exception.UnAuthorizedException;
 import com.ahoo.issuetrackerserver.member.domain.Member;
