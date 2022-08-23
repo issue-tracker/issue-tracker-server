@@ -13,6 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class IssueCommentReactionResponse {
 
+    @Schema(description = "이슈 댓글 반응 아이디")
+    private Long id;
+
     @Schema(description = "이슈 댓글 반응 이모지 유니코드")
     private String emoji;
 
@@ -21,6 +24,7 @@ public class IssueCommentReactionResponse {
 
     public static IssueCommentReactionResponse from(Reaction reaction) {
         return new IssueCommentReactionResponse(
+            reaction.getId(),
             reaction.getEmoji().getUnicode(),
             IssueCommentReactorResponse.from(reaction.getReactor())
         );

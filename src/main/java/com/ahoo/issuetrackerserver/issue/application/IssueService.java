@@ -2,11 +2,14 @@ package com.ahoo.issuetrackerserver.issue.application;
 
 import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
 import com.ahoo.issuetrackerserver.issue.domain.Comment;
+import com.ahoo.issuetrackerserver.issue.domain.Emoji;
 import com.ahoo.issuetrackerserver.issue.domain.Issue;
 import com.ahoo.issuetrackerserver.issue.domain.IssueAssignee;
 import com.ahoo.issuetrackerserver.issue.domain.IssueLabel;
+import com.ahoo.issuetrackerserver.issue.domain.Reaction;
 import com.ahoo.issuetrackerserver.issue.infrastructure.CommentRepository;
 import com.ahoo.issuetrackerserver.issue.infrastructure.IssueRepository;
+import com.ahoo.issuetrackerserver.issue.infrastructure.ReactionRepository;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCreateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueResponse;
 import com.ahoo.issuetrackerserver.label.domain.Label;
@@ -17,6 +20,7 @@ import com.ahoo.issuetrackerserver.milestone.domain.Milestone;
 import com.ahoo.issuetrackerserver.milestone.infrastructure.MilestoneRepository;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,6 +35,7 @@ public class IssueService {
     private final LabelRepository labelRepository;
     private final MilestoneRepository milestoneRepository;
     private final CommentRepository commentRepository;
+    private final ReactionRepository reactionRepository;
 
     @Transactional
     public IssueResponse save(Long memberId, IssueCreateRequest issueCreateRequest) {
@@ -195,5 +200,30 @@ public class IssueService {
             .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
 
         issue.deleteComment(memberId, commentId);
+    }
+
+    @Transactional
+    public IssueResponse addReaction(Long memberId, Long issueId, Long commentId, String emojiName) {
+        Emoji emoji = Emoji.valueOf(emojiName);
+
+        Member reactor = memberRepository.findById(memberId)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MEMBER));
+
+        Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+
+        Comment comment = issue.getComments().stream()
+            .filter(c -> Objects.equals(c.getId(), commentId))
+            .findFirst()
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_COMMENT));
+
+        comment.validateDuplicateReaction(emoji, reactor);
+
+        Reaction reaction = Reaction.of(comment, emoji, reactor);
+        reactionRepository.save(reaction);
+
+        comment.addReaction(reaction);
+
+        return IssueResponse.from(issue);
     }
 }

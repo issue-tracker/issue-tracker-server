@@ -41,8 +41,6 @@ public class IssueController {
 
     //TODO
     // 1. 이슈 전체 목록
-    // 2. 이슈 수정
-    // 3. 이슈 삭제
 
     @Operation(summary = "이슈 등록",
         description = "이슈를 등록합니다.",
@@ -415,4 +413,41 @@ public class IssueController {
         @PathVariable("commentId") Long commentId) {
         issueService.deleteComment(memberId, issueId, commentId);
     }
+
+    // TODO
+    // 이슈 코멘트 리액션 취소
+    // 본인이 이미 누른 것만 취소요청할 수 있음
+    @Operation(summary = "이슈 코멘트 리액션 추가",
+        description = "이슈에 코멘트 리액션을 추가합니다.",
+        responses = {
+            @ApiResponse(responseCode = "201",
+                description = "이슈 코멘트 리액션 추가 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = IssueResponse.class)
+                    )
+                }
+            ),
+            @ApiResponse(responseCode = "400",
+                description = "이슈 코멘트 리액션 추가 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @PostMapping("/{issueId}/comments/{commentId}/reactions/{emojiName}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public IssueResponse addReaction(
+        @SignInMemberId Long memberId,
+        @PathVariable("issueId") Long issueId,
+        @PathVariable("commentId") Long commentId,
+        @PathVariable("emojiName") String emojiName) {
+        return issueService.addReaction(memberId, issueId, commentId, emojiName);
+    }
+    
 }
+
