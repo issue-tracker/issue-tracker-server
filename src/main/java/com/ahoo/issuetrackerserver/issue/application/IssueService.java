@@ -226,4 +226,14 @@ public class IssueService {
 
         return IssueResponse.from(issue);
     }
+
+    @Transactional
+    public void deleteReaction(Long memberId, Long reactionId) {
+        Reaction reaction = reactionRepository.findById(reactionId)
+            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_REACTION));
+
+        reaction.validateReactor(memberId);
+
+        reactionRepository.delete(reaction);
+    }
 }

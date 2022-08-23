@@ -1,7 +1,10 @@
 package com.ahoo.issuetrackerserver.issue.domain;
 
 import com.ahoo.issuetrackerserver.common.BaseEntity;
+import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
+import com.ahoo.issuetrackerserver.common.exception.UnAuthorizedException;
 import com.ahoo.issuetrackerserver.member.domain.Member;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -45,5 +48,11 @@ public class Reaction extends BaseEntity {
 
     public boolean isSameReaction(Emoji emoji, Member reactor) {
         return getEmoji().equals(emoji) && getReactor().equals(reactor);
+    }
+
+    public void validateReactor(Long memberId) {
+        if (!Objects.equals(getReactor().getId(), memberId)) {
+            throw new UnAuthorizedException(ErrorMessage.INVALID_AUTHOR);
+        }
     }
 }

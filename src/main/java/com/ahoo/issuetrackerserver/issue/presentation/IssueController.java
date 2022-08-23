@@ -414,9 +414,6 @@ public class IssueController {
         issueService.deleteComment(memberId, issueId, commentId);
     }
 
-    // TODO
-    // 이슈 코멘트 리액션 취소
-    // 본인이 이미 누른 것만 취소요청할 수 있음
     @Operation(summary = "이슈 코멘트 리액션 추가",
         description = "이슈에 코멘트 리액션을 추가합니다.",
         responses = {
@@ -448,6 +445,32 @@ public class IssueController {
         @PathVariable("emojiName") String emojiName) {
         return issueService.addReaction(memberId, issueId, commentId, emojiName);
     }
-    
+
+    @Operation(summary = "이슈 코멘트 리액션 삭제",
+        description = "이슈에 코멘트 리액션을 삭제합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "이슈 코멘트 리액션 삭제 성공"
+            ),
+            @ApiResponse(responseCode = "400",
+                description = "이슈 코멘트 리액션 삭제 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @DeleteMapping("/{issueId}/comments/{commentId}/reactions/{reactionId}")
+    public void deleteReaction(
+        @SignInMemberId Long memberId,
+        @PathVariable("issueId") Long issueId,
+        @PathVariable("commentId") Long commentId,
+        @PathVariable("reactionId") Long reactionId
+    ) {
+        issueService.deleteReaction(memberId, reactionId);
+    }
+
 }
 

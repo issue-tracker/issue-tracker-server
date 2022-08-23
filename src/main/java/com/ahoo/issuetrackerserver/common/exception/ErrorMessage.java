@@ -39,4 +39,5 @@ public class ErrorMessage {
 
     // reaction
     public static final String DUPLICATED_REACTION = "중복되는 리액션이 존재합니다.";
+    public static final String NOT_EXISTS_REACTION = "존재하지 않는 리액션입니다.";
 }
