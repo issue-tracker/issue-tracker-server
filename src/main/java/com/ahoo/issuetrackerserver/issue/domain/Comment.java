@@ -59,4 +59,17 @@ public class Comment extends BaseEntity {
             throw new UnAuthorizedException(ErrorMessage.INVALID_AUTHOR);
         }
     }
+
+    public void addReaction(Reaction reaction) {
+        reactions.add(reaction);
+    }
+
+    public void validateDuplicateReaction(Emoji emoji, Member reactor) {
+        getReactions().stream()
+            .filter(reaction -> reaction.isSameReaction(emoji, reactor))
+            .findFirst()
+            .ifPresent((reaction) -> {
+                throw new DuplicatedReactionException(ErrorMessage.DUPLICATED_REACTION);
+            });
+    }
 }

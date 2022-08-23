@@ -13,12 +13,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Reaction extends BaseEntity {
 
     @Id
@@ -36,4 +38,12 @@ public class Reaction extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reactor_id")
     private Member reactor;
+
+    public static Reaction of(Comment comment, Emoji emoji, Member reactor) {
+        return new Reaction(null, comment, emoji, reactor);
+    }
+
+    public boolean isSameReaction(Emoji emoji, Member reactor) {
+        return getEmoji().equals(emoji) && getReactor().equals(reactor);
+    }
 }
