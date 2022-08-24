@@ -12,7 +12,7 @@ import org.hibernate.validator.constraints.Length;
 @Schema(description = "마일스톤 추가 요청")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AddMilestoneRequest {
+public class MilestoneCreateRequest {
 
     @Schema(required = true, description = "마일스톤 이름")
     @NotBlank
