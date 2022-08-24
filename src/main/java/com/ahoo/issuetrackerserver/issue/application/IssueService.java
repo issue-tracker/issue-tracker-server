@@ -12,6 +12,7 @@ import com.ahoo.issuetrackerserver.issue.infrastructure.IssueRepository;
 import com.ahoo.issuetrackerserver.issue.infrastructure.ReactionRepository;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCreateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueResponse;
+import com.ahoo.issuetrackerserver.issue.presentation.dto.IssuesResponse;
 import com.ahoo.issuetrackerserver.label.domain.Label;
 import com.ahoo.issuetrackerserver.label.infrastructure.LabelRepository;
 import com.ahoo.issuetrackerserver.member.domain.Member;
@@ -23,6 +24,8 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +39,8 @@ public class IssueService {
     private final MilestoneRepository milestoneRepository;
     private final CommentRepository commentRepository;
     private final ReactionRepository reactionRepository;
+
+    private final int PAGE_SIZE = 5;
 
     @Transactional
     public IssueResponse save(Long memberId, IssueCreateRequest issueCreateRequest) {
@@ -235,5 +240,16 @@ public class IssueService {
         reaction.validateReactor(memberId);
 
         reactionRepository.delete(reaction);
+    }
+
+    @Transactional(readOnly = true)
+    public IssuesResponse findAll(int page) {
+        Page<IssueResponse> openIssues = issueRepository.findAllByIsClosedFalse(PageRequest.of(page, PAGE_SIZE))
+            .map(IssueResponse::from);
+
+        Page<IssueResponse> closedIssues = issueRepository.findAllByIsClosedTrue(PageRequest.of(page, PAGE_SIZE))
+            .map(IssueResponse::from);
+
+        return IssuesResponse.of(openIssues, closedIssues);
     }
 }

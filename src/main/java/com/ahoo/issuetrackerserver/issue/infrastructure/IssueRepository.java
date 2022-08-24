@@ -3,12 +3,14 @@ package com.ahoo.issuetrackerserver.issue.infrastructure;
 import com.ahoo.issuetrackerserver.issue.domain.Issue;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface IssueRepository extends JpaRepository<Issue, Long> {
+public interface IssueRepository extends JpaRepository<Issue, Long>, IssueCustomRepository {
 
     @Query("select distinct i "
         + "from Issue i "
@@ -45,4 +47,8 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
         + "set i.isClosed = :status "
         + "where i.id in :ids")
     void updateStatus(@Param("status") boolean status, @Param("ids") List<Long> ids);
+
+    Page<Issue> findAllByIsClosedTrue(Pageable pageable);
+
+    Page<Issue> findAllByIsClosedFalse(Pageable pageable);
 }

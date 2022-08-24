@@ -8,6 +8,7 @@ import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCreateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueResponse;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueStatusUpdateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueTitleUpdateRequest;
+import com.ahoo.issuetrackerserver.issue.presentation.dto.IssuesResponse;
 import com.ahoo.issuetrackerserver.label.application.LabelService;
 import com.ahoo.issuetrackerserver.milestone.application.MilestoneService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -68,6 +69,32 @@ public class IssueController {
     public IssueResponse create(@SignInMemberId Long memberId,
         @Valid @RequestBody IssueCreateRequest issueCreateRequest) {
         return issueService.save(memberId, issueCreateRequest);
+    }
+
+    @Operation(summary = "이슈 전체 조회",
+        description = "이슈를 전체 조회합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "이슈 전체 조회 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = IssueResponse.class)
+                    )
+                }),
+            @ApiResponse(responseCode = "400",
+                description = "이슈 전체 조회 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @GetMapping
+    public IssuesResponse getIssues(@RequestParam int page) {
+        return issueService.findAll(page);
     }
 
     @Operation(summary = "이슈 단건 조회",
