@@ -37,6 +37,7 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "author_id")
     private Member author;
 
+    @Column(length = 1000)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
