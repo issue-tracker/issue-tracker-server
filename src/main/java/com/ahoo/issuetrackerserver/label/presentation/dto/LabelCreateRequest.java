@@ -9,6 +9,7 @@ import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 @Schema(description = "라벨 생성 요청")
 @Getter
@@ -17,6 +18,7 @@ public class LabelCreateRequest {
 
     @Schema(description = "라벨 이름")
     @NotBlank
+    @Length(max = 255)
     private String title;
 
     @Schema(description = "라벨 배경색 코드")
@@ -25,6 +27,7 @@ public class LabelCreateRequest {
     private String backgroundColorCode;
 
     @Schema(description = "라벨 설명")
+    @Length(max = 1000)
     private String description;
 
     @Schema(description = "라벨 글자색")

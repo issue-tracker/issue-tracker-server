@@ -14,23 +14,23 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddMilestoneRequest {
 
-	@Schema(required = true, description = "마일스톤 이름")
-	@NotBlank
-	@Length(max = 255)
-	private String title;
+    @Schema(required = true, description = "마일스톤 이름")
+    @NotBlank
+    @Length(max = 255)
+    private String title;
 
-	@Schema(description = "마일스톤 설명(선택)")
-	@Length(max = 255)
-	private String description;
+    @Schema(description = "마일스톤 설명(선택)")
+    @Length(max = 1000)
+    private String description;
 
-	@Schema(description = "마일스톤 완료일(선택) ex)YYYY-MM-DD")
-	private LocalDate dueDate;
+    @Schema(description = "마일스톤 완료일(선택) ex)YYYY-MM-DD")
+    private LocalDate dueDate;
 
-	public Milestone toEntity() {
-		return Milestone.of(
-			title,
-			description,
-			dueDate
-		);
-	}
+    public Milestone toEntity() {
+        return Milestone.of(
+            title,
+            description,
+            dueDate
+        );
+    }
 }

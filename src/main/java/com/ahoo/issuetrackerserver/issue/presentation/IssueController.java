@@ -382,7 +382,7 @@ public class IssueController {
     public IssueResponse addComment(
         @SignInMemberId Long memberId,
         @PathVariable Long issueId,
-        @RequestBody IssueCommentRequest issueCommentRequest) {
+        @Valid @RequestBody IssueCommentRequest issueCommentRequest) {
         return issueService.addComment(memberId, issueId, issueCommentRequest.getContent());
     }
 
@@ -413,7 +413,7 @@ public class IssueController {
         @SignInMemberId Long memberId,
         @PathVariable("issueId") Long issueId,
         @PathVariable("commentId") Long commentId,
-        @RequestBody IssueCommentRequest issueCommentRequest) {
+        @Valid @RequestBody IssueCommentRequest issueCommentRequest) {
         return issueService.updateComment(memberId, issueId, commentId, issueCommentRequest.getContent());
     }
 
