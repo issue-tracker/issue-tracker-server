@@ -1,86 +1,37 @@
 package com.ahoo.issuetrackerserver.common.exception;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = DuplicatedMemberException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleDuplicateMemberException(DuplicatedMemberException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(value = IllegalAuthProviderTypeException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIllegalAuthProviderTypeException(IllegalAuthProviderTypeException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(value = EssentialFieldDisagreeException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleEssentialFieldDisagreeException(EssentialFieldDisagreeException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(value = UnAuthorizedException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponse handleUnAuthorizedException(UnAuthorizedException e) {
-        e.printStackTrace();
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(value = NoSuchElementException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleNoSuchElementException(NoSuchElementException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIllegalArgumentException(IllegalArgumentException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(value = IllegalStateException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIllegalStateException(IllegalStateException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(value = DuplicatedLabelTitleException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleDuplicatedLabelTitleException(DuplicatedLabelTitleException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(value = DuplicatedReactionException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleDuplicatedReactionException(DuplicatedReactionException e) {
-        return new ErrorResponse(e.getMessage());
+    @ExceptionHandler(value = ApplicationException.class)
+    public ResponseEntity<ErrorResponse> handleApplicationException(ApplicationException e) {
+        return ResponseEntity.status(e.getErrorType().getStatus())
+            .body(new ErrorResponse(e.getErrorType().getErrorMessage()));
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
 
         StringBuilder message = new StringBuilder();
         if (bindingResult.hasErrors()) {
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
             for (FieldError fieldError : fieldErrors) {
+                message.append(fieldError.getField());
+                message.append(": ");
                 message.append(fieldError.getDefaultMessage());
+                message.append(" ");
             }
         }
 
-        return new ErrorResponse(message.toString());
+        return ResponseEntity.badRequest().body(new ErrorResponse(message.toString()));
     }
 }

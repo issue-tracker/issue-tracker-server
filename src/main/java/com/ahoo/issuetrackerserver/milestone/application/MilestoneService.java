@@ -1,6 +1,7 @@
 package com.ahoo.issuetrackerserver.milestone.application;
 
-import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
+import com.ahoo.issuetrackerserver.common.exception.ApplicationException;
+import com.ahoo.issuetrackerserver.common.exception.ErrorType;
 import com.ahoo.issuetrackerserver.milestone.domain.Milestone;
 import com.ahoo.issuetrackerserver.milestone.infrastructure.MilestoneRepository;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestoneCreateRequest;
@@ -22,7 +23,7 @@ public class MilestoneService {
     @Transactional(readOnly = true)
     public MilestoneResponse findOne(Long id) {
         Milestone milestone = milestoneRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MILESTONE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MILESTONE, new NoSuchElementException()));
         return MilestoneResponse.from(milestone);
     }
 
@@ -43,7 +44,7 @@ public class MilestoneService {
     @Transactional
     public MilestoneResponse update(Long id, MilestoneUpdateRequest milestoneUpdateRequest) {
         Milestone milestone = milestoneRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MILESTONE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MILESTONE, new NoSuchElementException()));
         milestone.update(
             milestoneUpdateRequest.getTitle(),
             milestoneUpdateRequest.getDescription(),
@@ -55,7 +56,7 @@ public class MilestoneService {
     @Transactional
     public MilestoneResponse toggleStatus(Long id) {
         Milestone milestone = milestoneRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MILESTONE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MILESTONE, new NoSuchElementException()));
         milestone.toggleStatus();
         return MilestoneResponse.from(milestone);
     }
@@ -64,7 +65,7 @@ public class MilestoneService {
     public void delete(Long id) {
         //TODO: 이슈 도메인 개발 시, 연관관계 끊어주는 로직 추가
         Milestone milestone = milestoneRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MILESTONE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MILESTONE, new NoSuchElementException()));
         milestoneRepository.delete(milestone);
     }
 }

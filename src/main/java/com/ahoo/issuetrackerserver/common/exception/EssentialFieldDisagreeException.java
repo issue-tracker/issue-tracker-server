@@ -1,8 +1,8 @@
 package com.ahoo.issuetrackerserver.common.exception;
 
-public class EssentialFieldDisagreeException extends RuntimeException {
+public class EssentialFieldDisagreeException extends ApplicationException {
 
-    public EssentialFieldDisagreeException(String message) {
-        super(message);
+    public EssentialFieldDisagreeException(ErrorType errorType) {
+        super(errorType);
     }
 }

@@ -1,8 +1,8 @@
 package com.ahoo.issuetrackerserver.common.exception;
 
-public class DuplicatedReactionException extends RuntimeException {
+public class DuplicatedReactionException extends ApplicationException {
 
-    public DuplicatedReactionException(String message) {
-        super(message);
+    public DuplicatedReactionException(ErrorType errorType) {
+        super(errorType);
     }
 }

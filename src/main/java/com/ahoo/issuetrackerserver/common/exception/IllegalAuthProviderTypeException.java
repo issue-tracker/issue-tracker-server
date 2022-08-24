@@ -1,8 +1,8 @@
 package com.ahoo.issuetrackerserver.common.exception;
 
-public class IllegalAuthProviderTypeException extends RuntimeException {
+public class IllegalAuthProviderTypeException extends ApplicationException {
 
-    public IllegalAuthProviderTypeException(Throwable cause) {
-        super("유효하지 않은 AuthProviderType입니다.", cause);
+    public IllegalAuthProviderTypeException(ErrorType errorType, Throwable cause) {
+        super(errorType, cause);
     }
 }

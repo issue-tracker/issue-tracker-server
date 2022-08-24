@@ -7,8 +7,9 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
 import com.ahoo.issuetrackerserver.auth.domain.AuthProvider;
+import com.ahoo.issuetrackerserver.common.exception.ApplicationException;
 import com.ahoo.issuetrackerserver.common.exception.DuplicatedMemberException;
-import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
+import com.ahoo.issuetrackerserver.common.exception.ErrorType;
 import com.ahoo.issuetrackerserver.member.application.MemberService;
 import com.ahoo.issuetrackerserver.member.domain.Member;
 import com.ahoo.issuetrackerserver.member.infrastructure.MemberRepository;
@@ -98,7 +99,7 @@ class MemberServiceTest {
             //then
             assertThatThrownBy(() -> memberService.signUpByGeneral(failureRequest))
                 .isInstanceOf(DuplicatedMemberException.class)
-                .hasMessage(ErrorMessage.DUPLICATED_ID);
+                .hasMessage(ErrorType.DUPLICATED_ID.getErrorMessage());
             then(memberRepository).should(times(1)).findByEmail(failureRequest.getEmail());
             then(memberRepository).should(times(1)).existsBySignInId(failureRequest.getSignInId());
             then(memberRepository).shouldHaveNoMoreInteractions();
@@ -119,7 +120,7 @@ class MemberServiceTest {
             //then
             assertThatThrownBy(() -> memberService.signUpByGeneral(failureRequest))
                 .isInstanceOf(DuplicatedMemberException.class)
-                .hasMessage(ErrorMessage.DUPLICATED_NICKNAME);
+                .hasMessage(ErrorType.DUPLICATED_NICKNAME.getErrorMessage());
             then(memberRepository).should(times(1)).findByEmail(failureRequest.getEmail());
             then(memberRepository).should(times(1)).existsBySignInId(failureRequest.getSignInId());
             then(memberRepository).should(times(1)).existsByNickname(failureRequest.getNickname());
@@ -168,7 +169,7 @@ class MemberServiceTest {
             //then
             assertThatThrownBy(() -> memberService.signUpByAuth(failureRequest))
                 .isInstanceOf(DuplicatedMemberException.class)
-                .hasMessage(duplicatedMember.getAuthProviderType().getProviderName() + ErrorMessage.DUPLICATED_EMAIL);
+                .hasMessage(duplicatedMember.getAuthProviderType().getProviderName() + ErrorType.DUPLICATED_EMAIL);
             then(memberRepository).should(times(1)).findByEmail(failureRequest.getEmail());
             then(memberRepository).shouldHaveNoMoreInteractions();
         }
@@ -186,7 +187,7 @@ class MemberServiceTest {
             //then
             assertThatThrownBy(() -> memberService.signUpByAuth(failureRequest))
                 .isInstanceOf(DuplicatedMemberException.class)
-                .hasMessage(ErrorMessage.DUPLICATED_NICKNAME);
+                .hasMessage(ErrorType.DUPLICATED_NICKNAME.getErrorMessage());
             then(memberRepository).should(times(1)).findByEmail(failureRequest.getEmail());
             then(memberRepository).should(times(1)).existsByNickname(failureRequest.getNickname());
             then(memberRepository).shouldHaveNoMoreInteractions();
@@ -216,7 +217,7 @@ class MemberServiceTest {
         }
 
         @Test
-        void 존재하지_않는_아이디로_로그인_요청_입력이_주어지면_IllegalArgumentException_예외가_발생하며_로그인이_실패한다() {
+        void 존재하지_않는_아이디로_로그인_요청_입력이_주어지면_ApplicationException_예외가_발생하며_로그인이_실패한다() {
             // given
             GeneralSignInRequest generalSignInRequest = GeneralSignInRequest.of("ader", "1234");
             given(memberRepository.findBySignInId(generalSignInRequest.getId())).willReturn(Optional.empty());
@@ -226,14 +227,14 @@ class MemberServiceTest {
             // then
             assertThatThrownBy(
                 () -> memberService.signInByGeneral(generalSignInRequest.getId(), generalSignInRequest.getPassword()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(ErrorMessage.SIGN_IN_FAIL);
+                .isInstanceOf(ApplicationException.class)
+                .hasMessage(ErrorType.SIGN_IN_FAIL.getErrorMessage());
             then(memberRepository).should(times(1)).findBySignInId(generalSignInRequest.getId());
             then(memberRepository).shouldHaveNoMoreInteractions();
         }
 
         @Test
-        void 일치하지_않는_비밀번호로_로그인_요청_입력이_주어지면_IllegalArgumentException_예외가_발생하며_로그인이_실패한다() {
+        void 일치하지_않는_비밀번호로_로그인_요청_입력이_주어지면_ApplicationException_예외가_발생하며_로그인이_실패한다() {
             // given
             Member member = Member.of(1L, "who-hoo", "1234", "who.ho3ov@gmail.com", "hoo",
                 "https://avatars.githubusercontent.com/u/68011320?v=4", AuthProvider.GITHUB, "68011320");
@@ -245,8 +246,8 @@ class MemberServiceTest {
             // then
             assertThatThrownBy(
                 () -> memberService.signInByGeneral(generalSignInRequest.getId(), generalSignInRequest.getPassword()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(ErrorMessage.SIGN_IN_FAIL);
+                .isInstanceOf(ApplicationException.class)
+                .hasMessage(ErrorType.SIGN_IN_FAIL.getErrorMessage());
             then(memberRepository).should(times(1)).findBySignInId(generalSignInRequest.getId());
             then(memberRepository).shouldHaveNoMoreInteractions();
         }

@@ -2,7 +2,7 @@ package com.ahoo.issuetrackerserver.issue.domain;
 
 import com.ahoo.issuetrackerserver.common.BaseEntity;
 import com.ahoo.issuetrackerserver.common.exception.DuplicatedReactionException;
-import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
+import com.ahoo.issuetrackerserver.common.exception.ErrorType;
 import com.ahoo.issuetrackerserver.common.exception.UnAuthorizedException;
 import com.ahoo.issuetrackerserver.member.domain.Member;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class Comment extends BaseEntity {
 
     public void validateSameAuthor(Long memberId) {
         if (this.author.getId() != memberId) {
-            throw new UnAuthorizedException(ErrorMessage.INVALID_AUTHOR);
+            throw new UnAuthorizedException(ErrorType.INVALID_AUTHOR);
         }
     }
 
@@ -70,7 +70,7 @@ public class Comment extends BaseEntity {
             .filter(reaction -> reaction.isSameReaction(emoji, reactor))
             .findFirst()
             .ifPresent((reaction) -> {
-                throw new DuplicatedReactionException(ErrorMessage.DUPLICATED_REACTION);
+                throw new DuplicatedReactionException(ErrorType.DUPLICATED_REACTION);
             });
     }
 }

@@ -2,7 +2,8 @@ package com.ahoo.issuetrackerserver.auth.application;
 
 import com.ahoo.issuetrackerserver.auth.infrastructure.jwt.JwtConstant;
 import com.ahoo.issuetrackerserver.auth.infrastructure.jwt.JwtToken;
-import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
+import com.ahoo.issuetrackerserver.common.exception.ErrorType;
+import com.ahoo.issuetrackerserver.common.exception.UnAuthorizedException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -24,7 +25,7 @@ public class JwtService {
                 .parseClaimsJws(token.getToken())
                 .getBody();
         } catch (SignatureException | ExpiredJwtException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-            throw new JwtException(ErrorMessage.INVALID_TOKEN, e);
+            throw new UnAuthorizedException(ErrorType.INVALID_TOKEN, new JwtException(null, e));
         }
     }
 

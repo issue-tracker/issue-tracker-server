@@ -1,8 +1,8 @@
 package com.ahoo.issuetrackerserver.common.exception;
 
-public class DuplicatedLabelTitleException extends RuntimeException {
+public class DuplicatedLabelTitleException extends ApplicationException {
 
-    public DuplicatedLabelTitleException(String message) {
-        super(message);
+    public DuplicatedLabelTitleException(ErrorType errorType) {
+        super(errorType);
     }
 }

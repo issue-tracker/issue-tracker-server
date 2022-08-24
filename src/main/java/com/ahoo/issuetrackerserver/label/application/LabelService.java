@@ -1,7 +1,8 @@
 package com.ahoo.issuetrackerserver.label.application;
 
+import com.ahoo.issuetrackerserver.common.exception.ApplicationException;
 import com.ahoo.issuetrackerserver.common.exception.DuplicatedLabelTitleException;
-import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
+import com.ahoo.issuetrackerserver.common.exception.ErrorType;
 import com.ahoo.issuetrackerserver.label.domain.Label;
 import com.ahoo.issuetrackerserver.label.domain.TextColor;
 import com.ahoo.issuetrackerserver.label.infrastructure.LabelRepository;
@@ -31,7 +32,7 @@ public class LabelService {
     @Transactional
     public LabelResponse save(String title, String colorCode, String description, TextColor textColor) {
         if (isExistsTitle(title)) {
-            throw new DuplicatedLabelTitleException(ErrorMessage.DUPLICATED_LABEL_TITLE);
+            throw new DuplicatedLabelTitleException(ErrorType.DUPLICATED_LABEL_TITLE);
         }
         Label savedLabel = labelRepository.save(Label.of(title, colorCode, description, textColor));
 
@@ -47,7 +48,7 @@ public class LabelService {
         try {
             labelRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new NoSuchElementException(ErrorMessage.NOT_EXISTS_LABEL);
+            throw new ApplicationException(ErrorType.NOT_EXISTS_LABEL, new NoSuchElementException());
         }
 
     }
@@ -55,7 +56,7 @@ public class LabelService {
     @Transactional(readOnly = true)
     public LabelResponse findById(Long id) {
         Label findLabel = labelRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_LABEL));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_LABEL, new NoSuchElementException()));
 
         return LabelResponse.from(findLabel);
     }
@@ -63,10 +64,10 @@ public class LabelService {
     @Transactional
     public LabelResponse update(LabelUpdateRequest labelUpdateRequest, Long id) {
         Label findLabel = labelRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_LABEL));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_LABEL, new NoSuchElementException()));
 
         if (isExistsTitle(labelUpdateRequest.getTitle())) {
-            throw new DuplicatedLabelTitleException(ErrorMessage.DUPLICATED_LABEL_TITLE);
+            throw new DuplicatedLabelTitleException(ErrorType.DUPLICATED_LABEL_TITLE);
         }
 
         findLabel.update(labelUpdateRequest.getTitle(), labelUpdateRequest.getBackgroundColorCode(),

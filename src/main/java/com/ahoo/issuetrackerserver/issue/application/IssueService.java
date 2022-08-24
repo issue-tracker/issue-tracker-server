@@ -1,6 +1,7 @@
 package com.ahoo.issuetrackerserver.issue.application;
 
-import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
+import com.ahoo.issuetrackerserver.common.exception.ApplicationException;
+import com.ahoo.issuetrackerserver.common.exception.ErrorType;
 import com.ahoo.issuetrackerserver.issue.domain.Comment;
 import com.ahoo.issuetrackerserver.issue.domain.Emoji;
 import com.ahoo.issuetrackerserver.issue.domain.Issue;
@@ -45,9 +46,9 @@ public class IssueService {
     @Transactional
     public IssueResponse save(Long memberId, IssueCreateRequest issueCreateRequest) {
         Member author = memberRepository.findById(memberId)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MEMBER));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MEMBER, new NoSuchElementException()));
         Milestone milestone = milestoneRepository.findById(issueCreateRequest.getMilestoneId())
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MILESTONE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MILESTONE, new NoSuchElementException()));
 
         Issue issue = Issue.of(issueCreateRequest.getTitle(), author, milestone);
 
@@ -73,7 +74,7 @@ public class IssueService {
     @Transactional(readOnly = true)
     public IssueResponse findById(Long id) {
         Issue findIssue = issueRepository.findByIdFetchJoinComments(id)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
         return IssueResponse.from(findIssue);
     }
@@ -86,7 +87,7 @@ public class IssueService {
     @Transactional
     public IssueResponse updateTitle(Long id, String title) {
         Issue issue = issueRepository.findByIdFetchJoinComments(id)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
         issue.changeTitle(title);
 
@@ -96,10 +97,10 @@ public class IssueService {
     @Transactional
     public IssueResponse addAssignee(Long issueId, Long assigneeId) {
         Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
         Member assignee = memberRepository.findById(assigneeId)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MEMBER));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MEMBER, new NoSuchElementException()));
 
         IssueAssignee newAssignee = IssueAssignee.of(issue, assignee);
         issue.addAssignee(newAssignee);
@@ -110,7 +111,7 @@ public class IssueService {
     @Transactional
     public void deleteAssignee(Long issueId, boolean clear, Long assigneeId) {
         Issue issue = issueRepository.findByIdFetchJoinAssignees(issueId)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
         if (clear) {
             issue.clearAssignees();
@@ -122,10 +123,10 @@ public class IssueService {
     @Transactional
     public IssueResponse addLabel(Long issueId, Long labelId) {
         Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
         Label label = labelRepository.findById(labelId)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_LABEL));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_LABEL, new NoSuchElementException()));
 
         IssueLabel newLabel = IssueLabel.of(issue, label);
         issue.addLabel(newLabel);
@@ -136,7 +137,7 @@ public class IssueService {
     @Transactional
     public void deleteLabel(Long issueId, Long labelId) {
         Issue issue = issueRepository.findByIdFetchJoinLabels(issueId)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
         issue.removeLabel(labelId);
     }
@@ -144,10 +145,10 @@ public class IssueService {
     @Transactional
     public IssueResponse addMilestone(Long issueId, Long milestoneId) {
         Milestone milestone = milestoneRepository.findById(milestoneId)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MILESTONE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MILESTONE, new NoSuchElementException()));
 
         Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
         issue.updateMilestone(milestone);
 
@@ -157,7 +158,7 @@ public class IssueService {
     @Transactional
     public void deleteMilestone(Long id) {
         Issue issue = issueRepository.findByIdFetchJoinMilestone(id)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
         issue.clearMilestone();
     }
@@ -165,7 +166,7 @@ public class IssueService {
     @Transactional
     public void deleteIssue(Long id) {
         Issue issue = issueRepository.findByIdFetchJoinMilestone(id)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
         if (issue.getMilestone() != null) {
             issue.getMilestone().removeIssue(issue);
@@ -177,10 +178,10 @@ public class IssueService {
     @Transactional
     public IssueResponse addComment(Long memberId, Long issueId, String content) {
         Member author = memberRepository.findById(memberId)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MEMBER));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MEMBER, new NoSuchElementException()));
 
         Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
         Comment newComment = Comment.of(author, content, issue);
         commentRepository.save(newComment);
@@ -192,7 +193,7 @@ public class IssueService {
     @Transactional
     public IssueResponse updateComment(Long memberId, Long issueId, Long commentId, String content) {
         Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
         issue.updateComment(memberId, commentId, content);
 
@@ -202,7 +203,7 @@ public class IssueService {
     @Transactional
     public void deleteComment(Long memberId, Long issueId, Long commentId) {
         Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
         issue.deleteComment(memberId, commentId);
     }
@@ -212,15 +213,15 @@ public class IssueService {
         Emoji emoji = Emoji.valueOf(emojiName);
 
         Member reactor = memberRepository.findById(memberId)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MEMBER));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MEMBER, new NoSuchElementException()));
 
         Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_ISSUE));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
         Comment comment = issue.getComments().stream()
             .filter(c -> Objects.equals(c.getId(), commentId))
             .findFirst()
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_COMMENT));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_COMMENT, new NoSuchElementException()));
 
         comment.validateDuplicateReaction(emoji, reactor);
 
@@ -235,7 +236,7 @@ public class IssueService {
     @Transactional
     public void deleteReaction(Long memberId, Long reactionId) {
         Reaction reaction = reactionRepository.findById(reactionId)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_REACTION));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_REACTION, new NoSuchElementException()));
 
         reaction.validateReactor(memberId);
 
