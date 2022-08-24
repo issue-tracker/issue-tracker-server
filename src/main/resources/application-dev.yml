@@ -6,8 +6,8 @@ spring:
     password:
   data:
     redis:
-      host : localhost
-      port : 6379
+      host: localhost
+      port: 6379
   h2:
     console:
       enabled: true
@@ -17,6 +17,7 @@ spring:
       ddl-auto: create
     properties:
       hibernate:
+        default_batch_fetch_size: 10
         format_sql: true
     defer-datasource-initialization: true
   sql:

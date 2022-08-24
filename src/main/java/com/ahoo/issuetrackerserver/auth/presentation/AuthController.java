@@ -88,6 +88,26 @@ public class AuthController {
         return authService.responseSignInMember(authMember, accessToken);
     }
 
+    @Operation(summary = "액세스 토큰 재발급",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "액세스 토큰을 재발급합니다.",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = AuthResponse.class)
+                    )
+                }),
+            @ApiResponse(responseCode = "401",
+                description = "액세스 토큰 재발급 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
     @GetMapping("/reissue")
     public AuthResponse reissueToken(@CookieValue(value = "refresh_token") Cookie refreshTokenCookie,
         HttpServletResponse response) {

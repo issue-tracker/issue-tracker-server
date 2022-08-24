@@ -1,7 +1,7 @@
 package com.ahoo.issuetrackerserver.member.application;
 
 import com.ahoo.issuetrackerserver.auth.domain.AuthProvider;
-import com.ahoo.issuetrackerserver.common.exception.DuplicateMemberException;
+import com.ahoo.issuetrackerserver.common.exception.DuplicatedMemberException;
 import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
 import com.ahoo.issuetrackerserver.common.exception.IllegalAuthProviderTypeException;
 import com.ahoo.issuetrackerserver.member.domain.Member;
@@ -72,11 +72,11 @@ public class MemberService {
         validateDuplicatedEmail(generalMemberCreateRequest.getEmail());
 
         if (isDuplicatedSignInId(generalMemberCreateRequest.getSignInId())) {
-            throw new DuplicateMemberException(ErrorMessage.DUPLICATED_ID);
+            throw new DuplicatedMemberException(ErrorMessage.DUPLICATED_ID);
         }
 
         if (isDuplicatedNickname(generalMemberCreateRequest.getNickname())) {
-            throw new DuplicateMemberException(ErrorMessage.DUPLICATED_NICKNAME);
+            throw new DuplicatedMemberException(ErrorMessage.DUPLICATED_NICKNAME);
         }
     }
 
@@ -84,7 +84,7 @@ public class MemberService {
         validateDuplicatedEmail(authMemberCreateRequest.getEmail());
 
         if (isDuplicatedNickname(authMemberCreateRequest.getNickname())) {
-            throw new DuplicateMemberException(ErrorMessage.DUPLICATED_NICKNAME);
+            throw new DuplicatedMemberException(ErrorMessage.DUPLICATED_NICKNAME);
         }
     }
 
@@ -92,7 +92,7 @@ public class MemberService {
     public void validateDuplicatedEmail(String email) {
         memberRepository.findByEmail(email).ifPresent(m -> {
             String authProviderName = m.getAuthProviderType().getProviderName();
-            throw new DuplicateMemberException(authProviderName + ErrorMessage.DUPLICATED_EMAIL);
+            throw new DuplicatedMemberException(authProviderName + ErrorMessage.DUPLICATED_EMAIL);
         });
     }
 
