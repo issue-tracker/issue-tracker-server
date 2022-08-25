@@ -6,7 +6,7 @@ import com.ahoo.issuetrackerserver.auth.presentation.dto.AuthAccessToken;
 import com.ahoo.issuetrackerserver.auth.presentation.dto.AuthResponse;
 import com.ahoo.issuetrackerserver.auth.presentation.dto.AuthUserResponse;
 import com.ahoo.issuetrackerserver.auth.presentation.dto.GithubEmailResponse;
-import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
+import com.ahoo.issuetrackerserver.common.exception.ErrorType;
 import com.ahoo.issuetrackerserver.common.exception.EssentialFieldDisagreeException;
 import com.ahoo.issuetrackerserver.member.application.MemberService;
 import com.ahoo.issuetrackerserver.member.presentation.dto.MemberResponse;
@@ -76,7 +76,7 @@ public class AuthService {
         try {
             return authProvider.parseAuthUserResponse(jsonResponse);
         } catch (JSONException e) {
-            throw new EssentialFieldDisagreeException(ErrorMessage.ESSENTIAL_FIELD_DISAGREE);
+            throw new EssentialFieldDisagreeException(ErrorType.ESSENTIAL_FIELD_DISAGREE);
         }
     }
 

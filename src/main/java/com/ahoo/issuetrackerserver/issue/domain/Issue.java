@@ -1,7 +1,8 @@
 package com.ahoo.issuetrackerserver.issue.domain;
 
 import com.ahoo.issuetrackerserver.common.BaseEntity;
-import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
+import com.ahoo.issuetrackerserver.common.exception.ApplicationException;
+import com.ahoo.issuetrackerserver.common.exception.ErrorType;
 import com.ahoo.issuetrackerserver.member.domain.Member;
 import com.ahoo.issuetrackerserver.milestone.domain.Milestone;
 import java.util.ArrayList;
@@ -76,7 +77,7 @@ public class Issue extends BaseEntity {
         IssueAssignee issueAssignee = this.assignees.stream()
             .filter(a -> Objects.equals(a.getAssignee().getId(), assigneeId))
             .findFirst()
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MEMBER));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MEMBER, new NoSuchElementException()));
         this.assignees.remove(issueAssignee);
     }
 
@@ -92,7 +93,7 @@ public class Issue extends BaseEntity {
         IssueLabel issueLabel = this.labels.stream()
             .filter(l -> Objects.equals(l.getLabel().getId(), labelId))
             .findFirst()
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_LABEL));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_LABEL, new NoSuchElementException()));
         this.labels.remove(issueLabel);
     }
 
@@ -124,7 +125,7 @@ public class Issue extends BaseEntity {
         Comment comment = this.comments.stream()
             .filter(c -> Objects.equals(c.getId(), commentId))
             .findFirst()
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_COMMENT));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_COMMENT, new NoSuchElementException()));
         comment.validateSameAuthor(memberId);
         comment.updateContent(content);
     }
@@ -133,7 +134,7 @@ public class Issue extends BaseEntity {
         Comment comment = getComments().stream()
             .filter(c -> Objects.equals(c.getId(), commentId))
             .findFirst()
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_COMMENT));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_COMMENT, new NoSuchElementException()));
         comment.validateSameAuthor(memberId);
         getComments().remove(comment);
     }

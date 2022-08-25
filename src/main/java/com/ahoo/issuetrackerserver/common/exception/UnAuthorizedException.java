@@ -1,12 +1,12 @@
 package com.ahoo.issuetrackerserver.common.exception;
 
-public class UnAuthorizedException extends RuntimeException {
+public class UnAuthorizedException extends ApplicationException {
 
-    public UnAuthorizedException(String message) {
-        super(message);
+    public UnAuthorizedException(ErrorType errorType) {
+        super(errorType);
     }
 
-    public UnAuthorizedException(String message, Throwable cause) {
-        super(message, cause);
+    public UnAuthorizedException(ErrorType errorType, Throwable cause) {
+        super(errorType, cause);
     }
 }

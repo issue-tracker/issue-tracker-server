@@ -30,6 +30,7 @@ public class Label extends BaseEntity {
     @Column(nullable = false)
     private String backgroundColorCode;
 
+    @Column(length = 1000)
     private String description;
 
     @Enumerated(EnumType.STRING)

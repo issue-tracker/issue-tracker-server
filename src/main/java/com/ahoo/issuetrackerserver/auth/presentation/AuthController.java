@@ -11,8 +11,8 @@ import com.ahoo.issuetrackerserver.auth.presentation.dto.AuthAccessToken;
 import com.ahoo.issuetrackerserver.auth.presentation.dto.AuthResponse;
 import com.ahoo.issuetrackerserver.auth.presentation.dto.AuthUserResponse;
 import com.ahoo.issuetrackerserver.common.argumentresolver.SignInMemberId;
-import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
 import com.ahoo.issuetrackerserver.common.exception.ErrorResponse;
+import com.ahoo.issuetrackerserver.common.exception.ErrorType;
 import com.ahoo.issuetrackerserver.common.exception.UnAuthorizedException;
 import com.ahoo.issuetrackerserver.member.application.MemberService;
 import com.ahoo.issuetrackerserver.member.presentation.dto.MemberResponse;
@@ -72,7 +72,7 @@ public class AuthController {
             AuthAccessToken accessTokenResponse = authService.requestAccessToken(authProvider, code);
             authUserResponse = authService.requestAuthUser(authProvider, accessTokenResponse);
         } catch (WebClientResponseException e) {
-            throw new UnAuthorizedException(ErrorMessage.INVALID_CODE, e);
+            throw new UnAuthorizedException(ErrorType.INVALID_CODE, e);
         }
 
         MemberResponse authMember = authService.findAuthMember(authProvider, authUserResponse.getResourceOwnerId());
@@ -114,7 +114,7 @@ public class AuthController {
         RefreshToken refreshToken = RefreshToken.of(refreshTokenCookie.getValue());
 
         refreshTokenRepository.findById(refreshToken.getToken())
-            .orElseThrow(() -> new UnAuthorizedException(ErrorMessage.INVALID_REFRESH_TOKEN));
+            .orElseThrow(() -> new UnAuthorizedException(ErrorType.INVALID_REFRESH_TOKEN));
 
         Long memberId = jwtService.extractMemberId(refreshToken);
         MemberResponse memberResponse = memberService.findById(memberId);

@@ -2,10 +2,10 @@ package com.ahoo.issuetrackerserver.milestone.presentation;
 
 import com.ahoo.issuetrackerserver.common.exception.ErrorResponse;
 import com.ahoo.issuetrackerserver.milestone.application.MilestoneService;
-import com.ahoo.issuetrackerserver.milestone.presentation.dto.AddMilestoneRequest;
+import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestoneCreateRequest;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestoneResponse;
+import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestoneUpdateRequest;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestonesResponse;
-import com.ahoo.issuetrackerserver.milestone.presentation.dto.UpdateMilestoneRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,159 +31,159 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class MilestoneController {
 
-	private final MilestoneService milestoneService;
+    private final MilestoneService milestoneService;
 
-	@Operation(summary = "마일스톤 단건 조회",
-		description = "마일스톤 id로 단건의 마일스톤을 조회합니다.",
-		responses = {
-			@ApiResponse(responseCode = "200",
-				description = "마일스톤 조회 성공",
-				content = {
-					@Content(
-						mediaType = "application/json",
-						schema = @Schema(implementation = MilestoneResponse.class)
-					)
-				}),
-			@ApiResponse(responseCode = "400",
-				description = "마일스톤 조회 실패",
-				content = {
-					@Content(
-						mediaType = "application/json",
-						schema = @Schema(implementation = ErrorResponse.class)
-					)
-				}
-			)}
-	)
-	@GetMapping("/{id}")
-	public MilestoneResponse milestone(@PathVariable Long id) {
-		return milestoneService.findOne(id);
-	}
+    @Operation(summary = "마일스톤 단건 조회",
+        description = "마일스톤 id로 단건의 마일스톤을 조회합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "마일스톤 조회 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = MilestoneResponse.class)
+                    )
+                }),
+            @ApiResponse(responseCode = "400",
+                description = "마일스톤 조회 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @GetMapping("/{id}")
+    public MilestoneResponse milestone(@PathVariable Long id) {
+        return milestoneService.findOne(id);
+    }
 
-	@Operation(summary = "마일스톤 다건 조회",
-		description = "조건에 맞는 마일스톤의 전체 목록을 조회합니다.",
-		responses = {
-			@ApiResponse(responseCode = "200",
-				description = "마일스톤 다건 조회 성공",
-				content = {
-					@Content(
-						mediaType = "application/json",
-						schema = @Schema(implementation = MilestonesResponse.class)
-					)
-				}),
-			@ApiResponse(responseCode = "400",
-				description = "마일스톤 다건 조회 실패",
-				content = {
-					@Content(
-						mediaType = "application/json",
-						schema = @Schema(implementation = ErrorResponse.class)
-					)
-				}
-			)}
-	)
-	@GetMapping
-	public MilestonesResponse milestones() {
-		return milestoneService.findAll();
-	}
+    @Operation(summary = "마일스톤 다건 조회",
+        description = "조건에 맞는 마일스톤의 전체 목록을 조회합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "마일스톤 다건 조회 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = MilestonesResponse.class)
+                    )
+                }),
+            @ApiResponse(responseCode = "400",
+                description = "마일스톤 다건 조회 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @GetMapping
+    public MilestonesResponse milestones() {
+        return milestoneService.findAll();
+    }
 
-	@Operation(summary = "마일스톤 등록",
-		description = "새로운 마일스톤을 등록합니다.",
-		responses = {
-			@ApiResponse(responseCode = "201",
-				description = "마일스톤 등록 성공",
-				content = {
-					@Content(
-						mediaType = "application/json",
-						schema = @Schema(implementation = MilestoneResponse.class)
-					)
-				}),
-			@ApiResponse(responseCode = "400",
-				description = "마일스톤 등록 실패",
-				content = {
-					@Content(
-						mediaType = "application/json",
-						schema = @Schema(implementation = ErrorResponse.class)
-					)
-				}
-			)}
-	)
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public MilestoneResponse addMilestone(@Valid @RequestBody AddMilestoneRequest addMilestoneRequest) {
-		return milestoneService.save(addMilestoneRequest);
-	}
+    @Operation(summary = "마일스톤 등록",
+        description = "새로운 마일스톤을 등록합니다.",
+        responses = {
+            @ApiResponse(responseCode = "201",
+                description = "마일스톤 등록 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = MilestoneResponse.class)
+                    )
+                }),
+            @ApiResponse(responseCode = "400",
+                description = "마일스톤 등록 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public MilestoneResponse addMilestone(@Valid @RequestBody MilestoneCreateRequest milestoneCreateRequest) {
+        return milestoneService.save(milestoneCreateRequest);
+    }
 
-	@Operation(summary = "마일스톤 수정",
-		description = "마일스톤을 수정합니다.",
-		responses = {
-			@ApiResponse(responseCode = "200",
-				description = "마일스톤 수정 성공",
-				content = {
-					@Content(
-						mediaType = "application/json",
-						schema = @Schema(implementation = MilestoneResponse.class)
-					)
-				}),
-			@ApiResponse(responseCode = "400",
-				description = "마일스톤 수정 실패",
-				content = {
-					@Content(
-						mediaType = "application/json",
-						schema = @Schema(implementation = ErrorResponse.class)
-					)
-				}
-			)}
-	)
-	@PatchMapping("/{id}")
-	public MilestoneResponse updateMilestone(
-		@PathVariable Long id,
-		@Valid @RequestBody UpdateMilestoneRequest updateMilestoneRequest) {
-		return milestoneService.update(id, updateMilestoneRequest);
-	}
+    @Operation(summary = "마일스톤 수정",
+        description = "마일스톤을 수정합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "마일스톤 수정 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = MilestoneResponse.class)
+                    )
+                }),
+            @ApiResponse(responseCode = "400",
+                description = "마일스톤 수정 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @PatchMapping("/{id}")
+    public MilestoneResponse updateMilestone(
+        @PathVariable Long id,
+        @Valid @RequestBody MilestoneUpdateRequest milestoneUpdateRequest) {
+        return milestoneService.update(id, milestoneUpdateRequest);
+    }
 
-	@Operation(summary = "마일스톤 상태 변경(toggle)",
-		description = "마일스톤의 상태를 변경(toggle)합니다.",
-		responses = {
-			@ApiResponse(responseCode = "200",
-				description = "마일스톤 상태 변경(toggle) 성공",
-				content = {
-					@Content(
-						mediaType = "application/json",
-						schema = @Schema(implementation = MilestoneResponse.class)
-					)
-				}),
-			@ApiResponse(responseCode = "400",
-				description = "마일스톤 상태 변경(toggle) 실패",
-				content = {
-					@Content(
-						mediaType = "application/json",
-						schema = @Schema(implementation = ErrorResponse.class)
-					)
-				}
-			)}
-	)
-	@PatchMapping("/{id}/status")
-	public MilestoneResponse toggleMilestoneStatus(@PathVariable Long id) {
-		return milestoneService.toggleStatus(id);
-	}
+    @Operation(summary = "마일스톤 상태 변경(toggle)",
+        description = "마일스톤의 상태를 변경(toggle)합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "마일스톤 상태 변경(toggle) 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = MilestoneResponse.class)
+                    )
+                }),
+            @ApiResponse(responseCode = "400",
+                description = "마일스톤 상태 변경(toggle) 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @PatchMapping("/{id}/status")
+    public MilestoneResponse toggleMilestoneStatus(@PathVariable Long id) {
+        return milestoneService.toggleStatus(id);
+    }
 
-	@Operation(summary = "마일스톤 삭제",
-		description = "마일스톤을 삭제합니다.",
-		responses = {
-			@ApiResponse(responseCode = "200",
-				description = "마일스톤 삭제 성공"),
-			@ApiResponse(responseCode = "400",
-				description = "마일스톤 삭제 실패",
-				content = {
-					@Content(
-						mediaType = "application/json",
-						schema = @Schema(implementation = ErrorResponse.class)
-					)
-				}
-			)}
-	)
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		milestoneService.delete(id);
-		return ResponseEntity.ok().build();
-	}
+    @Operation(summary = "마일스톤 삭제",
+        description = "마일스톤을 삭제합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "마일스톤 삭제 성공"),
+            @ApiResponse(responseCode = "400",
+                description = "마일스톤 삭제 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        milestoneService.delete(id);
+        return ResponseEntity.ok().build();
+    }
 }

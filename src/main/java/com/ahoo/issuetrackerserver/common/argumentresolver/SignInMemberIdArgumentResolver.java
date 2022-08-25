@@ -2,7 +2,7 @@ package com.ahoo.issuetrackerserver.common.argumentresolver;
 
 import com.ahoo.issuetrackerserver.auth.application.JwtService;
 import com.ahoo.issuetrackerserver.auth.infrastructure.jwt.AccessToken;
-import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
+import com.ahoo.issuetrackerserver.common.exception.ErrorType;
 import com.ahoo.issuetrackerserver.common.exception.UnAuthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -30,7 +30,7 @@ public class SignInMemberIdArgumentResolver implements HandlerMethodArgumentReso
 
         String authorizationHeader = webRequest.getHeader(AUTHORIZATION_HEADER_NAME);
         if (authorizationHeader == null) {
-            throw new UnAuthorizedException(ErrorMessage.NO_AUTHORIZATION_HEADER);
+            throw new UnAuthorizedException(ErrorType.NO_AUTHORIZATION_HEADER);
         }
 
         AccessToken accessToken = AccessToken.headerToAccessToken(authorizationHeader);

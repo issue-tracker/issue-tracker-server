@@ -1,8 +1,9 @@
 package com.ahoo.issuetrackerserver.member.application;
 
 import com.ahoo.issuetrackerserver.auth.domain.AuthProvider;
+import com.ahoo.issuetrackerserver.common.exception.ApplicationException;
 import com.ahoo.issuetrackerserver.common.exception.DuplicatedMemberException;
-import com.ahoo.issuetrackerserver.common.exception.ErrorMessage;
+import com.ahoo.issuetrackerserver.common.exception.ErrorType;
 import com.ahoo.issuetrackerserver.common.exception.IllegalAuthProviderTypeException;
 import com.ahoo.issuetrackerserver.member.domain.Member;
 import com.ahoo.issuetrackerserver.member.infrastructure.MemberRepository;
@@ -37,17 +38,17 @@ public class MemberService {
             Member savedMember = memberRepository.save(memberCreateRequest.toEntity());
             return MemberResponse.from(savedMember);
         } catch (IllegalArgumentException e) {
-            throw new IllegalAuthProviderTypeException(e);
+            throw new IllegalAuthProviderTypeException(ErrorType.INVALID_AUTH_PROVIDER_TYPE, e);
         }
     }
 
     @Transactional(readOnly = true)
     public MemberResponse signInByGeneral(String id, String password) {
         Member findMember = memberRepository.findBySignInId(id)
-            .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.SIGN_IN_FAIL));
+            .orElseThrow(() -> new ApplicationException(ErrorType.SIGN_IN_FAIL, new IllegalArgumentException()));
 
         if (!findMember.isCorrectPassword(password)) {
-            throw new IllegalArgumentException(ErrorMessage.SIGN_IN_FAIL);
+            throw new ApplicationException(ErrorType.SIGN_IN_FAIL, new IllegalArgumentException());
         }
 
         return MemberResponse.from(findMember);
@@ -72,11 +73,11 @@ public class MemberService {
         validateDuplicatedEmail(generalMemberCreateRequest.getEmail());
 
         if (isDuplicatedSignInId(generalMemberCreateRequest.getSignInId())) {
-            throw new DuplicatedMemberException(ErrorMessage.DUPLICATED_ID);
+            throw new DuplicatedMemberException(ErrorType.DUPLICATED_ID);
         }
 
         if (isDuplicatedNickname(generalMemberCreateRequest.getNickname())) {
-            throw new DuplicatedMemberException(ErrorMessage.DUPLICATED_NICKNAME);
+            throw new DuplicatedMemberException(ErrorType.DUPLICATED_NICKNAME);
         }
     }
 
@@ -84,7 +85,7 @@ public class MemberService {
         validateDuplicatedEmail(authMemberCreateRequest.getEmail());
 
         if (isDuplicatedNickname(authMemberCreateRequest.getNickname())) {
-            throw new DuplicatedMemberException(ErrorMessage.DUPLICATED_NICKNAME);
+            throw new DuplicatedMemberException(ErrorType.DUPLICATED_NICKNAME);
         }
     }
 
@@ -92,7 +93,7 @@ public class MemberService {
     public void validateDuplicatedEmail(String email) {
         memberRepository.findByEmail(email).ifPresent(m -> {
             String authProviderName = m.getAuthProviderType().getProviderName();
-            throw new DuplicatedMemberException(authProviderName + ErrorMessage.DUPLICATED_EMAIL);
+            throw new DuplicatedMemberException(ErrorType.DUPLICATED_EMAIL, authProviderName);
         });
     }
 
@@ -111,7 +112,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberResponse findById(Long id) {
         Member findMember = memberRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessage.NOT_EXISTS_MEMBER));
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MEMBER, new NoSuchElementException()));
         return MemberResponse.from(findMember);
     }
 }

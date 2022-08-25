@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 @Schema(description = "이슈 등록 요청")
 @Getter
@@ -15,9 +16,11 @@ public class IssueCreateRequest {
 
     @Schema(description = "이슈 제목", required = true)
     @NotBlank
+    @Length(max = 255)
     private String title;
 
     @Schema(description = "이슈 코멘트 내용")
+    @Length(max = 1000)
     private String comment;
 
     @Schema(description = "담당자 아이디 목록")
