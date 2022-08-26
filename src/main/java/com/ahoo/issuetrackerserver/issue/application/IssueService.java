@@ -246,12 +246,12 @@ public class IssueService {
 
     @Transactional(readOnly = true)
     public IssuesResponse findAll(int page, IssueSearchFilter issueSearchFilter) {
-        Page<IssueResponse> openIssues = issueRepository.findAllByIsClosedFalseAndFilter(
-                PageRequest.of(page, PAGE_SIZE), issueSearchFilter)
+        Page<IssueResponse> openIssues = issueRepository.findAllByIsClosedAndFilter(
+                PageRequest.of(page, PAGE_SIZE), issueSearchFilter, false)
             .map(IssueResponse::from);
 
-        Page<IssueResponse> closedIssues = issueRepository.findAllByIsClosedTrueAndFilter(
-                PageRequest.of(page, PAGE_SIZE), issueSearchFilter)
+        Page<IssueResponse> closedIssues = issueRepository.findAllByIsClosedAndFilter(
+                PageRequest.of(page, PAGE_SIZE), issueSearchFilter, true)
             .map(IssueResponse::from);
 
         return IssuesResponse.of(openIssues, closedIssues);

@@ -11,6 +11,8 @@ import com.ahoo.issuetrackerserver.issue.domain.Issue;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueSearchFilter;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.SimpleExpression;
+import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +24,11 @@ import org.springframework.data.domain.Pageable;
 public class IssueRepositoryImpl implements IssueRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
+    public static final int PAGE_SIZE = 10;
 
     @Override
-    public Page<Issue> findAllByIsClosedTrueAndFilter(Pageable pageable, IssueSearchFilter issueSearchFilter) {
+    public Page<Issue> findAllByIsClosedAndFilter(Pageable pageable, IssueSearchFilter issueSearchFilter,
+        boolean isClosed) {
         List<Issue> content = jpaQueryFactory.selectDistinct(issue)
             .from(issue)
             .join(issue.author, member)
@@ -33,15 +37,15 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
             .leftJoin(issue.assignees, issueAssignee)
             .leftJoin(issue.labels, issueLabel)
             .where(
-                issue.isClosed.isTrue(),
-                assigneeNicknamesFilter(issueSearchFilter.getAssigneeNicknames()),
-                labelTitlesFilter(issueSearchFilter.getLabelTitles()),
-                milestoneTitleLikeFilter(issueSearchFilter.getMilestoneTitle()),
-                authorNicknameLikeFilter(issueSearchFilter.getAuthorNickname()),
-                issueTitleLikeFilter(issueSearchFilter.getIssueTitle())
+                isEqual(issue.isClosed, isClosed),
+                isEqual(issue.milestone.title, issueSearchFilter.getMilestoneTitle()),
+                isEqual(issue.author.nickname, issueSearchFilter.getAuthorNickname()),
+                isEqualAny(issueAssignee.assignee.nickname, issueSearchFilter.getAssigneeNicknames()),
+                isEqualAny(issueLabel.label.title, issueSearchFilter.getLabelTitles()),
+                isContains(issue.title, issueSearchFilter.getIssueTitle())
             )
             .offset(pageable.getOffset())
-            .limit(10)
+            .limit(PAGE_SIZE)
             .fetch();
 
         Long count = jpaQueryFactory.select(issue.countDistinct())
@@ -52,96 +56,39 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
             .leftJoin(issue.assignees, issueAssignee)
             .leftJoin(issue.labels, issueLabel)
             .where(
-                issue.isClosed.isTrue(),
-                assigneeNicknamesFilter(issueSearchFilter.getAssigneeNicknames()),
-                labelTitlesFilter(issueSearchFilter.getLabelTitles()),
-                milestoneTitleLikeFilter(issueSearchFilter.getMilestoneTitle()),
-                authorNicknameLikeFilter(issueSearchFilter.getAuthorNickname()),
-                issueTitleLikeFilter(issueSearchFilter.getIssueTitle())
+                isEqual(issue.isClosed, isClosed),
+                isEqual(issue.milestone.title, issueSearchFilter.getMilestoneTitle()),
+                isEqual(issue.author.nickname, issueSearchFilter.getAuthorNickname()),
+                isEqualAny(issueAssignee.assignee.nickname, issueSearchFilter.getAssigneeNicknames()),
+                isEqualAny(issueLabel.label.title, issueSearchFilter.getLabelTitles()),
+                isContains(issue.title, issueSearchFilter.getIssueTitle())
             )
             .offset(pageable.getOffset())
-            .limit(10)
+            .limit(PAGE_SIZE)
             .fetchOne();
 
         return new PageImpl<>(content, pageable, count);
     }
 
-    @Override
-    public Page<Issue> findAllByIsClosedFalseAndFilter(Pageable pageable, IssueSearchFilter issueSearchFilter) {
-        List<Issue> content = jpaQueryFactory.selectDistinct(issue)
-            .from(issue)
-            .join(issue.author, member)
-            .leftJoin(issue.milestone, milestone)
-            .leftJoin(issue.comments, comment)
-            .leftJoin(issue.assignees, issueAssignee)
-            .leftJoin(issue.labels, issueLabel)
-            .where(
-                issue.isClosed.isFalse(),
-                assigneeNicknamesFilter(issueSearchFilter.getAssigneeNicknames()),
-                labelTitlesFilter(issueSearchFilter.getLabelTitles()),
-                milestoneTitleLikeFilter(issueSearchFilter.getMilestoneTitle()),
-                authorNicknameLikeFilter(issueSearchFilter.getAuthorNickname()),
-                issueTitleLikeFilter(issueSearchFilter.getIssueTitle())
-            )
-            .offset(pageable.getOffset())
-            .limit(10)
-            .fetch();
-
-        Long count = jpaQueryFactory.select(issue.countDistinct())
-            .from(issue)
-            .join(issue.author, member)
-            .leftJoin(issue.milestone, milestone)
-            .leftJoin(issue.comments, comment)
-            .leftJoin(issue.assignees, issueAssignee)
-            .leftJoin(issue.labels, issueLabel)
-            .where(
-                issue.isClosed.isFalse(),
-                assigneeNicknamesFilter(issueSearchFilter.getAssigneeNicknames()),
-                labelTitlesFilter(issueSearchFilter.getLabelTitles()),
-                milestoneTitleLikeFilter(issueSearchFilter.getMilestoneTitle()),
-                authorNicknameLikeFilter(issueSearchFilter.getAuthorNickname()),
-                issueTitleLikeFilter(issueSearchFilter.getIssueTitle())
-            )
-            .offset(pageable.getOffset())
-            .limit(10)
-            .fetchOne();
-        return new PageImpl<>(content, pageable, count);
-    }
-
-    private BooleanBuilder assigneeNicknamesFilter(List<String> assigneeNicknames) {
+    private <T> BooleanBuilder isEqualAny(SimpleExpression<T> left, List<T> rights) {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
-        for (String assigneeNickname : assigneeNicknames) {
-            booleanBuilder.or(issueAssignee.assignee.nickname.eq(assigneeNickname));
+        for (T right : rights) {
+            booleanBuilder.or(left.eq(right));
         }
         return booleanBuilder;
     }
 
-    private BooleanBuilder labelTitlesFilter(List<String> labelTitles) {
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-        for (String labelTitle : labelTitles) {
-            booleanBuilder.or(issueLabel.label.title.eq(labelTitle));
-        }
-        return booleanBuilder;
-    }
-
-    private BooleanExpression issueTitleLikeFilter(String issueTitle) {
-        if (issueTitle == null) {
+    private <T> BooleanExpression isEqual(SimpleExpression<T> left, T right) {
+        if (right == null) {
             return null;
         }
-        return issue.title.contains(issueTitle);
+        return left.eq(right);
     }
 
-    private BooleanExpression authorNicknameLikeFilter(String authorNickname) {
-        if (authorNickname == null) {
+    private BooleanExpression isContains(StringPath left, String right) {
+        if (right == null) {
             return null;
         }
-        return issue.author.nickname.eq(authorNickname);
-    }
-
-    private BooleanExpression milestoneTitleLikeFilter(String milestoneTitle) {
-        if (milestoneTitle == null) {
-            return null;
-        }
-        return issue.milestone.title.eq(milestoneTitle);
+        return left.contains(right);
     }
 }
