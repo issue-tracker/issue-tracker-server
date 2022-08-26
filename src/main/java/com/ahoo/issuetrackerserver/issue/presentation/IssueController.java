@@ -2,10 +2,12 @@ package com.ahoo.issuetrackerserver.issue.presentation;
 
 import com.ahoo.issuetrackerserver.common.argumentresolver.SignInMemberId;
 import com.ahoo.issuetrackerserver.common.exception.ErrorResponse;
+import com.ahoo.issuetrackerserver.issue.application.IssueQueryParser;
 import com.ahoo.issuetrackerserver.issue.application.IssueService;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCommentRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCreateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueResponse;
+import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueSearchFilter;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueStatusUpdateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueTitleUpdateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssuesResponse;
@@ -93,8 +95,9 @@ public class IssueController {
             )}
     )
     @GetMapping
-    public IssuesResponse getIssues(@RequestParam int page) {
-        return issueService.findAll(page);
+    public IssuesResponse getIssues(@RequestParam int page, @RequestParam String q) {
+        IssueSearchFilter issueSearchFilter = IssueQueryParser.parse(q);
+        return issueService.findAll(page, issueSearchFilter);
     }
 
     @Operation(summary = "이슈 단건 조회",
