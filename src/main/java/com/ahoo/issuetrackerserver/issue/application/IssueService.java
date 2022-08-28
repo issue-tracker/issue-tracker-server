@@ -13,6 +13,7 @@ import com.ahoo.issuetrackerserver.issue.infrastructure.IssueRepository;
 import com.ahoo.issuetrackerserver.issue.infrastructure.ReactionRepository;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCreateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueResponse;
+import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueSearchFilter;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssuesResponse;
 import com.ahoo.issuetrackerserver.label.domain.Label;
 import com.ahoo.issuetrackerserver.label.infrastructure.LabelRepository;
@@ -244,11 +245,13 @@ public class IssueService {
     }
 
     @Transactional(readOnly = true)
-    public IssuesResponse findAll(int page) {
-        Page<IssueResponse> openIssues = issueRepository.findAllByIsClosedFalse(PageRequest.of(page, PAGE_SIZE))
+    public IssuesResponse findAll(int page, IssueSearchFilter issueSearchFilter) {
+        Page<IssueResponse> openIssues = issueRepository.findAllByIsClosedAndFilter(
+                PageRequest.of(page, PAGE_SIZE), issueSearchFilter, false)
             .map(IssueResponse::from);
 
-        Page<IssueResponse> closedIssues = issueRepository.findAllByIsClosedTrue(PageRequest.of(page, PAGE_SIZE))
+        Page<IssueResponse> closedIssues = issueRepository.findAllByIsClosedAndFilter(
+                PageRequest.of(page, PAGE_SIZE), issueSearchFilter, true)
             .map(IssueResponse::from);
 
         return IssuesResponse.of(openIssues, closedIssues);

@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface IssueRepository extends JpaRepository<Issue, Long>, IssueCustomRepository {
+public interface IssueRepository extends JpaRepository<Issue, Long>, IssueRepositoryCustom {
 
     @Query("select distinct i "
         + "from Issue i "
