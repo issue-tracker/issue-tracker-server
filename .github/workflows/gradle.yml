@@ -9,7 +9,7 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ga-test]
+    branches: [ga-test2]
 
 permissions:
   contents: read
@@ -28,11 +28,18 @@ jobs:
           envs: GITHUB_SHA
           script: |
             cd issue-tracker
+            echo change directory
             chmod +x gradlew
+            echo chmod 
             docker stop issue-tracker-redis
+            echo docker stop
             issue-tracker=` jps | grep issue-tracker | cut -d' ' -f1`
             kill -9 $issue-tracker
+            echo kill jar
             ./gradlew bootJar  
+            echo bootJar
             docker start issue-tracker-redis 
+            echo start redis
             cd build/libs
+            echo change directory
             nohup java -jar issue-tracker.jar --spring.profiles.active=dev &
