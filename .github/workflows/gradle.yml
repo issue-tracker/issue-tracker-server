@@ -29,8 +29,8 @@ jobs:
           script: |
             cd issue-tracker
             echo change directory
-            git switch ga-test2
-            git pull origin ga-test2
+            git switch ga-test3
+            git pull origin ga-test3
             chmod +x gradlew
             echo chmod 
             docker stop issue-tracker-redis
