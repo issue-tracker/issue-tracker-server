@@ -1,0 +1,38 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ga-test]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy 😆
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{secrets.EC2_HOST}}
+          username: ec2-user
+          key: ${{ secrets.PRIVATE_KEY }}
+          envs: GITHUB_SHA
+          script: |
+            cd issue-tracker
+            chmod +x gradlew
+            docker stop issue-tracker-redis
+            issue-tracker=` jps | grep issue-tracker | cut -d' ' -f1`
+            kill -9 $issue-tracker
+            ./gradlew bootJar  
+            docker start issue-tracker-redis 
+            cd build/libs
+            nohup java -jar issue-tracker.jar --spring.profiles.active=dev &
