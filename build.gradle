@@ -66,10 +66,18 @@ sourceSets {
     main.java.srcDir querydslDir
 }
 
-compileQuerydsl {
-    options.annotationProcessorPath = configurations.querydsl
+compileJava {
+    doFirst {
+        delete "$buildDir/generated/querydsl/com"
+    }
 }
 
+compileQuerydsl {
+    doFirst {
+        delete "$buildDir/generated/querydsl/com"
+    }
+    options.annotationProcessorPath = configurations.querydsl
+}
 tasks.named('test') {
     useJUnitPlatform()
 }
