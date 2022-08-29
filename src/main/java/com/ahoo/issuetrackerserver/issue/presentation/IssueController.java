@@ -11,8 +11,6 @@ import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueSearchFilter;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueStatusUpdateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueTitleUpdateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssuesResponse;
-import com.ahoo.issuetrackerserver.label.application.LabelService;
-import com.ahoo.issuetrackerserver.milestone.application.MilestoneService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -39,11 +37,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class IssueController {
 
     private final IssueService issueService;
-    private final LabelService labelService;
-    private final MilestoneService milestoneService;
-
-    //TODO
-    // 1. 이슈 전체 목록
 
     @Operation(summary = "이슈 등록",
         description = "이슈를 등록합니다.",
@@ -95,7 +88,9 @@ public class IssueController {
             )}
     )
     @GetMapping
-    public IssuesResponse getIssues(@RequestParam int page, @RequestParam String q) {
+    public IssuesResponse getIssues(
+        @RequestParam int page,
+        @RequestParam(required = false) String q) {
         IssueSearchFilter issueSearchFilter = IssueQueryParser.parse(q);
         return issueService.findAll(page, issueSearchFilter);
     }
