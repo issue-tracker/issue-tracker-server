@@ -44,4 +44,4 @@ jobs:
             echo start redis
             cd build/libs
             echo change directory
-            nohup java -jar issue-tracker.jar --spring.profiles.active=dev > /nohup.out 2>&1 &
+            nohup java -jar issue-tracker.jar --spring.profiles.active=dev > nohup.out 2>&1 &
