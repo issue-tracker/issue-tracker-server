@@ -29,8 +29,7 @@ public class MilestoneService {
 
     @Transactional(readOnly = true)
     public MilestonesResponse findAll() {
-        //TODO: 이슈 개발 후, 연관된 이슈 count(open, close) 로직 추가
-        List<Milestone> milestones = milestoneRepository.findAll();
+        List<Milestone> milestones = milestoneRepository.findAllFetchJoin();
         return MilestonesResponse.from(milestones);
     }
 
