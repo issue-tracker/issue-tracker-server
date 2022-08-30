@@ -3,15 +3,17 @@ package com.ahoo.issuetrackerserver.milestone.application;
 import com.ahoo.issuetrackerserver.common.exception.ApplicationException;
 import com.ahoo.issuetrackerserver.common.exception.ErrorType;
 import com.ahoo.issuetrackerserver.issue.domain.Issue;
+import com.ahoo.issuetrackerserver.issue.infrastructure.IssueRepository;
 import com.ahoo.issuetrackerserver.milestone.domain.Milestone;
 import com.ahoo.issuetrackerserver.milestone.infrastructure.MilestoneRepository;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestoneCreateRequest;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestoneResponse;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestoneUpdateRequest;
 import com.ahoo.issuetrackerserver.milestone.presentation.dto.MilestonesResponse;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MilestoneService {
 
     private final MilestoneRepository milestoneRepository;
+    private final IssueRepository issueRepository;
 
     @Transactional(readOnly = true)
     public MilestoneResponse findOne(Long id) {
@@ -67,10 +70,11 @@ public class MilestoneService {
         Milestone milestone = milestoneRepository.findByIdFetchJoin(id)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MILESTONE, new NoSuchElementException()));
 
-        List<Issue> issues = new CopyOnWriteArrayList(milestone.getIssues());
-        for (Issue issue : issues) {
-            issue.clearMilestone();
-        }
+        List<Long> ids = milestone.getIssues().stream()
+            .map(Issue::getId)
+            .collect(Collectors.toList());
+
+        issueRepository.removeMilestoneByIds(ids, LocalDateTime.now());
 
         milestoneRepository.delete(milestone);
     }
