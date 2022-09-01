@@ -15,12 +15,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class IssueHistory extends BaseEntity {
 
     @Id
@@ -28,14 +30,12 @@ public class IssueHistory extends BaseEntity {
     @Column(name = "issue_history_id")
     private Long id;
 
-    @Column(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "issue_id")
+    @JoinColumn(name = "issue_id", nullable = false)
     private Issue issue;
 
-    @Column(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "modifier_id")
+    @JoinColumn(name = "modifier_id", nullable = false)
     private Member modifier;
 
     @Column(nullable = false)
@@ -53,4 +53,42 @@ public class IssueHistory extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assignee_id")
     private Member assignee;
+
+    private String previousTitle;
+
+    public static IssueHistory changeTitleType(Issue issue, Member modifier, String previousTitle) {
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.CHANGE_TITLE, null, null, null, previousTitle);
+    }
+
+    public static IssueHistory addAssigneeType(Issue issue, Member modifier, Member assignee) {
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.ADD_ASSIGNEE, null, null, assignee, null);
+    }
+
+    public static IssueHistory deleteAssigneeType(Issue issue, Member modifier, Member assignee) {
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.REMOVE_ASSIGNEE, null, null, assignee, null);
+    }
+
+    public static IssueHistory addLabelType(Issue issue, Member modifier, Label label) {
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.ADD_LABEL, label, null, null, null);
+    }
+
+    public static IssueHistory deleteLabelType(Issue issue, Member modifier, Label label) {
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.REMOVE_LABEL, label, null, null, null);
+    }
+
+    public static IssueHistory addMilestoneType(Issue issue, Member modifier, Milestone milestone) {
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.ADD_MILESTONE, null, milestone, null, null);
+    }
+
+    public static IssueHistory deleteMilestoneType(Issue issue, Member modifier, Milestone milestone) {
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.REMOVE_MILESTONE, null, milestone, null, null);
+    }
+
+    public static IssueHistory openIssueType(Issue issue, Member modifier) {
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.OPEN_ISSUE, null, null, null, null);
+    }
+
+    public static IssueHistory closeIssueType(Issue issue, Member modifier) {
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.CLOSE_ISSUE, null, null, null, null);
+    }
 }

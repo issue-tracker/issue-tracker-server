@@ -2,6 +2,7 @@ package com.ahoo.issuetrackerserver.issue.application;
 
 import com.ahoo.issuetrackerserver.common.exception.ApplicationException;
 import com.ahoo.issuetrackerserver.common.exception.ErrorType;
+import com.ahoo.issuetrackerserver.issue.application.aspect.IssueHistoryLogging;
 import com.ahoo.issuetrackerserver.issue.domain.Comment;
 import com.ahoo.issuetrackerserver.issue.domain.Emoji;
 import com.ahoo.issuetrackerserver.issue.domain.Issue;
@@ -80,13 +81,15 @@ public class IssueService {
         return IssueResponse.from(findIssue);
     }
 
+    @IssueHistoryLogging
     @Transactional
-    public void updateStatus(boolean status, List<Long> ids) {
+    public void updateStatus(boolean status, List<Long> ids, Long memberId) {
         issueRepository.updateStatus(status, ids);
     }
 
+    @IssueHistoryLogging
     @Transactional
-    public IssueResponse updateTitle(Long id, String title) {
+    public IssueResponse updateTitle(Long id, String title, Long memberId) {
         Issue issue = issueRepository.findByIdFetchJoinComments(id)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
@@ -95,8 +98,9 @@ public class IssueService {
         return IssueResponse.from(issue);
     }
 
+    @IssueHistoryLogging
     @Transactional
-    public IssueResponse addAssignee(Long issueId, Long assigneeId) {
+    public IssueResponse addAssignee(Long issueId, Long assigneeId, Long memberId) {
         Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
@@ -109,8 +113,9 @@ public class IssueService {
         return IssueResponse.from(issue);
     }
 
+    @IssueHistoryLogging
     @Transactional
-    public void deleteAssignee(Long issueId, boolean clear, Long assigneeId) {
+    public void deleteAssignee(Long issueId, boolean clear, Long assigneeId, Long memberId) {
         Issue issue = issueRepository.findByIdFetchJoinAssignees(issueId)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
@@ -121,8 +126,9 @@ public class IssueService {
         }
     }
 
+    @IssueHistoryLogging
     @Transactional
-    public IssueResponse addLabel(Long issueId, Long labelId) {
+    public IssueResponse addLabel(Long issueId, Long labelId, Long memberId) {
         Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
@@ -135,16 +141,18 @@ public class IssueService {
         return IssueResponse.from(issue);
     }
 
+    @IssueHistoryLogging
     @Transactional
-    public void deleteLabel(Long issueId, Long labelId) {
+    public void deleteLabel(Long issueId, Long labelId, Long memberId) {
         Issue issue = issueRepository.findByIdFetchJoinLabels(issueId)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
         issue.removeLabel(labelId);
     }
 
+    @IssueHistoryLogging
     @Transactional
-    public IssueResponse addMilestone(Long issueId, Long milestoneId) {
+    public IssueResponse addMilestone(Long issueId, Long milestoneId, Long memberId) {
         Milestone milestone = milestoneRepository.findById(milestoneId)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MILESTONE, new NoSuchElementException()));
 
@@ -156,6 +164,7 @@ public class IssueService {
         return IssueResponse.from(issue);
     }
 
+    @IssueHistoryLogging
     @Transactional
     public void deleteMilestone(Long id, Long milestoneId, Long memberId) {
         Issue issue = issueRepository.findByIdFetchJoinMilestone(id)
@@ -171,8 +180,9 @@ public class IssueService {
         issue.clearMilestone();
     }
 
+    @IssueHistoryLogging
     @Transactional
-    public void deleteIssue(Long id) {
+    public void deleteIssue(Long id, Long memberId) {
         Issue issue = issueRepository.findByIdFetchJoinMilestone(id)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
