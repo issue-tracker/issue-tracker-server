@@ -3,7 +3,8 @@ package com.ahoo.issuetrackerserver.issue.domain;
 public enum IssueUpdateAction {
 
     CHANGE_TITLE,
-    CHANGE_STATUS,
+    OPEN_ISSUE,
+    CLOSE_ISSUE,
     ADD_LABEL,
     REMOVE_LABEL,
     ADD_ASSIGNEE,
