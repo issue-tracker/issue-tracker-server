@@ -157,9 +157,16 @@ public class IssueService {
     }
 
     @Transactional
-    public void deleteMilestone(Long id) {
+    public void deleteMilestone(Long id, Long milestoneId, Long memberId) {
         Issue issue = issueRepository.findByIdFetchJoinMilestone(id)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
+
+        Milestone milestone = milestoneRepository.findById(milestoneId)
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MILESTONE, new NoSuchElementException()));
+
+        if (!issue.getMilestone().equals(milestone)) {
+            throw new ApplicationException(ErrorType.NOT_MATCHED_MILESTONE, new IllegalArgumentException());
+        }
 
         issue.clearMilestone();
     }

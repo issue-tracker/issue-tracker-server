@@ -302,7 +302,7 @@ public class IssueController {
                 }
             )}
     )
-    @PatchMapping("/{issueId}/milestones/{milestoneId}")
+    @PatchMapping("/{issueId}/milestone/{milestoneId}")
     public IssueResponse addMilestone(
         @PathVariable("issueId") Long issueId,
         @PathVariable(name = "milestoneId", required = true) Long milestoneId) {
@@ -325,10 +325,13 @@ public class IssueController {
                 }
             )}
     )
-    @DeleteMapping("/{id}/milestones")
+    @DeleteMapping("/{issueId}/milestone/{milestoneId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMilestone(@PathVariable Long id) {
-        issueService.deleteMilestone(id);
+    public void deleteMilestone(
+        @SignInMemberId Long memberId,
+        @PathVariable("issueId") Long issueId,
+        @PathVariable("milestoneId") Long milestoneId) {
+        issueService.deleteMilestone(issueId, milestoneId, memberId);
     }
 
     @Operation(summary = "이슈 삭제",
