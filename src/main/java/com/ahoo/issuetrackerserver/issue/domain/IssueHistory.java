@@ -56,39 +56,47 @@ public class IssueHistory extends BaseEntity {
 
     private String previousTitle;
 
-    public static IssueHistory changeTitleType(Issue issue, Member modifier, String previousTitle) {
-        return new IssueHistory(null, issue, modifier, IssueUpdateAction.CHANGE_TITLE, null, null, null, previousTitle);
+    private String changedTitle;
+
+    public static IssueHistory changeTitleType(Issue issue, Member modifier, String previousTitle,
+        String changedTitle) {
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.CHANGE_TITLE, null, null, null, previousTitle,
+            changedTitle);
     }
 
     public static IssueHistory addAssigneeType(Issue issue, Member modifier, Member assignee) {
-        return new IssueHistory(null, issue, modifier, IssueUpdateAction.ADD_ASSIGNEE, null, null, assignee, null);
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.ADD_ASSIGNEE, null, null, assignee, null,
+            null);
     }
 
     public static IssueHistory deleteAssigneeType(Issue issue, Member modifier, Member assignee) {
-        return new IssueHistory(null, issue, modifier, IssueUpdateAction.REMOVE_ASSIGNEE, null, null, assignee, null);
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.REMOVE_ASSIGNEE, null, null, assignee, null,
+            null);
     }
 
     public static IssueHistory addLabelType(Issue issue, Member modifier, Label label) {
-        return new IssueHistory(null, issue, modifier, IssueUpdateAction.ADD_LABEL, label, null, null, null);
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.ADD_LABEL, label, null, null, null, null);
     }
 
     public static IssueHistory deleteLabelType(Issue issue, Member modifier, Label label) {
-        return new IssueHistory(null, issue, modifier, IssueUpdateAction.REMOVE_LABEL, label, null, null, null);
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.REMOVE_LABEL, label, null, null, null, null);
     }
 
     public static IssueHistory addMilestoneType(Issue issue, Member modifier, Milestone milestone) {
-        return new IssueHistory(null, issue, modifier, IssueUpdateAction.ADD_MILESTONE, null, milestone, null, null);
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.ADD_MILESTONE, null, milestone, null, null,
+            null);
     }
 
     public static IssueHistory deleteMilestoneType(Issue issue, Member modifier, Milestone milestone) {
-        return new IssueHistory(null, issue, modifier, IssueUpdateAction.REMOVE_MILESTONE, null, milestone, null, null);
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.REMOVE_MILESTONE, null, milestone, null, null,
+            null);
     }
 
     public static IssueHistory openIssueType(Issue issue, Member modifier) {
-        return new IssueHistory(null, issue, modifier, IssueUpdateAction.OPEN_ISSUE, null, null, null, null);
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.OPEN_ISSUE, null, null, null, null, null);
     }
 
     public static IssueHistory closeIssueType(Issue issue, Member modifier) {
-        return new IssueHistory(null, issue, modifier, IssueUpdateAction.CLOSE_ISSUE, null, null, null, null);
+        return new IssueHistory(null, issue, modifier, IssueUpdateAction.CLOSE_ISSUE, null, null, null, null, null);
     }
 }

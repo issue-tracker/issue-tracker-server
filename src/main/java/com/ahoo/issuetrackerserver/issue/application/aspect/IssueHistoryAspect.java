@@ -73,7 +73,7 @@ public class IssueHistoryAspect {
 
             IssueHistory issueHistory = null;
             if (joinPoint.getSignature().getName().equals("updateTitle")) {
-                issueHistory = IssueHistory.changeTitleType(issue, modifier, previousTitle);
+                issueHistory = IssueHistory.changeTitleType(issue, modifier, previousTitle, issue.getTitle());
             } else if (joinPoint.getSignature().getName().equals("addAssignee")) {
                 Long assigneeId = (Long) args[1];
                 Member assignee = memberRepository.findById(assigneeId)
