@@ -56,9 +56,12 @@ public class Issue extends BaseEntity {
 
     private boolean isClosed;
 
+    @OneToMany(mappedBy = "issue")
+    private List<IssueHistory> logs = new ArrayList<>();
+
     public static Issue of(String title, Member author, Milestone milestone) {
         return new Issue(null, title, author, new ArrayList<>(), new ArrayList<>(), milestone, new ArrayList<>(),
-            false);
+            false, new ArrayList<>());
     }
 
     public void addAssignee(IssueAssignee assignee) {
