@@ -12,6 +12,7 @@ import com.ahoo.issuetrackerserver.issue.domain.Reaction;
 import com.ahoo.issuetrackerserver.issue.infrastructure.CommentRepository;
 import com.ahoo.issuetrackerserver.issue.infrastructure.IssueRepository;
 import com.ahoo.issuetrackerserver.issue.infrastructure.ReactionRepository;
+import com.ahoo.issuetrackerserver.issue.presentation.dto.EmojiResponse;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCreateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueResponse;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueSearchFilter;
@@ -22,6 +23,7 @@ import com.ahoo.issuetrackerserver.member.domain.Member;
 import com.ahoo.issuetrackerserver.member.infrastructure.MemberRepository;
 import com.ahoo.issuetrackerserver.milestone.domain.Milestone;
 import com.ahoo.issuetrackerserver.milestone.infrastructure.MilestoneRepository;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -272,5 +274,11 @@ public class IssueService {
             .map(IssueResponse::from);
 
         return IssuesResponse.of(openIssues, closedIssues);
+    }
+
+    public List<EmojiResponse> findAllEmoji() {
+        return Arrays.stream(Emoji.values())
+            .map(EmojiResponse::from)
+            .collect(Collectors.toUnmodifiableList());
     }
 }

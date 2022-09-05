@@ -4,6 +4,7 @@ import com.ahoo.issuetrackerserver.common.argumentresolver.SignInMemberId;
 import com.ahoo.issuetrackerserver.common.exception.ErrorResponse;
 import com.ahoo.issuetrackerserver.issue.application.IssueQueryParser;
 import com.ahoo.issuetrackerserver.issue.application.IssueService;
+import com.ahoo.issuetrackerserver.issue.presentation.dto.EmojiResponse;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCommentRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCreateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueResponse;
@@ -12,10 +13,12 @@ import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueStatusUpdateReque
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueTitleUpdateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssuesResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -510,5 +513,30 @@ public class IssueController {
         issueService.deleteReaction(memberId, reactionId);
     }
 
+    @Operation(summary = "이모지 전체 조회",
+        description = "이모지를 전체 조회합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "이모지 전체 조회 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        array = @ArraySchema(schema = @Schema(implementation = EmojiResponse.class))
+                    )
+                }),
+            @ApiResponse(responseCode = "400",
+                description = "이모지 전체 조회 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @GetMapping("/comments/reactions/emojis")
+    public List<EmojiResponse> getEmojis() {
+        return issueService.findAllEmoji();
+    }
 }
 
