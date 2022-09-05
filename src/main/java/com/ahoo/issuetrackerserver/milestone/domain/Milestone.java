@@ -71,4 +71,8 @@ public class Milestone extends BaseEntity {
     public void removeIssue(Issue issue) {
         this.issues.remove(issue);
     }
+
+    public boolean hasIssue() {
+        return !getIssues().isEmpty();
+    }
 }

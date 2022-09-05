@@ -70,11 +70,12 @@ public class MilestoneService {
         Milestone milestone = milestoneRepository.findByIdFetchJoin(id)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MILESTONE, new NoSuchElementException()));
 
-        List<Long> ids = milestone.getIssues().stream()
-            .map(Issue::getId)
-            .collect(Collectors.toList());
-
-        issueRepository.removeMilestoneByIds(ids, LocalDateTime.now());
+        if (milestone.hasIssue()) {
+            List<Long> ids = milestone.getIssues().stream()
+                .map(Issue::getId)
+                .collect(Collectors.toList());
+            issueRepository.removeMilestoneByIds(ids, LocalDateTime.now());
+        }
 
         milestoneRepository.delete(milestone);
     }
