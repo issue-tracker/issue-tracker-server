@@ -11,6 +11,11 @@ public class IssueQueryParser {
 
     public static IssueSearchFilter parse(String q) {
         IssueSearchFilter filter = new IssueSearchFilter();
+
+        if (q == null) {
+            return filter;
+        }
+
         String[] queryStrings = q.split("\\+");
         for (String queryString : queryStrings) {
             String decodedQueryString = URLDecoder.decode(queryString, StandardCharsets.UTF_8);
