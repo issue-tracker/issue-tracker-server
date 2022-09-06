@@ -10,7 +10,9 @@ import com.ahoo.issuetrackerserver.member.infrastructure.MemberRepository;
 import com.ahoo.issuetrackerserver.member.presentation.dto.AuthMemberCreateRequest;
 import com.ahoo.issuetrackerserver.member.presentation.dto.GeneralMemberCreateRequest;
 import com.ahoo.issuetrackerserver.member.presentation.dto.MemberResponse;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,5 +116,12 @@ public class MemberService {
         Member findMember = memberRepository.findById(id)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MEMBER, new NoSuchElementException()));
         return MemberResponse.from(findMember);
+    }
+
+    @Transactional
+    public List<MemberResponse> findAll() {
+        return memberRepository.findAll().stream()
+            .map(MemberResponse::from)
+            .collect(Collectors.toUnmodifiableList());
     }
 }
