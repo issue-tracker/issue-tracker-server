@@ -25,11 +25,11 @@ public class IssueResponse {
     @Schema(description = "이슈 제목")
     private String title;
 
-    @Schema(description = "이슈 생성 시각")
-    private LocalDateTime createdAt;
-
     @Schema(description = "이슈 생성자")
     private MemberResponse author;
+
+    @Schema(description = "이슈 상태")
+    private boolean isClosed;
 
     @Schema(description = "이슈 코멘트 목록")
     private List<CommentResponse> comments;
@@ -46,12 +46,18 @@ public class IssueResponse {
     @Schema(description = "이슈 변경이력")
     private List<IssueHistoryResponse> issueHistories = new ArrayList<>();
 
+    @Schema(description = "이슈 생성 시각")
+    private LocalDateTime createdAt;
+
+    @Schema(description = "이슈 수정 시각")
+    private LocalDateTime lastModifiedAt;
+
     public static IssueResponse from(Issue issue) {
         return new IssueResponse(
             issue.getId(),
             issue.getTitle(),
-            issue.getCreatedAt(),
             MemberResponse.from(issue.getAuthor()),
+            issue.isClosed(),
             issue.getComments().stream()
                 .map(CommentResponse::from)
                 .collect(Collectors.toUnmodifiableList()),
@@ -60,7 +66,9 @@ public class IssueResponse {
             MilestoneResponse.from(issue.getMilestone()),
             issue.getLogs().stream()
                 .map(history -> IssueHistoryResponse.issueHistoryMapper(history.getAction(), history))
-                .collect(Collectors.toUnmodifiableList())
+                .collect(Collectors.toUnmodifiableList()),
+            issue.getCreatedAt(),
+            issue.getLastModifiedAt()
         );
     }
 }
