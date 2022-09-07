@@ -39,10 +39,6 @@ public class LabelService {
         return LabelResponse.from(savedLabel);
     }
 
-    private boolean isExistsTitle(String title) {
-        return labelRepository.existsByTitle(title);
-    }
-
     @Transactional
     public void deleteById(Long id) {
         try {
@@ -66,7 +62,7 @@ public class LabelService {
         Label findLabel = labelRepository.findById(id)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_LABEL, new NoSuchElementException()));
 
-        if (isExistsTitle(labelUpdateRequest.getTitle())) {
+        if (isExistsTitle(labelUpdateRequest.getTitle()) && isNotModifiedTitle(labelUpdateRequest, findLabel)) {
             throw new DuplicatedLabelTitleException(ErrorType.DUPLICATED_LABEL_TITLE);
         }
 
@@ -76,4 +72,11 @@ public class LabelService {
         return LabelResponse.from(findLabel);
     }
 
+    private boolean isExistsTitle(String title) {
+        return labelRepository.existsByTitle(title);
+    }
+
+    private boolean isNotModifiedTitle(LabelUpdateRequest labelUpdateRequest, Label findLabel) {
+        return !findLabel.getTitle().equals(labelUpdateRequest.getTitle());
+    }
 }

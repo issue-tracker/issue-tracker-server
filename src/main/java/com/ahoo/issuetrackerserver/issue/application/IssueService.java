@@ -2,6 +2,7 @@ package com.ahoo.issuetrackerserver.issue.application;
 
 import com.ahoo.issuetrackerserver.common.exception.ApplicationException;
 import com.ahoo.issuetrackerserver.common.exception.ErrorType;
+import com.ahoo.issuetrackerserver.issue.application.aspect.IssueHistoryLogging;
 import com.ahoo.issuetrackerserver.issue.domain.Comment;
 import com.ahoo.issuetrackerserver.issue.domain.Emoji;
 import com.ahoo.issuetrackerserver.issue.domain.Issue;
@@ -11,6 +12,7 @@ import com.ahoo.issuetrackerserver.issue.domain.Reaction;
 import com.ahoo.issuetrackerserver.issue.infrastructure.CommentRepository;
 import com.ahoo.issuetrackerserver.issue.infrastructure.IssueRepository;
 import com.ahoo.issuetrackerserver.issue.infrastructure.ReactionRepository;
+import com.ahoo.issuetrackerserver.issue.presentation.dto.EmojiResponse;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCreateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueResponse;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueSearchFilter;
@@ -21,6 +23,7 @@ import com.ahoo.issuetrackerserver.member.domain.Member;
 import com.ahoo.issuetrackerserver.member.infrastructure.MemberRepository;
 import com.ahoo.issuetrackerserver.milestone.domain.Milestone;
 import com.ahoo.issuetrackerserver.milestone.infrastructure.MilestoneRepository;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -80,13 +83,15 @@ public class IssueService {
         return IssueResponse.from(findIssue);
     }
 
+    @IssueHistoryLogging
     @Transactional
-    public void updateStatus(boolean status, List<Long> ids) {
+    public void updateStatus(boolean status, List<Long> ids, Long memberId) {
         issueRepository.updateStatus(status, ids);
     }
 
+    @IssueHistoryLogging
     @Transactional
-    public IssueResponse updateTitle(Long id, String title) {
+    public IssueResponse updateTitle(Long id, String title, Long memberId) {
         Issue issue = issueRepository.findByIdFetchJoinComments(id)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
@@ -95,8 +100,9 @@ public class IssueService {
         return IssueResponse.from(issue);
     }
 
+    @IssueHistoryLogging
     @Transactional
-    public IssueResponse addAssignee(Long issueId, Long assigneeId) {
+    public IssueResponse addAssignee(Long issueId, Long assigneeId, Long memberId) {
         Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
@@ -109,8 +115,9 @@ public class IssueService {
         return IssueResponse.from(issue);
     }
 
+    @IssueHistoryLogging
     @Transactional
-    public void deleteAssignee(Long issueId, boolean clear, Long assigneeId) {
+    public void deleteAssignee(Long issueId, boolean clear, Long assigneeId, Long memberId) {
         Issue issue = issueRepository.findByIdFetchJoinAssignees(issueId)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
@@ -121,8 +128,9 @@ public class IssueService {
         }
     }
 
+    @IssueHistoryLogging
     @Transactional
-    public IssueResponse addLabel(Long issueId, Long labelId) {
+    public IssueResponse addLabel(Long issueId, Long labelId, Long memberId) {
         Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
@@ -135,16 +143,18 @@ public class IssueService {
         return IssueResponse.from(issue);
     }
 
+    @IssueHistoryLogging
     @Transactional
-    public void deleteLabel(Long issueId, Long labelId) {
+    public void deleteLabel(Long issueId, Long labelId, Long memberId) {
         Issue issue = issueRepository.findByIdFetchJoinLabels(issueId)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
         issue.removeLabel(labelId);
     }
 
+    @IssueHistoryLogging
     @Transactional
-    public IssueResponse addMilestone(Long issueId, Long milestoneId) {
+    public IssueResponse addMilestone(Long issueId, Long milestoneId, Long memberId) {
         Milestone milestone = milestoneRepository.findById(milestoneId)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MILESTONE, new NoSuchElementException()));
 
@@ -156,16 +166,25 @@ public class IssueService {
         return IssueResponse.from(issue);
     }
 
+    @IssueHistoryLogging
     @Transactional
-    public void deleteMilestone(Long id) {
+    public void deleteMilestone(Long id, Long milestoneId, Long memberId) {
         Issue issue = issueRepository.findByIdFetchJoinMilestone(id)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
+
+        Milestone milestone = milestoneRepository.findById(milestoneId)
+            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MILESTONE, new NoSuchElementException()));
+
+        if (!issue.getMilestone().equals(milestone)) {
+            throw new ApplicationException(ErrorType.NOT_MATCHED_MILESTONE, new IllegalArgumentException());
+        }
 
         issue.clearMilestone();
     }
 
+    @IssueHistoryLogging
     @Transactional
-    public void deleteIssue(Long id) {
+    public void deleteIssue(Long id, Long memberId) {
         Issue issue = issueRepository.findByIdFetchJoinMilestone(id)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
@@ -255,5 +274,11 @@ public class IssueService {
             .map(IssueResponse::from);
 
         return IssuesResponse.of(openIssues, closedIssues);
+    }
+
+    public List<EmojiResponse> findAllEmoji() {
+        return Arrays.stream(Emoji.values())
+            .map(EmojiResponse::from)
+            .collect(Collectors.toUnmodifiableList());
     }
 }

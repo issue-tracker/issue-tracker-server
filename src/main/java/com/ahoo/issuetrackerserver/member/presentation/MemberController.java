@@ -14,10 +14,12 @@ import com.ahoo.issuetrackerserver.member.presentation.dto.GeneralSignInRequest;
 import com.ahoo.issuetrackerserver.member.presentation.dto.MemberResponse;
 import com.ahoo.issuetrackerserver.member.presentation.dto.SignResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -251,5 +253,31 @@ public class MemberController {
         response.addCookie(cookie);
 
         refreshTokenRepository.delete(refreshToken);
+    }
+
+    @Operation(summary = "회원 목록 조회",
+        description = "전체 회원 목록을 조회합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "회원 목록 조회 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        array = @ArraySchema(schema = @Schema(implementation = MemberResponse.class))
+                    )
+                }),
+            @ApiResponse(responseCode = "400",
+                description = "회원 목록 조회 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @GetMapping
+    public List<MemberResponse> getMembers(@SignInMemberId Long id) {
+        return memberService.findAll();
     }
 }

@@ -4,6 +4,7 @@ import com.ahoo.issuetrackerserver.common.argumentresolver.SignInMemberId;
 import com.ahoo.issuetrackerserver.common.exception.ErrorResponse;
 import com.ahoo.issuetrackerserver.issue.application.IssueQueryParser;
 import com.ahoo.issuetrackerserver.issue.application.IssueService;
+import com.ahoo.issuetrackerserver.issue.presentation.dto.EmojiResponse;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCommentRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCreateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueResponse;
@@ -12,10 +13,12 @@ import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueStatusUpdateReque
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueTitleUpdateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssuesResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -139,8 +142,10 @@ public class IssueController {
     )
     @PatchMapping("/update-status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void changeIssueStatus(@Valid @RequestBody IssueStatusUpdateRequest issueStatusUpdateRequest) {
-        issueService.updateStatus(issueStatusUpdateRequest.getStatus(), issueStatusUpdateRequest.getIds());
+    public void changeIssueStatus(
+        @SignInMemberId Long memberId,
+        @Valid @RequestBody IssueStatusUpdateRequest issueStatusUpdateRequest) {
+        issueService.updateStatus(issueStatusUpdateRequest.getStatus(), issueStatusUpdateRequest.getIds(), memberId);
     }
 
     @Operation(summary = "이슈 제목 수정",
@@ -166,9 +171,10 @@ public class IssueController {
     )
     @PatchMapping("/{id}/title")
     public IssueResponse updateTitle(
+        @SignInMemberId Long memberId,
         @PathVariable Long id,
         @Valid @RequestBody IssueTitleUpdateRequest issueTitleUpdateRequest) {
-        return issueService.updateTitle(id, issueTitleUpdateRequest.getTitle());
+        return issueService.updateTitle(id, issueTitleUpdateRequest.getTitle(), memberId);
     }
 
     @Operation(summary = "이슈 담당자 추가",
@@ -195,9 +201,10 @@ public class IssueController {
     )
     @PostMapping("/{issueId}/assignees/{assigneeId}")
     public IssueResponse addAssignee(
+        @SignInMemberId Long memberId,
         @PathVariable("issueId") Long issueId,
         @PathVariable("assigneeId") Long assigneeId) {
-        return issueService.addAssignee(issueId, assigneeId);
+        return issueService.addAssignee(issueId, assigneeId, memberId);
     }
 
     @Operation(summary = "이슈 담당자 삭제",
@@ -219,11 +226,12 @@ public class IssueController {
     @DeleteMapping("/{issueId}/assignees")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAssignees(
+        @SignInMemberId Long memberId,
         @PathVariable Long issueId,
         @RequestParam(required = false, defaultValue = "false") boolean clear,
         @RequestParam(required = false) Long assigneeId
     ) {
-        issueService.deleteAssignee(issueId, clear, assigneeId);
+        issueService.deleteAssignee(issueId, clear, assigneeId, memberId);
     }
 
     @Operation(summary = "이슈 라벨 추가",
@@ -250,9 +258,10 @@ public class IssueController {
     )
     @PostMapping("/{issueId}/labels/{labelId}")
     public IssueResponse addLabel(
+        @SignInMemberId Long memberId,
         @PathVariable("issueId") Long issueId,
         @PathVariable("labelId") Long labelId) {
-        return issueService.addLabel(issueId, labelId);
+        return issueService.addLabel(issueId, labelId, memberId);
     }
 
     @Operation(summary = "이슈 라벨 삭제",
@@ -273,11 +282,12 @@ public class IssueController {
     )
     @DeleteMapping("/{issueId}/labels/{labelId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAssignees(
+    public void deleteLabels(
+        @SignInMemberId Long memberId,
         @PathVariable("issueId") Long issueId,
         @PathVariable("labelId") Long labelId
     ) {
-        issueService.deleteLabel(issueId, labelId);
+        issueService.deleteLabel(issueId, labelId, memberId);
     }
 
     @Operation(summary = "이슈 마일스톤 추가",
@@ -302,11 +312,12 @@ public class IssueController {
                 }
             )}
     )
-    @PatchMapping("/{issueId}/milestones/{milestoneId}")
+    @PatchMapping("/{issueId}/milestone/{milestoneId}")
     public IssueResponse addMilestone(
+        @SignInMemberId Long memberId,
         @PathVariable("issueId") Long issueId,
         @PathVariable(name = "milestoneId", required = true) Long milestoneId) {
-        return issueService.addMilestone(issueId, milestoneId);
+        return issueService.addMilestone(issueId, milestoneId, memberId);
     }
 
     @Operation(summary = "이슈 마일스톤 삭제",
@@ -325,10 +336,13 @@ public class IssueController {
                 }
             )}
     )
-    @DeleteMapping("/{id}/milestones")
+    @DeleteMapping("/{issueId}/milestone/{milestoneId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMilestone(@PathVariable Long id) {
-        issueService.deleteMilestone(id);
+    public void deleteMilestone(
+        @SignInMemberId Long memberId,
+        @PathVariable("issueId") Long issueId,
+        @PathVariable("milestoneId") Long milestoneId) {
+        issueService.deleteMilestone(issueId, milestoneId, memberId);
     }
 
     @Operation(summary = "이슈 삭제",
@@ -349,8 +363,10 @@ public class IssueController {
     )
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteIssue(@PathVariable Long id) {
-        issueService.deleteIssue(id);
+    public void deleteIssue(
+        @SignInMemberId Long memberId,
+        @PathVariable Long id) {
+        issueService.deleteIssue(id, memberId);
     }
 
     @Operation(summary = "이슈 코멘트 등록",
@@ -497,5 +513,30 @@ public class IssueController {
         issueService.deleteReaction(memberId, reactionId);
     }
 
+    @Operation(summary = "이모지 전체 조회",
+        description = "이모지를 전체 조회합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200",
+                description = "이모지 전체 조회 성공",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        array = @ArraySchema(schema = @Schema(implementation = EmojiResponse.class))
+                    )
+                }),
+            @ApiResponse(responseCode = "400",
+                description = "이모지 전체 조회 실패",
+                content = {
+                    @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class)
+                    )
+                }
+            )}
+    )
+    @GetMapping("/comments/reactions/emojis")
+    public List<EmojiResponse> getEmojis() {
+        return issueService.findAllEmoji();
+    }
 }
 
