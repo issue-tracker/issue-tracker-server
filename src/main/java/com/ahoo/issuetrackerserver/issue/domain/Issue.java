@@ -141,4 +141,12 @@ public class Issue extends BaseEntity {
         comment.validateSameAuthor(memberId);
         getComments().remove(comment);
     }
+
+    public boolean isFirstComment(Long commentId) {
+        return Objects.equals(
+            comments.stream()
+                .findFirst()
+                .orElseThrow()
+                .getId(), commentId);
+    }
 }
