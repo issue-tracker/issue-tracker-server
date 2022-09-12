@@ -36,6 +36,7 @@ public enum ErrorType {
     NOT_EXISTS_MILESTONE(HttpStatus.BAD_REQUEST, "존재하지 않는 마일스톤입니다."),
     NOT_EXISTS_REACTION(HttpStatus.BAD_REQUEST, "존재하지 않는 리액션입니다."),
 
+    NOT_DELETABLE_COMMENT(HttpStatus.BAD_REQUEST, "삭제할 수 없는 코멘트입니다."),
     NOT_MATCHED_MILESTONE(HttpStatus.BAD_REQUEST, "삭제하려는 마일스톤이 해당 이슈에 존재하지 않습니다.");
 
     private final HttpStatus status;
