@@ -225,6 +225,10 @@ public class IssueService {
         Issue issue = issueRepository.findByIdFetchJoinComments(issueId)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
+        if (issue.isFirstComment(commentId)) {
+            throw new ApplicationException(ErrorType.NOT_DELETABLE_COMMENT);
+        }
+
         issue.deleteComment(memberId, commentId);
     }
 
