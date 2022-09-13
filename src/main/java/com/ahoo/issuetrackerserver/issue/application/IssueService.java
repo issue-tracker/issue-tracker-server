@@ -51,8 +51,10 @@ public class IssueService {
     public IssueResponse save(Long memberId, IssueCreateRequest issueCreateRequest) {
         Member author = memberRepository.findById(memberId)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MEMBER, new NoSuchElementException()));
-        Milestone milestone = milestoneRepository.findById(issueCreateRequest.getMilestoneId())
-            .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_MILESTONE, new NoSuchElementException()));
+        Milestone milestone = issueCreateRequest.getMilestoneId() == null
+            ? null
+            : milestoneRepository.findById(issueCreateRequest.getMilestoneId()).orElseThrow(
+                () -> new ApplicationException(ErrorType.NOT_EXISTS_MILESTONE, new NoSuchElementException()));
 
         Issue issue = Issue.of(issueCreateRequest.getTitle(), author, milestone);
 

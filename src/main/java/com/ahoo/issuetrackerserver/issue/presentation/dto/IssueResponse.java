@@ -63,7 +63,7 @@ public class IssueResponse {
                 .collect(Collectors.toUnmodifiableList()),
             IssueAssigneesResponse.from(issue.getAssignees()),
             IssueLabelsResponse.from(issue.getLabels()),
-            MilestoneResponse.from(issue.getMilestone()),
+            issue.getMilestone() == null ? null : MilestoneResponse.from(issue.getMilestone()),
             issue.getLogs().stream()
                 .map(history -> IssueHistoryResponse.issueHistoryMapper(history.getAction(), history))
                 .collect(Collectors.toUnmodifiableList()),
