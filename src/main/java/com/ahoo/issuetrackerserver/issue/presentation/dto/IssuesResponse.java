@@ -22,7 +22,7 @@ public class IssuesResponse {
     @Schema(description = "닫힌 이슈 갯수")
     private Long closedIssueCount;
 
-    @Schema(description = "이힌 이슈 목록")
+    @Schema(description = "닫힌 이슈 목록")
     private Page<IssueResponse> closedIssues;
 
     public static IssuesResponse of(Page<IssueResponse> openIssues, Page<IssueResponse> closedIssues) {
