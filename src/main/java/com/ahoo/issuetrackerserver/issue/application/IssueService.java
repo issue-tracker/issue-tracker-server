@@ -23,6 +23,7 @@ import com.ahoo.issuetrackerserver.member.domain.Member;
 import com.ahoo.issuetrackerserver.member.infrastructure.MemberRepository;
 import com.ahoo.issuetrackerserver.milestone.domain.Milestone;
 import com.ahoo.issuetrackerserver.milestone.infrastructure.MilestoneRepository;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -88,7 +89,7 @@ public class IssueService {
     @IssueHistoryLogging
     @Transactional
     public void updateStatus(boolean status, List<Long> ids, Long memberId) {
-        issueRepository.updateStatus(status, ids);
+        issueRepository.updateStatus(status, ids, LocalDateTime.now());
     }
 
     @IssueHistoryLogging

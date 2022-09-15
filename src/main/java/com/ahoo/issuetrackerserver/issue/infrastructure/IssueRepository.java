@@ -45,9 +45,10 @@ public interface IssueRepository extends JpaRepository<Issue, Long>, IssueReposi
 
     @Modifying
     @Query("update Issue i "
-        + "set i.isClosed = :status "
+        + "set i.isClosed = :status, "
+        + "i.lastModifiedAt = :now "
         + "where i.id in :ids")
-    void updateStatus(@Param("status") boolean status, @Param("ids") List<Long> ids);
+    void updateStatus(@Param("status") boolean status, @Param("ids") List<Long> ids, @Param("now") LocalDateTime now);
 
     Page<Issue> findAllByIsClosedTrue(Pageable pageable);
 
