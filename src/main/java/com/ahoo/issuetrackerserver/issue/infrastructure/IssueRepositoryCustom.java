@@ -7,5 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface IssueRepositoryCustom {
 
-    Page<Issue> findAllByIsClosedAndFilter(Pageable pageable, IssueSearchFilter filter, boolean isClosed);
+    Page<Issue> findAllByFilter(Pageable pageable, IssueSearchFilter filter);
+
+    Long countByFilterAndIsClosed(IssueSearchFilter filter, boolean isClosed);
 }

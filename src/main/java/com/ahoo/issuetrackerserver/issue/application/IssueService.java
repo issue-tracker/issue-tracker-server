@@ -272,15 +272,13 @@ public class IssueService {
 
     @Transactional(readOnly = true)
     public IssuesResponse findAll(int page, IssueSearchFilter issueSearchFilter) {
-        Page<IssueResponse> openIssues = issueRepository.findAllByIsClosedAndFilter(
-                PageRequest.of(page, PAGE_SIZE), issueSearchFilter, false)
+        long openIssueCount = issueRepository.countByFilterAndIsClosed(issueSearchFilter, false);
+        long closedIssueCount = issueRepository.countByFilterAndIsClosed(issueSearchFilter, true);
+        Page<IssueResponse> issues = issueRepository.findAllByFilter(
+                PageRequest.of(page, PAGE_SIZE), issueSearchFilter)
             .map(IssueResponse::from);
 
-        Page<IssueResponse> closedIssues = issueRepository.findAllByIsClosedAndFilter(
-                PageRequest.of(page, PAGE_SIZE), issueSearchFilter, true)
-            .map(IssueResponse::from);
-
-        return IssuesResponse.of(openIssues, closedIssues);
+        return IssuesResponse.of(openIssueCount, closedIssueCount, issues);
     }
 
     public List<EmojiResponse> findAllEmoji() {
