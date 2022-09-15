@@ -45,7 +45,7 @@ public class IssueService {
     private final CommentRepository commentRepository;
     private final ReactionRepository reactionRepository;
 
-    private final int PAGE_SIZE = 5;
+    private final int PAGE_SIZE = 10;
 
     @Transactional
     public IssueResponse save(Long memberId, IssueCreateRequest issueCreateRequest) {
