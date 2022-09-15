@@ -63,8 +63,6 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
                 isEqualAny(issueLabel.label.title, issueSearchFilter.getLabelTitles()),
                 isContains(issue.title, issueSearchFilter.getIssueTitle())
             )
-            .offset(pageable.getOffset())
-            .limit(PAGE_SIZE)
             .fetchOne();
 
         return new PageImpl<>(content, pageable, count);
