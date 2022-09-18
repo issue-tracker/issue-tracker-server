@@ -22,7 +22,7 @@ public class IssueSearchFilter {
     public void addElement(String queryString) {
         String[] query = queryString.split(":");
         if (query.length > 1) {
-            query[VALUE] = query[VALUE].replaceAll("\"", "");
+            query[VALUE] = query[VALUE].substring(1, query[VALUE].length() - 1);
         }
         switch (query[KEY]) {
             case "is":

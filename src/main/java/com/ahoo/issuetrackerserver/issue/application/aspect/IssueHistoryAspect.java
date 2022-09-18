@@ -54,7 +54,9 @@ public class IssueHistoryAspect {
 
             Object[] args = joinPoint.getArgs();
             Long issueId = (Long) args[0];
-            Long modifiedId = (Long) args[2];
+            Long modifiedId = args.length > 2
+                ? (Long) args[2]
+                : (Long) args[1];
             String previousTitle = null;
 
             if (joinPoint.getSignature().getName().equals("updateTitle")) {
@@ -64,7 +66,15 @@ public class IssueHistoryAspect {
                         () -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
             }
 
+            if (joinPoint.getSignature().getName().equals("deleteIssue")) {
+                issueHistoryRepository.deleteAllByIssueId(issueId);
+            }
+
             joinPoint.proceed();
+
+            if (joinPoint.getSignature().getName().equals("deleteIssue")) {
+                return;
+            }
 
             Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));

@@ -23,6 +23,7 @@ import com.ahoo.issuetrackerserver.member.domain.Member;
 import com.ahoo.issuetrackerserver.member.infrastructure.MemberRepository;
 import com.ahoo.issuetrackerserver.milestone.domain.Milestone;
 import com.ahoo.issuetrackerserver.milestone.infrastructure.MilestoneRepository;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -88,7 +89,7 @@ public class IssueService {
     @IssueHistoryLogging
     @Transactional
     public void updateStatus(boolean status, List<Long> ids, Long memberId) {
-        issueRepository.updateStatus(status, ids);
+        issueRepository.updateStatus(status, ids, LocalDateTime.now());
     }
 
     @IssueHistoryLogging
@@ -271,15 +272,13 @@ public class IssueService {
 
     @Transactional(readOnly = true)
     public IssuesResponse findAll(int page, IssueSearchFilter issueSearchFilter) {
-        Page<IssueResponse> openIssues = issueRepository.findAllByIsClosedAndFilter(
-                PageRequest.of(page, PAGE_SIZE), issueSearchFilter, false)
+        long openIssueCount = issueRepository.countByFilterAndIsClosed(issueSearchFilter, false);
+        long closedIssueCount = issueRepository.countByFilterAndIsClosed(issueSearchFilter, true);
+        Page<IssueResponse> issues = issueRepository.findAllByFilter(
+                PageRequest.of(page, PAGE_SIZE), issueSearchFilter)
             .map(IssueResponse::from);
 
-        Page<IssueResponse> closedIssues = issueRepository.findAllByIsClosedAndFilter(
-                PageRequest.of(page, PAGE_SIZE), issueSearchFilter, true)
-            .map(IssueResponse::from);
-
-        return IssuesResponse.of(openIssues, closedIssues);
+        return IssuesResponse.of(openIssueCount, closedIssueCount, issues);
     }
 
     public List<EmojiResponse> findAllEmoji() {

@@ -16,21 +16,17 @@ public class IssuesResponse {
     @Schema(description = "열린 이슈 갯수")
     private Long openIssueCount;
 
-    @Schema(description = "열린 이슈 목록")
-    private Page<IssueResponse> openIssues;
-
     @Schema(description = "닫힌 이슈 갯수")
     private Long closedIssueCount;
 
-    @Schema(description = "닫힌 이슈 목록")
-    private Page<IssueResponse> closedIssues;
+    @Schema(description = "이슈 목록")
+    private Page<IssueResponse> issues;
 
-    public static IssuesResponse of(Page<IssueResponse> openIssues, Page<IssueResponse> closedIssues) {
+    public static IssuesResponse of(Long openIssueCount, Long closedIssueCount, Page<IssueResponse> issues) {
         return new IssuesResponse(
-            openIssues.getTotalElements(),
-            openIssues,
-            closedIssues.getTotalElements(),
-            closedIssues
+            openIssueCount,
+            closedIssueCount,
+            issues
         );
     }
 }

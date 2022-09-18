@@ -13,6 +13,7 @@ import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueStatusUpdateReque
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueTitleUpdateRequest;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssuesResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -64,7 +65,7 @@ public class IssueController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public IssueResponse create(@SignInMemberId Long memberId,
+    public IssueResponse create(@Parameter(hidden = true) @SignInMemberId Long memberId,
         @Valid @RequestBody IssueCreateRequest issueCreateRequest) {
         return issueService.save(memberId, issueCreateRequest);
     }
@@ -143,7 +144,7 @@ public class IssueController {
     @PatchMapping("/update-status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void changeIssueStatus(
-        @SignInMemberId Long memberId,
+        @Parameter(hidden = true) @SignInMemberId Long memberId,
         @Valid @RequestBody IssueStatusUpdateRequest issueStatusUpdateRequest) {
         issueService.updateStatus(issueStatusUpdateRequest.getStatus(), issueStatusUpdateRequest.getIds(), memberId);
     }
@@ -171,7 +172,7 @@ public class IssueController {
     )
     @PatchMapping("/{id}/title")
     public IssueResponse updateTitle(
-        @SignInMemberId Long memberId,
+        @Parameter(hidden = true) @SignInMemberId Long memberId,
         @PathVariable Long id,
         @Valid @RequestBody IssueTitleUpdateRequest issueTitleUpdateRequest) {
         return issueService.updateTitle(id, issueTitleUpdateRequest.getTitle(), memberId);
@@ -201,7 +202,7 @@ public class IssueController {
     )
     @PostMapping("/{issueId}/assignees/{assigneeId}")
     public IssueResponse addAssignee(
-        @SignInMemberId Long memberId,
+        @Parameter(hidden = true) @SignInMemberId Long memberId,
         @PathVariable("issueId") Long issueId,
         @PathVariable("assigneeId") Long assigneeId) {
         return issueService.addAssignee(issueId, assigneeId, memberId);
@@ -226,7 +227,7 @@ public class IssueController {
     @DeleteMapping("/{issueId}/assignees")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAssignees(
-        @SignInMemberId Long memberId,
+        @Parameter(hidden = true) @SignInMemberId Long memberId,
         @PathVariable Long issueId,
         @RequestParam(required = false, defaultValue = "false") boolean clear,
         @RequestParam(required = false) Long assigneeId
@@ -258,7 +259,7 @@ public class IssueController {
     )
     @PostMapping("/{issueId}/labels/{labelId}")
     public IssueResponse addLabel(
-        @SignInMemberId Long memberId,
+        @Parameter(hidden = true) @SignInMemberId Long memberId,
         @PathVariable("issueId") Long issueId,
         @PathVariable("labelId") Long labelId) {
         return issueService.addLabel(issueId, labelId, memberId);
@@ -283,7 +284,7 @@ public class IssueController {
     @DeleteMapping("/{issueId}/labels/{labelId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLabels(
-        @SignInMemberId Long memberId,
+        @Parameter(hidden = true) @SignInMemberId Long memberId,
         @PathVariable("issueId") Long issueId,
         @PathVariable("labelId") Long labelId
     ) {
@@ -314,7 +315,7 @@ public class IssueController {
     )
     @PatchMapping("/{issueId}/milestone/{milestoneId}")
     public IssueResponse addMilestone(
-        @SignInMemberId Long memberId,
+        @Parameter(hidden = true) @SignInMemberId Long memberId,
         @PathVariable("issueId") Long issueId,
         @PathVariable(name = "milestoneId", required = true) Long milestoneId) {
         return issueService.addMilestone(issueId, milestoneId, memberId);
@@ -339,7 +340,7 @@ public class IssueController {
     @DeleteMapping("/{issueId}/milestone/{milestoneId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMilestone(
-        @SignInMemberId Long memberId,
+        @Parameter(hidden = true) @SignInMemberId Long memberId,
         @PathVariable("issueId") Long issueId,
         @PathVariable("milestoneId") Long milestoneId) {
         issueService.deleteMilestone(issueId, milestoneId, memberId);
@@ -364,7 +365,7 @@ public class IssueController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteIssue(
-        @SignInMemberId Long memberId,
+        @Parameter(hidden = true) @SignInMemberId Long memberId,
         @PathVariable Long id) {
         issueService.deleteIssue(id, memberId);
     }
@@ -394,7 +395,7 @@ public class IssueController {
     @PostMapping("/{issueId}/comments")
     @ResponseStatus(HttpStatus.CREATED)
     public IssueResponse addComment(
-        @SignInMemberId Long memberId,
+        @Parameter(hidden = true) @SignInMemberId Long memberId,
         @PathVariable Long issueId,
         @Valid @RequestBody IssueCommentRequest issueCommentRequest) {
         return issueService.addComment(memberId, issueId, issueCommentRequest.getContent());
@@ -424,7 +425,7 @@ public class IssueController {
     )
     @PatchMapping("/{issueId}/comments/{commentId}")
     public IssueResponse updateComment(
-        @SignInMemberId Long memberId,
+        @Parameter(hidden = true) @SignInMemberId Long memberId,
         @PathVariable("issueId") Long issueId,
         @PathVariable("commentId") Long commentId,
         @Valid @RequestBody IssueCommentRequest issueCommentRequest) {
@@ -449,7 +450,7 @@ public class IssueController {
     )
     @DeleteMapping("/{issueId}/comments/{commentId}")
     public void deleteComment(
-        @SignInMemberId Long memberId,
+        @Parameter(hidden = true) @SignInMemberId Long memberId,
         @PathVariable("issueId") Long issueId,
         @PathVariable("commentId") Long commentId) {
         issueService.deleteComment(memberId, issueId, commentId);
@@ -480,7 +481,7 @@ public class IssueController {
     @PostMapping("/{issueId}/comments/{commentId}/reactions/{emojiName}")
     @ResponseStatus(HttpStatus.CREATED)
     public IssueResponse addReaction(
-        @SignInMemberId Long memberId,
+        @Parameter(hidden = true) @SignInMemberId Long memberId,
         @PathVariable("issueId") Long issueId,
         @PathVariable("commentId") Long commentId,
         @PathVariable("emojiName") String emojiName) {
@@ -505,7 +506,7 @@ public class IssueController {
     )
     @DeleteMapping("/{issueId}/comments/{commentId}/reactions/{reactionId}")
     public void deleteReaction(
-        @SignInMemberId Long memberId,
+        @Parameter(hidden = true) @SignInMemberId Long memberId,
         @PathVariable("issueId") Long issueId,
         @PathVariable("commentId") Long commentId,
         @PathVariable("reactionId") Long reactionId

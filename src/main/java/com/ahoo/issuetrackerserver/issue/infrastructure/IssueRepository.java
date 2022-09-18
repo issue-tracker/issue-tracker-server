@@ -4,8 +4,6 @@ import com.ahoo.issuetrackerserver.issue.domain.Issue;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -45,13 +43,10 @@ public interface IssueRepository extends JpaRepository<Issue, Long>, IssueReposi
 
     @Modifying
     @Query("update Issue i "
-        + "set i.isClosed = :status "
+        + "set i.isClosed = :status, "
+        + "i.lastModifiedAt = :now "
         + "where i.id in :ids")
-    void updateStatus(@Param("status") boolean status, @Param("ids") List<Long> ids);
-
-    Page<Issue> findAllByIsClosedTrue(Pageable pageable);
-
-    Page<Issue> findAllByIsClosedFalse(Pageable pageable);
+    void updateStatus(@Param("status") boolean status, @Param("ids") List<Long> ids, @Param("now") LocalDateTime now);
 
     @Modifying
     @Query("update Issue i "
@@ -59,4 +54,5 @@ public interface IssueRepository extends JpaRepository<Issue, Long>, IssueReposi
         + "i.lastModifiedAt = :now "
         + "where i.id in :ids")
     void removeMilestoneByIds(@Param("ids") List<Long> ids, @Param("now") LocalDateTime now);
+
 }

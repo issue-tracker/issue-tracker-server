@@ -27,8 +27,7 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
     public static final int PAGE_SIZE = 10;
 
     @Override
-    public Page<Issue> findAllByIsClosedAndFilter(Pageable pageable, IssueSearchFilter issueSearchFilter,
-        boolean isClosed) {
+    public Page<Issue> findAllByFilter(Pageable pageable, IssueSearchFilter issueSearchFilter) {
         List<Issue> content = jpaQueryFactory.selectDistinct(issue)
             .from(issue)
             .join(issue.author, member)
@@ -37,7 +36,7 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
             .leftJoin(issue.assignees, issueAssignee)
             .leftJoin(issue.labels, issueLabel)
             .where(
-                isEqual(issue.isClosed, isClosed),
+                isEqual(issue.isClosed, issueSearchFilter.getIsClosed()),
                 isEqual(issue.milestone.title, issueSearchFilter.getMilestoneTitle()),
                 isEqual(issue.author.nickname, issueSearchFilter.getAuthorNickname()),
                 isEqualAny(issueAssignee.assignee.nickname, issueSearchFilter.getAssigneeNicknames()),
@@ -56,7 +55,7 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
             .leftJoin(issue.assignees, issueAssignee)
             .leftJoin(issue.labels, issueLabel)
             .where(
-                isEqual(issue.isClosed, isClosed),
+                isEqual(issue.isClosed, issueSearchFilter.getIsClosed()),
                 isEqual(issue.milestone.title, issueSearchFilter.getMilestoneTitle()),
                 isEqual(issue.author.nickname, issueSearchFilter.getAuthorNickname()),
                 isEqualAny(issueAssignee.assignee.nickname, issueSearchFilter.getAssigneeNicknames()),
@@ -66,6 +65,26 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
             .fetchOne();
 
         return new PageImpl<>(content, pageable, count);
+    }
+
+    @Override
+    public Long countByFilterAndIsClosed(IssueSearchFilter issueSearchFilter, boolean isClosed) {
+        return jpaQueryFactory.select(issue.countDistinct())
+            .from(issue)
+            .join(issue.author, member)
+            .leftJoin(issue.milestone, milestone)
+            .leftJoin(issue.comments, comment)
+            .leftJoin(issue.assignees, issueAssignee)
+            .leftJoin(issue.labels, issueLabel)
+            .where(
+                isEqual(issue.isClosed, isClosed),
+                isEqual(issue.milestone.title, issueSearchFilter.getMilestoneTitle()),
+                isEqual(issue.author.nickname, issueSearchFilter.getAuthorNickname()),
+                isEqualAny(issueAssignee.assignee.nickname, issueSearchFilter.getAssigneeNicknames()),
+                isEqualAny(issueLabel.label.title, issueSearchFilter.getLabelTitles()),
+                isContains(issue.title, issueSearchFilter.getIssueTitle())
+            )
+            .fetchOne();
     }
 
     private <T> BooleanBuilder isEqualAny(SimpleExpression<T> left, List<T> rights) {
