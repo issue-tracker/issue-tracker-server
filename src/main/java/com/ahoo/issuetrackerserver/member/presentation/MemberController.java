@@ -14,6 +14,7 @@ import com.ahoo.issuetrackerserver.member.presentation.dto.GeneralSignInRequest;
 import com.ahoo.issuetrackerserver.member.presentation.dto.MemberResponse;
 import com.ahoo.issuetrackerserver.member.presentation.dto.SignResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -222,7 +223,7 @@ public class MemberController {
             )}
     )
     @GetMapping("/info")
-    public MemberResponse getMemberInfo(@SignInMemberId Long memberId) {
+    public MemberResponse getMemberInfo(@Parameter(hidden = true) @SignInMemberId Long memberId) {
         return memberService.findById(memberId);
     }
 
@@ -277,7 +278,7 @@ public class MemberController {
             )}
     )
     @GetMapping
-    public List<MemberResponse> getMembers(@SignInMemberId Long id) {
+    public List<MemberResponse> getMembers(@Parameter(hidden = true) @SignInMemberId Long id) {
         return memberService.findAll();
     }
 }

@@ -17,6 +17,7 @@ import com.ahoo.issuetrackerserver.common.exception.UnAuthorizedException;
 import com.ahoo.issuetrackerserver.member.application.MemberService;
 import com.ahoo.issuetrackerserver.member.presentation.dto.MemberResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -148,7 +149,7 @@ public class AuthController {
             )}
     )
     @GetMapping("/test")
-    public Long signInRequiredTest(@SignInMemberId Long memberId) {
+    public Long signInRequiredTest(@Parameter(hidden = true) @SignInMemberId Long memberId) {
         return memberId;
     }
 }
