@@ -123,4 +123,17 @@ public class IssueHistoryResponse {
             null
         );
     }
+
+    public IssueHistoryResponse(Member modifier, LocalDateTime modifiedAt,
+        IssueUpdateAction action, Label label, Milestone milestone,
+        Member assignee, String previousTitle, String changedTitle) {
+        this.modifier = MemberResponse.from(modifier);
+        this.modifiedAt = modifiedAt;
+        this.action = action;
+        this.label = label;
+        this.milestone = milestone;
+        this.assignee = assignee;
+        this.previousTitle = previousTitle;
+        this.changedTitle = changedTitle;
+    }
 }
