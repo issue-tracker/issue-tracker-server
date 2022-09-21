@@ -3,6 +3,7 @@ package com.ahoo.issuetrackerserver.issue.infrastructure;
 import static com.ahoo.issuetrackerserver.issue.domain.QComment.comment;
 import static com.ahoo.issuetrackerserver.issue.domain.QIssue.issue;
 import static com.ahoo.issuetrackerserver.issue.domain.QIssueAssignee.issueAssignee;
+import static com.ahoo.issuetrackerserver.issue.domain.QIssueHistory.issueHistory;
 import static com.ahoo.issuetrackerserver.issue.domain.QIssueLabel.issueLabel;
 import static com.ahoo.issuetrackerserver.member.domain.QMember.member;
 import static com.ahoo.issuetrackerserver.milestone.domain.QMilestone.milestone;
@@ -35,6 +36,7 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
             .leftJoin(issue.comments, comment)
             .leftJoin(issue.assignees, issueAssignee)
             .leftJoin(issue.labels, issueLabel)
+            .leftJoin(issue.logs, issueHistory).fetchJoin()
             .where(
                 isEqual(issue.isClosed, issueSearchFilter.getIsClosed()),
                 isEqual(issue.milestone.title, issueSearchFilter.getMilestoneTitle()),

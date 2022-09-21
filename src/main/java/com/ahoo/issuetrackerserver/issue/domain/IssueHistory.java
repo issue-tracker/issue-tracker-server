@@ -42,7 +42,7 @@ public class IssueHistory extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private IssueUpdateAction action;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "label_id")
     private Label label;
 
@@ -50,7 +50,7 @@ public class IssueHistory extends BaseEntity {
     @JoinColumn(name = "milestone_id")
     private Milestone milestone;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "assignee_id")
     private Member assignee;
 
