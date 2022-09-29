@@ -42,15 +42,15 @@ public class IssueHistory extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private IssueUpdateAction action;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne//(fetch = FetchType.EAGER)
     @JoinColumn(name = "label_id")
     private Label label;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne//(fetch = FetchType.EAGER)
     @JoinColumn(name = "milestone_id")
     private Milestone milestone;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne//(fetch = FetchType.EAGER)
     @JoinColumn(name = "assignee_id")
     private Member assignee;
 

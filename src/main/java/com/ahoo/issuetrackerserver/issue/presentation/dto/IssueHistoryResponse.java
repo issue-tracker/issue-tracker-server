@@ -32,7 +32,7 @@ public class IssueHistoryResponse {
     private Label label;
 
     @Schema(description = "수정된 마일스톤", nullable = true)
-    private Milestone milestone;
+    private IssueHistoryMilestone milestone;
 
     @Schema(description = "수정된 할당자", nullable = true)
     private Member assignee;
@@ -104,7 +104,7 @@ public class IssueHistoryResponse {
             issueHistory.getCreatedAt(),
             issueHistory.getAction(),
             null,
-            issueHistory.getMilestone(),
+            IssueHistoryMilestone.from(issueHistory.getMilestone()),
             null,
             null,
             null
@@ -131,7 +131,7 @@ public class IssueHistoryResponse {
         this.modifiedAt = modifiedAt;
         this.action = action;
         this.label = label;
-        this.milestone = milestone;
+        this.milestone = IssueHistoryMilestone.from(milestone);
         this.assignee = assignee;
         this.previousTitle = previousTitle;
         this.changedTitle = changedTitle;
