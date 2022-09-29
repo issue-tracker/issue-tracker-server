@@ -40,7 +40,12 @@ public class MilestoneService {
 
     @Transactional
     public MilestoneResponse save(MilestoneCreateRequest milestoneCreateRequest) {
+        if (milestoneRepository.existsByTitle(milestoneCreateRequest.getTitle())) {
+            throw new ApplicationException(ErrorType.DUPLICATED_MILESTONE_TITLE);
+        }
+
         Milestone newMilestone = milestoneCreateRequest.toEntity();
+
         milestoneRepository.save(newMilestone);
         return MilestoneResponse.from(newMilestone);
     }

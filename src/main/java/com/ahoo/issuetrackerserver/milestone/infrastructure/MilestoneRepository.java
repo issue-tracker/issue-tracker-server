@@ -19,4 +19,6 @@ public interface MilestoneRepository extends JpaRepository<Milestone, Long> {
         + "left outer join fetch m.issues "
         + "where m.id = :id")
     Optional<Milestone> findByIdFetchJoin(@Param("id") Long id);
+
+    boolean existsByTitle(String title);
 }

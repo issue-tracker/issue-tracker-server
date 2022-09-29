@@ -71,4 +71,22 @@ public class IssueResponse {
             issue.getLastModifiedAt()
         );
     }
+
+    public static IssueResponse of(Issue issue, List<IssueHistoryResponse> issueHistoryResponses) {
+        return new IssueResponse(
+            issue.getId(),
+            issue.getTitle(),
+            MemberResponse.from(issue.getAuthor()),
+            issue.isClosed(),
+            issue.getComments().stream()
+                .map(CommentResponse::from)
+                .collect(Collectors.toUnmodifiableList()),
+            IssueAssigneesResponse.from(issue.getAssignees()),
+            IssueLabelsResponse.from(issue.getLabels()),
+            issue.getMilestone() == null ? null : MilestoneResponse.from(issue.getMilestone()),
+            issueHistoryResponses,
+            issue.getCreatedAt(),
+            issue.getLastModifiedAt()
+        );
+    }
 }

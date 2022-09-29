@@ -10,10 +10,12 @@ import com.ahoo.issuetrackerserver.issue.domain.IssueAssignee;
 import com.ahoo.issuetrackerserver.issue.domain.IssueLabel;
 import com.ahoo.issuetrackerserver.issue.domain.Reaction;
 import com.ahoo.issuetrackerserver.issue.infrastructure.CommentRepository;
+import com.ahoo.issuetrackerserver.issue.infrastructure.IssueHistoryRepository;
 import com.ahoo.issuetrackerserver.issue.infrastructure.IssueRepository;
 import com.ahoo.issuetrackerserver.issue.infrastructure.ReactionRepository;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.EmojiResponse;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueCreateRequest;
+import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueHistoryResponse;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueResponse;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssueSearchFilter;
 import com.ahoo.issuetrackerserver.issue.presentation.dto.IssuesResponse;
@@ -45,6 +47,7 @@ public class IssueService {
     private final MilestoneRepository milestoneRepository;
     private final CommentRepository commentRepository;
     private final ReactionRepository reactionRepository;
+    private final IssueHistoryRepository issueHistoryRepository;
 
     private final int PAGE_SIZE = 10;
 
@@ -83,7 +86,9 @@ public class IssueService {
         Issue findIssue = issueRepository.findByIdFetchJoinComments(id)
             .orElseThrow(() -> new ApplicationException(ErrorType.NOT_EXISTS_ISSUE, new NoSuchElementException()));
 
-        return IssueResponse.from(findIssue);
+        List<IssueHistoryResponse> logs = issueHistoryRepository.findByIssueId(id);
+
+        return IssueResponse.of(findIssue, logs);
     }
 
     @IssueHistoryLogging
