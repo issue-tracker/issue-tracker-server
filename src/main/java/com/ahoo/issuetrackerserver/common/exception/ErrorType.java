@@ -28,6 +28,7 @@ public enum ErrorType {
     DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "(으)로 이미 가입된 이메일입니다."),
     DUPLICATED_REACTION(HttpStatus.BAD_REQUEST, "중복되는 리액션이 존재합니다."),
     DUPLICATED_LABEL_TITLE(HttpStatus.BAD_REQUEST, "중복되는 라벨 이름이 존재합니다."),
+    DUPLICATED_MILESTONE_TITLE(HttpStatus.BAD_REQUEST, "중복되는 마일스톤 이름이 존재합니다."),
 
     NOT_EXISTS_MEMBER(HttpStatus.BAD_REQUEST, "존재하지 않는 회원입니다."),
     NOT_EXISTS_LABEL(HttpStatus.BAD_REQUEST, "존재하지 않는 라벨입니다."),
