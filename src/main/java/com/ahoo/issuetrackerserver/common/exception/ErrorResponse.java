@@ -9,6 +9,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ErrorResponse {
 
+    @Schema(description = "에러 코드")
+    private int errorCode;
+
     @Schema(description = "에러 메시지")
-    String message;
+    private String message;
 }

@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = ApplicationException.class)
     public ResponseEntity<ErrorResponse> handleApplicationException(ApplicationException e) {
         return ResponseEntity.status(e.getErrorType().getStatus())
-            .body(new ErrorResponse(e.getErrorType().getErrorMessage()));
+            .body(new ErrorResponse(e.getErrorType().getErrorCode(), e.getErrorType().getErrorMessage()));
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
@@ -32,6 +32,6 @@ public class GlobalExceptionHandler {
             }
         }
 
-        return ResponseEntity.badRequest().body(new ErrorResponse(message.toString()));
+        return ResponseEntity.badRequest().body(new ErrorResponse(0, message.toString()));
     }
 }
