@@ -11,9 +11,10 @@ public enum ErrorType {
 
     // 권한
     NO_AUTHORIZATION_HEADER(HttpStatus.UNAUTHORIZED, 1000, "요청에 Authorization 헤더가 존재하지 않습니다."),
-    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, 1001, "유효하지 않은 토큰입니다."),
+    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, 1001, "유효하지 않은 access_token입니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, 1002, "유효하지 않은 refresh_token입니다."),
     INVALID_AUTHOR(HttpStatus.UNAUTHORIZED, 1003, "권한이 없는 사용자입니다."),
+    NO_REFRESH_TOKEN_COOKIE(HttpStatus.BAD_REQUEST, 1004, "요청에 refresh_token 쿠키가 존재하지 않습니다."),
 
     // OAuth
     ESSENTIAL_FIELD_DISAGREE(HttpStatus.BAD_REQUEST, 2000, "필수 제공 동의 항목을 동의하지 않았습니다."),

@@ -1,11 +1,12 @@
 package com.ahoo.issuetrackerserver.auth.infrastructure.jwt;
 
-import javax.servlet.http.Cookie;
+import com.ahoo.issuetrackerserver.common.exception.ErrorType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.http.ResponseCookie;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -24,12 +25,23 @@ public class RefreshToken implements JwtToken {
     }
 
     @Override
-    public Cookie toCookie() {
-        Cookie cookie = new Cookie(REFRESH_TOKEN, this.refreshToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath(COOKIE_PATH);
-        cookie.setMaxAge((int) JwtConstant.REFRESH_TOKEN_EXPIRED_TIME);
-        return cookie;
+    public ResponseCookie toCookie() {
+//        Cookie cookie = new Cookie(REFRESH_TOKEN, this.refreshToken);
+//        cookie.setHttpOnly(true);
+//        cookie.setPath(COOKIE_PATH);
+//        cookie.setMaxAge((int) JwtConstant.REFRESH_TOKEN_EXPIRED_TIME);
+//        return cookie;
+        return ResponseCookie.from(REFRESH_TOKEN, this.refreshToken)
+            .httpOnly(true)
+            .path(COOKIE_PATH)
+            .maxAge(JwtConstant.REFRESH_TOKEN_EXPIRED_TIME)
+            .sameSite("None")
+            .build();
+    }
+
+    @Override
+    public ErrorType getErrorType() {
+        return ErrorType.INVALID_REFRESH_TOKEN;
     }
 
     public static RefreshToken of(String refreshToken) {
