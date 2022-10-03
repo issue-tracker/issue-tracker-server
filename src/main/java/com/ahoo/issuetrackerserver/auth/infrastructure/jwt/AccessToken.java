@@ -1,9 +1,9 @@
 package com.ahoo.issuetrackerserver.auth.infrastructure.jwt;
 
 import com.ahoo.issuetrackerserver.common.exception.ErrorType;
-import javax.servlet.http.Cookie;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseCookie;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AccessToken implements JwtToken {
@@ -16,11 +16,15 @@ public class AccessToken implements JwtToken {
     }
 
     @Override
-    public Cookie toCookie() {
-        Cookie cookie = new Cookie("access_token", this.accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        return cookie;
+    public ResponseCookie toCookie() {
+//        Cookie cookie = new Cookie("access_token", this.accessToken);
+//        cookie.setHttpOnly(true);
+//        cookie.setPath("/");
+//        return cookie;
+        return ResponseCookie.from("access_token", this.accessToken)
+            .httpOnly(true)
+            .path("/")
+            .build();
     }
 
     @Override
