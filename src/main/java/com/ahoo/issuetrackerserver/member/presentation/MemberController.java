@@ -244,7 +244,7 @@ public class MemberController {
                 }
             )}
     )
-    @RequestMapping(method = RequestMethod.HEAD, value = "/signout")
+    @RequestMapping(method = RequestMethod.POST, value = "/signout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void signOut(@CookieValue(value = REFRESH_TOKEN) Cookie refreshTokenCookie, HttpServletResponse response) {
         RefreshToken refreshToken = RefreshToken.of(refreshTokenCookie.getValue());
