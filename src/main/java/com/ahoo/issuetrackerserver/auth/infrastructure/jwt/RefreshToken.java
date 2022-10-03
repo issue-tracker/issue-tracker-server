@@ -1,5 +1,6 @@
 package com.ahoo.issuetrackerserver.auth.infrastructure.jwt;
 
+import com.ahoo.issuetrackerserver.common.exception.ErrorType;
 import javax.servlet.http.Cookie;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,11 @@ public class RefreshToken implements JwtToken {
         cookie.setPath(COOKIE_PATH);
         cookie.setMaxAge((int) JwtConstant.REFRESH_TOKEN_EXPIRED_TIME);
         return cookie;
+    }
+
+    @Override
+    public ErrorType getErrorType() {
+        return ErrorType.INVALID_REFRESH_TOKEN;
     }
 
     public static RefreshToken of(String refreshToken) {

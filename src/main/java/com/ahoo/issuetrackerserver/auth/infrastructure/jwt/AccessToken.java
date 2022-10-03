@@ -1,5 +1,6 @@
 package com.ahoo.issuetrackerserver.auth.infrastructure.jwt;
 
+import com.ahoo.issuetrackerserver.common.exception.ErrorType;
 import javax.servlet.http.Cookie;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,11 @@ public class AccessToken implements JwtToken {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
+    }
+
+    @Override
+    public ErrorType getErrorType() {
+        return ErrorType.INVALID_ACCESS_TOKEN;
     }
 
     public static AccessToken of(String accessToken) {
