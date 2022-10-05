@@ -85,8 +85,7 @@ public class AuthController {
         RefreshToken refreshToken = JwtGenerator.generateRefreshToken(authMember.getId());
         refreshTokenRepository.save(refreshToken);
 
-//        response.addCookie(refreshToken.toCookie());
-        response.addHeader("Set-Cookie", refreshToken.toCookie().toString());
+        response.addCookie(refreshToken.toCookie());
         return authService.responseSignInMember(authMember, accessToken);
     }
 
@@ -125,8 +124,7 @@ public class AuthController {
         RefreshToken newRefreshToken = JwtGenerator.generateRefreshToken(memberId);
         refreshTokenRepository.save(newRefreshToken);
 
-//        response.addCookie(refreshToken.toCookie());
-        response.addHeader("Set-Cookie", refreshToken.toCookie().toString());
+        response.addCookie(refreshToken.toCookie());
         return authService.responseSignInMember(memberResponse, newAccessToken);
     }
 
