@@ -47,6 +47,7 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
                     : isEqualAny(issueLabel.label.title, issueSearchFilter.getLabelTitles()),
                 isContains(issue.title, issueSearchFilter.getIssueTitle())
             )
+            .orderBy(issue.createdAt.desc())
             .offset(pageable.getOffset())
             .limit(PAGE_SIZE)
             .fetch();
