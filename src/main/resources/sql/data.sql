@@ -75,3 +75,8 @@ VALUES (1, 'THUMBS_UP', 1),
        (4, 'HEART', 1),
        (4, 'ROCKET', 2),
        (3, 'EYES', 2);
+
+INSERT INTO issue_history (issue_id, modifier_id, action, created_at, last_modified_at)
+VALUES (5, 1, 'CLOSE_ISSUE', '2022-12-19 00:00:00', '2022-12-19 00:00:00'),
+       (6, 1, 'CLOSE_ISSUE', '2022-12-19 00:00:00', '2022-12-19 00:00:00'),
+       (7, 2, 'CLOSE_ISSUE', '2022-12-19 00:00:00', '2022-12-19 00:00:00');

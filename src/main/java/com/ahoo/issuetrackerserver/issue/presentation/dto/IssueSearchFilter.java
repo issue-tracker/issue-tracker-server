@@ -50,4 +50,10 @@ public class IssueSearchFilter {
                 issueTitle = query[KEY];
         }
     }
+
+    public boolean isEmptyLabelTitle() {
+        return this.getLabelTitles().stream()
+            .anyMatch(String::isEmpty);
+    }
+
 }
