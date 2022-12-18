@@ -42,7 +42,9 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
                 isEqual(issue.milestone.title, issueSearchFilter.getMilestoneTitle()),
                 isEqual(issue.author.nickname, issueSearchFilter.getAuthorNickname()),
                 isEqualAny(issueAssignee.assignee.nickname, issueSearchFilter.getAssigneeNicknames()),
-                isEqualAny(issueLabel.label.title, issueSearchFilter.getLabelTitles()),
+                issueSearchFilter.isEmptyLabelTitle()
+                    ? issue.labels.isEmpty()
+                    : isEqualAny(issueLabel.label.title, issueSearchFilter.getLabelTitles()),
                 isContains(issue.title, issueSearchFilter.getIssueTitle())
             )
             .offset(pageable.getOffset())
@@ -61,7 +63,9 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
                 isEqual(issue.milestone.title, issueSearchFilter.getMilestoneTitle()),
                 isEqual(issue.author.nickname, issueSearchFilter.getAuthorNickname()),
                 isEqualAny(issueAssignee.assignee.nickname, issueSearchFilter.getAssigneeNicknames()),
-                isEqualAny(issueLabel.label.title, issueSearchFilter.getLabelTitles()),
+                issueSearchFilter.isEmptyLabelTitle()
+                    ? issue.labels.isEmpty()
+                    : isEqualAny(issueLabel.label.title, issueSearchFilter.getLabelTitles()),
                 isContains(issue.title, issueSearchFilter.getIssueTitle())
             )
             .fetchOne();
@@ -83,7 +87,9 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
                 isEqual(issue.milestone.title, issueSearchFilter.getMilestoneTitle()),
                 isEqual(issue.author.nickname, issueSearchFilter.getAuthorNickname()),
                 isEqualAny(issueAssignee.assignee.nickname, issueSearchFilter.getAssigneeNicknames()),
-                isEqualAny(issueLabel.label.title, issueSearchFilter.getLabelTitles()),
+                issueSearchFilter.isEmptyLabelTitle()
+                    ? issue.labels.isEmpty()
+                    : isEqualAny(issueLabel.label.title, issueSearchFilter.getLabelTitles()),
                 isContains(issue.title, issueSearchFilter.getIssueTitle())
             )
             .fetchOne();
@@ -110,4 +116,5 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
         }
         return left.contains(right);
     }
+
 }
