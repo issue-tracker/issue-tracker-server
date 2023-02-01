@@ -1,12 +1,15 @@
 package com.ahoo.issuetrackerserver.auth.infrastructure.jwt;
 
 import com.ahoo.issuetrackerserver.common.exception.ErrorType;
-import javax.servlet.http.Cookie;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseCookie;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AccessToken implements JwtToken {
+
+    private static final String ACCESS_TOKEN = "access_token";
+    private static final String COOKIE_PATH = "/";
 
     private String accessToken;
 
@@ -16,11 +19,14 @@ public class AccessToken implements JwtToken {
     }
 
     @Override
-    public Cookie toCookie() {
-        Cookie cookie = new Cookie("access_token", this.accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        return cookie;
+    public ResponseCookie toCookie() {
+        return ResponseCookie.from(ACCESS_TOKEN, accessToken)
+            .maxAge(JwtConstant.ACCESS_TOKEN_EXPIRED_TIME)
+            .path(COOKIE_PATH)
+            .secure(true)
+            .httpOnly(true)
+            .sameSite("None")
+            .build();
     }
 
     @Override

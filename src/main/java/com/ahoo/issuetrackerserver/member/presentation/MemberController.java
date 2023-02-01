@@ -108,7 +108,7 @@ public class MemberController {
         RefreshToken refreshToken = JwtGenerator.generateRefreshToken(memberResponse.getId());
         refreshTokenRepository.save(refreshToken);
 
-        response.addCookie(refreshToken.toCookie());
+        response.setHeader("Set-Cookie", refreshToken.toCookie().toString());
         return SignResponse.of(memberResponse, accessToken);
     }
 
@@ -143,7 +143,7 @@ public class MemberController {
         RefreshToken refreshToken = JwtGenerator.generateRefreshToken(memberResponse.getId());
         refreshTokenRepository.save(refreshToken);
 
-        response.addCookie(refreshToken.toCookie());
+        response.setHeader("Set-Cookie", refreshToken.toCookie().toString());
         return SignResponse.of(memberResponse, accessToken);
     }
 
