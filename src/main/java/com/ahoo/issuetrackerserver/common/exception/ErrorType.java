@@ -35,10 +35,11 @@ public enum ErrorType {
     NOT_EXISTS_MILESTONE(HttpStatus.BAD_REQUEST, 3004, "존재하지 않는 마일스톤입니다."),
     NOT_EXISTS_REACTION(HttpStatus.BAD_REQUEST, 3005, "존재하지 않는 리액션입니다."),
 
-    // 파일 업로드
+    // 파일 관련 에러
     INVALID_CONTENT_TYPE(HttpStatus.BAD_REQUEST, 4001, "이미지 파일만 업로드 가능합니다."),
     FILE_CONVERT_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, 4002, "파일 변환 중 에러가 발생하였습니다."),
     INVALID_FILE_NAME(HttpStatus.BAD_REQUEST, 4003, "잘못된 형식의 파일 이름입니다."),
+    FILE_DOWNLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, 4004, "파일 다운로드 중 에러가 발생하였습니다."),
 
     // 기타 유효성 검증
     INVALID_HEX_COLOR_CODE(HttpStatus.BAD_REQUEST, 5001, "유효하지 않은 색상 코드입니다."),
