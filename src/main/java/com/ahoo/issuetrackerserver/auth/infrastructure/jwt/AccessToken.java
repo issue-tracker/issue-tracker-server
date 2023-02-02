@@ -10,6 +10,7 @@ public class AccessToken implements JwtToken {
 
     private static final String ACCESS_TOKEN = "access_token";
     private static final String COOKIE_PATH = "/";
+    public static final String DOMAIN_NAME = ".issue-tracker.link";
 
     private String accessToken;
 
@@ -26,6 +27,7 @@ public class AccessToken implements JwtToken {
             .secure(true)
             .httpOnly(true)
             .sameSite("None")
+            .domain(DOMAIN_NAME)
             .build();
     }
 

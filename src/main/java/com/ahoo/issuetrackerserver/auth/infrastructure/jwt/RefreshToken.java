@@ -15,6 +15,7 @@ public class RefreshToken implements JwtToken {
 
     private static final String REFRESH_TOKEN = "refresh_token";
     private static final String COOKIE_PATH = "/";
+    public static final String DOMAIN_NAME = ".issue-tracker.link";
 
     @Id
     private String refreshToken;
@@ -32,6 +33,7 @@ public class RefreshToken implements JwtToken {
             .secure(true)
             .httpOnly(true)
             .sameSite("None")
+            .domain(DOMAIN_NAME)
             .build();
     }
 
