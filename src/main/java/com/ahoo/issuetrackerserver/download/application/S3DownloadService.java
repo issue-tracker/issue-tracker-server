@@ -28,7 +28,7 @@ public class S3DownloadService {
     public ResponseEntity<byte[]> download(String fileName) {
         try {
             S3Object o = amazonS3.getObject(new GetObjectRequest(component.getBucket(), fileName));
-            S3ObjectInputStream objectInputStream = ((S3Object) o).getObjectContent();
+            S3ObjectInputStream objectInputStream = o.getObjectContent();
             byte[] bytes = IOUtils.toByteArray(objectInputStream);
 
             String downloadFileName = URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20");
