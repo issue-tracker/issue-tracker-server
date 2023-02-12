@@ -13,7 +13,7 @@ public class S3DownloadController {
     private final S3DownloadService s3DownloadService;
 
     @GetMapping("/.well-known/apple-app-site-association")
-    public ResponseEntity<byte[]> downloadS3File() {
         return s3DownloadService.download("issue-tracker/apple-app-site-association");
+    public ResponseEntity<byte[]> downloadAASAFile() {
     }
 }
