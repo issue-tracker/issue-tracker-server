@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.IOUtils;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -31,7 +32,8 @@ public class S3DownloadService {
             S3ObjectInputStream objectInputStream = o.getObjectContent();
             byte[] bytes = IOUtils.toByteArray(objectInputStream);
 
-            String downloadFileName = URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20");
+            String downloadFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replaceAll("\\+", "%20")
+                .replace(".json", "");
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             httpHeaders.setContentLength(bytes.length);
